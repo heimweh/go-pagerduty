@@ -8,6 +8,7 @@ type resourceReference struct {
 	Type    string `json:"type,omitempty"`
 }
 
+// UserReferenceWrapper is a wrapper around UserReference
 type UserReferenceWrapper struct {
 	User *UserReference `json:"user,omitempty"`
 }

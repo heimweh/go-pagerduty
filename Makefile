@@ -18,6 +18,9 @@ tools:
 	go get -u github.com/client9/misspell/cmd/misspell
 	go get -u github.com/golang/lint/golint
 
+vendor-status:
+	@govendor status
+
 coverprofile:
 	@go test ./pagerduty/... -coverprofile coverage.out && go tool cover -html=coverage.out
 
@@ -29,7 +32,7 @@ lint:
 	@echo -e "$(OK_MSG)"
 
 # check combines all checks into a single command
-check: fmtcheck vet misspell staticcheck simple unused lint checkdoc
+check: fmtcheck vet misspell staticcheck simple unused lint vendor-status
 
 # fmt formats Go code.
 fmt:
