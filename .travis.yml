@@ -5,7 +5,7 @@ go:
 - 1.8.1
 
 install:
-- go get github.com/kardianos/govendor
+- make tools
 
 script:
 - make test
