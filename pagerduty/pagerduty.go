@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"net/url"
 
@@ -25,6 +26,7 @@ type Config struct {
 	HTTPClient *http.Client
 	Token      string
 	UserAgent  string
+	Debug      bool
 }
 
 // Client manages the communication with the PagerDuty API
@@ -98,6 +100,10 @@ func (c *Client) newRequest(method, url string, body interface{}) (*http.Request
 		}
 	}
 
+	if c.Config.Debug {
+		log.Printf("[DEBUG] PagerDuty - Preparing %s request to %s with body: %s", method, url, buf)
+	}
+
 	u := c.baseURL.String() + url
 
 	req, err := http.NewRequest(method, u, buf)
@@ -123,7 +129,9 @@ func (c *Client) newRequestDo(method, url string, options, body, v interface{}) 
 			return nil, err
 		}
 
-		url = fmt.Sprintf("%s?%s", url, values.Encode())
+		if v := values.Encode(); v != "" {
+			url = fmt.Sprintf("%s?%s", url, v)
+		}
 	}
 
 	req, err := c.newRequest(method, url, body)
