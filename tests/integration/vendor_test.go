@@ -3,7 +3,7 @@ package integration
 import (
 	"testing"
 
-	pagerduty "github.com/heimweh/go-pagerduty/pagerduty"
+	"github.com/heimweh/go-pagerduty/pagerduty"
 )
 
 func TestVendorsList(t *testing.T) {
