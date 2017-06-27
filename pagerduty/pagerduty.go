@@ -170,24 +170,24 @@ func (c *Client) ValidateAuth() error {
 	return err
 }
 
-func decodeJSON(r *Response, v interface{}) error {
-	return json.NewDecoder(r.Body).Decode(v)
+func decodeJSON(res *Response, v interface{}) error {
+	return json.NewDecoder(res.Body).Decode(v)
 }
 
-func checkResponse(r *Response) error {
-	if c := r.StatusCode; http.StatusOK <= c && c <= 299 {
+func checkResponse(res *Response) error {
+	if res.StatusCode >= 200 && res.StatusCode <= 299 {
 		return nil
 	}
 
-	return decodeErrorResponse(r)
+	return decodeErrorResponse(res)
 }
 
-func decodeErrorResponse(r *Response) error {
+func decodeErrorResponse(res *Response) error {
 	// Try to decode error response or fallback with standard error
-	v := new(ErrorResponse)
-	if err := decodeJSON(r, v); err != nil {
-		return fmt.Errorf("%s API call to %s failed: %v", r.Request.Method, r.Request.URL.String(), r.Status)
+	v := &errorResponse{Error: &Error{ErrorResponse: res}}
+	if err := decodeJSON(res, v); err != nil {
+		return fmt.Errorf("%s API call to %s failed: %v", res.Request.Method, res.Request.URL.String(), res.Status)
 	}
 
-	return fmt.Errorf("%s API call to %s failed: %s : %v", r.Request.Method, r.Request.URL.String(), r.Status, v.ErrorResponse)
+	return v.Error
 }

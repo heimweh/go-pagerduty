@@ -17,8 +17,8 @@ func TestErrorResponses(t *testing.T) {
 		{
 			name: "error with message",
 			body: `{"error": {"message": "Your account is expired and cannot use the API.", "code": 2012}}`,
-			want: &ErrorResponse{
-				ErrorResponse: &ErrorResponse{
+			want: &errorResponse{
+				Error: &Error{
 					Code:    2012,
 					Message: "Your account is expired and cannot use the API.",
 				},
@@ -28,8 +28,8 @@ func TestErrorResponses(t *testing.T) {
 		{
 			name: "error with multiple errors",
 			body: `{"error": {"errors": ["foo", "bar"], "code": 2001, "message": "Invalid Input Provided"}}`,
-			want: &ErrorResponse{
-				ErrorResponse: &ErrorResponse{
+			want: &errorResponse{
+				Error: &Error{
 					Errors:  []interface{}{"foo", "bar"},
 					Code:    2001,
 					Message: "Invalid Input Provided",
@@ -40,8 +40,8 @@ func TestErrorResponses(t *testing.T) {
 		{
 			name: "error with map slice",
 			body: `{"error": {"message": "Invalid Schedule", "code": 3001, "errors": {"foo": ["bar"]}}}`,
-			want: &ErrorResponse{
-				ErrorResponse: &ErrorResponse{
+			want: &errorResponse{
+				Error: &Error{
 					Errors:  map[string]interface{}{"foo": []interface{}{"bar"}},
 					Code:    3001,
 					Message: "Invalid Schedule",
@@ -52,7 +52,7 @@ func TestErrorResponses(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			v := new(ErrorResponse)
+			v := new(errorResponse)
 
 			r := &Response{Response: &http.Response{Body: ioutil.NopCloser(bytes.NewBuffer([]byte(tc.body)))}}
 
