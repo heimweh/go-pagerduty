@@ -62,13 +62,19 @@ type ScheduleLayer struct {
 
 // ListSchedulesOptions represents options when listing schedules.
 type ListSchedulesOptions struct {
-	*Pagination
-	Query string `url:"query,omitempty"`
+	Limit  int    `url:"limit,omitempty"`
+	More   bool   `url:"more,omitempty"`
+	Offset int    `url:"offset,omitempty"`
+	Total  int    `url:"total,omitempty"`
+	Query  string `url:"query,omitempty"`
 }
 
 // ListSchedulesResponse represents a list response of schedules.
 type ListSchedulesResponse struct {
-	*Pagination
+	Limit     int         `url:"limit,omitempty"`
+	More      bool        `url:"more,omitempty"`
+	Offset    int         `url:"offset,omitempty"`
+	Total     int         `url:"total,omitempty"`
 	Schedules []*Schedule `json:"schedules,omitempty"`
 }
 
