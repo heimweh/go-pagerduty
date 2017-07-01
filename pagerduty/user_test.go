@@ -132,3 +132,81 @@ func TestUsersUpdate(t *testing.T) {
 		t.Errorf("returned %#v; want %#v", resp, want)
 	}
 }
+
+func TestUsersAddContactMethod(t *testing.T) {
+	setup()
+	defer teardown()
+
+	input := &ContactMethod{Address: "foo@bar.com", Type: "email_contact_method"}
+
+	mux.HandleFunc("/users/1/contact_methods", func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "POST")
+		v := new(ContactMethod)
+		json.NewDecoder(r.Body).Decode(v)
+		if !reflect.DeepEqual(v.ContactMethod, input) {
+			t.Errorf("Request body = %+v, want %+v", v, input)
+		}
+		w.Write([]byte(`{"contact_method": { "address": "foo@bar.com", "id": "1", "type": "email_contact_method" }}`))
+	})
+
+	resp, _, err := client.Users.CreateContactMethod("1", input)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	want := &ContactMethod{
+		ID:      "1",
+		Type:    "email_contact_method",
+		Address: "foo@bar.com",
+	}
+
+	if !reflect.DeepEqual(resp, want) {
+		t.Errorf("returned %#v; want %#v", resp, want)
+	}
+}
+
+func TestUsersUpdateContactMethod(t *testing.T) {
+	setup()
+	defer teardown()
+
+	input := &ContactMethod{Address: "foo@bar.com", Type: "email_contact_method"}
+
+	mux.HandleFunc("/users/1/contact_methods/1", func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "PUT")
+		v := new(ContactMethod)
+		json.NewDecoder(r.Body).Decode(v)
+		if !reflect.DeepEqual(v.ContactMethod, input) {
+			t.Errorf("Request body = %+v, want %+v", v, input)
+		}
+		w.Write([]byte(`{"contact_method": { "address": "foo@bar.com", "id": "1", "type": "email_contact_method" }}`))
+	})
+
+	resp, _, err := client.Users.UpdateContactMethod("1", "1", input)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	want := &ContactMethod{
+		ID:      "1",
+		Type:    "email_contact_method",
+		Address: "foo@bar.com",
+	}
+
+	if !reflect.DeepEqual(resp, want) {
+		t.Errorf("returned %#v; want %#v", resp, want)
+	}
+}
+
+func TestUsersDeleteContactMethod(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/users/1/contact_methods/1", func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "DELETE")
+		w.WriteHeader(http.StatusNoContent)
+	})
+
+	if _, err := client.Users.DeleteContactMethod("1", "1"); err != nil {
+		t.Fatal(err)
+	}
+}
