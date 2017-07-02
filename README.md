@@ -1,6 +1,12 @@
 # go-pagerduty
 PagerDuty API client in Go, primarily used by the [PagerDuty](https://github.com/terraform-providers/terraform-provider-pagerduty) provider in Terraform. 
 
+
+[![GoDoc](https://godoc.org/github.com/heimweh/go-pagerduty?status.svg)](http://godoc.org/github.com/heimweh/go-pagerduty/pagerduty)
+[![Build
+Status](https://travis-ci.org/heimweh/go-pagerduty.svg?branch=master)](https://travis-ci.org/heimweh/go-pagerduty)
+
+
 ## Installation
 ```bash
 go get github.com/heimweh/go-pagerduty
