@@ -90,6 +90,18 @@ type ListSchedulesResponse struct {
 	Total     int         `url:"total,omitempty"`
 }
 
+// ListOnCallsOptions represents options when listing on calls.
+type ListOnCallsOptions struct {
+	ID    string `url:"id,omitempty"`
+	Since string `url:"since,omitempty"`
+	Until string `url:"until,omitempty"`
+}
+
+// ListOnCallsResponse represents a list response of on calls.
+type ListOnCallsResponse struct {
+	Users []*User `json:"users,omitempty"`
+}
+
 // ListOverridesOptions represents options when listing overrides.
 type ListOverridesOptions struct {
 	Editable bool   `url:"editable,omitempty"`
@@ -188,6 +200,19 @@ func (s *ScheduleService) Update(id string, schedule *Schedule) (*Schedule, *Res
 	}
 
 	return v.Schedule, resp, nil
+}
+
+// ListOnCalls lists all of the users on call in a given schedule for a given time range.
+func (s *ScheduleService) ListOnCalls(scheduleID string, o *ListOnCallsOptions) (*ListOnCallsResponse, *Response, error) {
+	u := fmt.Sprintf("/schedules/%s/users", scheduleID)
+	v := new(ListOnCallsResponse)
+
+	resp, err := s.client.newRequestDo("GET", u, o, nil, &v)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return v, resp, nil
 }
 
 // ListOverrides lists existing overrides.
