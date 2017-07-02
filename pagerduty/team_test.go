@@ -162,3 +162,29 @@ func TestTeamsRemoveUser(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+
+func TestTeamsAddEscalationPolicy(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/teams/1/escalation_policies/1", func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "PUT")
+	})
+
+	if _, err := client.Teams.AddEscalationPolicy("1", "1"); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestTeamsRemoveEscalationPolicy(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/teams/1/escalation_policies/1", func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "DELETE")
+	})
+
+	if _, err := client.Teams.RemoveEscalationPolicy("1", "1"); err != nil {
+		t.Fatal(err)
+	}
+}
