@@ -203,3 +203,30 @@ func TestSchedulesDeleteOverride(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+
+func TestSchedulesListOnCalls(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/schedules/1/users", func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "GET")
+		w.Write([]byte(`{"users": [{"id": "1"}]}`))
+	})
+
+	want := &ListOnCallsResponse{
+		Users: []*User{
+			{
+				ID: "1",
+			},
+		},
+	}
+
+	resp, _, err := client.Schedules.ListOnCalls("1", &ListOnCallsOptions{})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if !reflect.DeepEqual(resp, want) {
+		t.Errorf("returned \n\n%#v want \n\n%#v", resp, want)
+	}
+}
