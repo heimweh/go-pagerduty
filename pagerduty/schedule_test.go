@@ -136,3 +136,70 @@ func TestSchedulesUpdate(t *testing.T) {
 		t.Errorf("returned \n\n%#v want \n\n%#v", resp, want)
 	}
 }
+
+func TestSchedulesListOverrides(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/schedules/1/overrides", func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "GET")
+		w.Write([]byte(`{"overrides": [{"id": "1"}]}`))
+	})
+
+	resp, _, err := client.Schedules.ListOverrides("1", &ListOverridesOptions{})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	want := &ListOverridesResponse{
+		Overrides: []*Override{
+			{
+				ID: "1",
+			},
+		},
+	}
+
+	if !reflect.DeepEqual(resp, want) {
+		t.Errorf("returned \n\n%#v want \n\n%#v", resp, want)
+	}
+}
+
+func TestSchedulesCreateOverride(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/schedules/1/overrides", func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "POST")
+		w.Write([]byte(`{"override": {"id": "1", "user": { "id": "1" }}}`))
+	})
+
+	resp, _, err := client.Schedules.CreateOverride("1", &Override{User: &UserReference{ID: "1"}})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	want := &Override{
+		ID: "1",
+		User: &UserReference{
+			ID: "1",
+		},
+	}
+
+	if !reflect.DeepEqual(resp, want) {
+		t.Errorf("returned \n\n%#v want \n\n%#v", resp, want)
+	}
+}
+
+func TestSchedulesDeleteOverride(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/schedules/1/overrides/1", func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "DELETE")
+		w.WriteHeader(http.StatusNoContent)
+	})
+
+	if _, err := client.Schedules.DeleteOverride("1", "1"); err != nil {
+		t.Fatal(err)
+	}
+}
