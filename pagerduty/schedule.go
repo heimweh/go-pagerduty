@@ -83,11 +83,11 @@ type ListSchedulesOptions struct {
 
 // ListSchedulesResponse represents a list response of schedules.
 type ListSchedulesResponse struct {
-	Limit     int         `url:"limit,omitempty"`
-	More      bool        `url:"more,omitempty"`
-	Offset    int         `url:"offset,omitempty"`
+	Limit     int         `json:"limit,omitempty"`
+	More      bool        `json:"more,omitempty"`
+	Offset    int         `json:"offset,omitempty"`
 	Schedules []*Schedule `json:"schedules,omitempty"`
-	Total     int         `url:"total,omitempty"`
+	Total     int         `json:"total,omitempty"`
 }
 
 // ListOnCallsOptions represents options when listing on calls.
@@ -113,11 +113,11 @@ type ListOverridesOptions struct {
 
 // ListOverridesResponse represents a list response of schedules.
 type ListOverridesResponse struct {
-	Limit     int         `url:"limit,omitempty"`
-	More      bool        `url:"more,omitempty"`
-	Offset    int         `url:"offset,omitempty"`
+	Limit     int         `json:"limit,omitempty"`
+	More      bool        `json:"more,omitempty"`
+	Offset    int         `json:"offset,omitempty"`
 	Overrides []*Override `json:"overrides,omitempty"`
-	Total     int         `url:"total,omitempty"`
+	Total     int         `json:"total,omitempty"`
 }
 
 // GetScheduleOptions represents options when retrieving a schedule.

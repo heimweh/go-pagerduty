@@ -29,10 +29,10 @@ type ListTeamsOptions struct {
 
 // ListTeamsResponse represents a list response of teams.
 type ListTeamsResponse struct {
-	Limit  int     `url:"limit,omitempty"`
-	More   bool    `url:"more,omitempty"`
-	Offset int     `url:"offset,omitempty"`
-	Total  int     `url:"total,omitempty"`
+	Limit  int     `json:"limit,omitempty"`
+	More   bool    `json:"more,omitempty"`
+	Offset int     `json:"offset,omitempty"`
+	Total  int     `json:"total,omitempty"`
 	Teams  []*Team `json:"teams,omitempty"`
 }
 
