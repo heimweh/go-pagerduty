@@ -52,7 +52,7 @@ func TestSchedulesCreate(t *testing.T) {
 		w.Write([]byte(`{"schedule": {"name": "foo", "id": "1"}}`))
 	})
 
-	resp, _, err := client.Schedules.Create(input)
+	resp, _, err := client.Schedules.Create(input, &CreateScheduleOptions{})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -122,7 +122,7 @@ func TestSchedulesUpdate(t *testing.T) {
 		w.Write([]byte(`{"schedule": {"name": "foo", "id": "1"}}`))
 	})
 
-	resp, _, err := client.Schedules.Update("1", input)
+	resp, _, err := client.Schedules.Update("1", input, &UpdateScheduleOptions{})
 	if err != nil {
 		t.Fatal(err)
 	}
