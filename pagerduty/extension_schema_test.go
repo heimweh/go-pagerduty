@@ -15,7 +15,7 @@ func TestExtensionSchemasList(t *testing.T) {
 		w.Write([]byte(`{"extension_schemas": [{"id": "1"}]}`))
 	})
 
-	resp, _, err := client.ExtensionSchemas.List()
+	resp, _, err := client.ExtensionSchemas.List(nil)
 	if err != nil {
 		t.Fatal(err)
 	}
