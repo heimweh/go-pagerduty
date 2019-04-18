@@ -129,3 +129,29 @@ func TestEscalationPoliciesUpdate(t *testing.T) {
 		t.Errorf("returned \n\n%#v want \n\n%#v", resp, want)
 	}
 }
+
+func TestEscalationPoliciesUpdateTeams(t *testing.T) {
+	setup()
+	defer teardown()
+
+	input := &EscalationPolicy{
+		Name:  "foo",
+		ID:    "1",
+		Teams: []*TeamReference{},
+	}
+
+	mux.HandleFunc("/escalation_policies/1", func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "PUT")
+		v := new(EscalationPolicy)
+		json.NewDecoder(r.Body).Decode(v)
+		if !reflect.DeepEqual(v.EscalationPolicy, input) {
+			t.Errorf("Request body = %+v, want %+v", v, input)
+		}
+		w.Write([]byte(`{"escalation_policy": {"name": "foo", "id": "1", "teams": []}}`))
+	})
+
+	_, _, err := client.EscalationPolicies.Update("1", input)
+	if err != nil {
+		t.Fatal(err)
+	}
+}
