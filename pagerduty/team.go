@@ -36,6 +36,10 @@ type ListTeamsResponse struct {
 	Teams  []*Team `json:"teams,omitempty"`
 }
 
+type teamRole struct {
+	Role string `json:"role,omitempty"`
+}
+
 // List lists existing teams.
 func (s *TeamService) List(o *ListTeamsOptions) (*ListTeamsResponse, *Response, error) {
 	u := "/teams"
@@ -104,6 +108,27 @@ func (s *TeamService) RemoveUser(teamID, userID string) (*Response, error) {
 func (s *TeamService) AddUser(teamID, userID string) (*Response, error) {
 	u := fmt.Sprintf("/teams/%s/users/%s", teamID, userID)
 	return s.client.newRequestDo("PUT", u, nil, nil, nil)
+}
+
+// AddUserWithRole adds a user with the specified role (one of observer, manager, or responder[default])
+func (s *TeamService) AddUserWithRole(teamID, userID string, role string) (*Response, error) {
+	tr := new(teamRole)
+
+	switch role {
+	case "manager":
+		tr = &teamRole{Role: "manager"}
+	case "observer":
+		tr = &teamRole{Role: "observer"}
+	case "responder":
+		tr = &teamRole{Role: "responder"}
+	case "":
+		tr = &teamRole{Role: "responder"}
+	default:
+		tr = nil
+	}
+
+	u := fmt.Sprintf("/teams/%s/users/%s", teamID, userID)
+	return s.client.newRequestDo("PUT", u, nil, tr, nil)
 }
 
 // RemoveEscalationPolicy removes an escalation policy from a team.
