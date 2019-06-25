@@ -13,7 +13,7 @@ func TestServicesList(t *testing.T) {
 
 	mux.HandleFunc("/services", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "GET")
-		w.Write([]byte(`{"services": [{"id": "1"}]}`))
+		w.Write([]byte(validListServicesJSON))
 	})
 
 	resp, _, err := client.Services.List(&ListServicesOptions{})
@@ -21,16 +21,8 @@ func TestServicesList(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	want := &ListServicesResponse{
-		Services: []*Service{
-			{
-				ID: "1",
-			},
-		},
-	}
-
-	if !reflect.DeepEqual(resp, want) {
-		t.Errorf("returned \n\n%#v want \n\n%#v", resp, want)
+	if !reflect.DeepEqual(resp, validListServicesResponse) {
+		t.Errorf("returned \n\n%#v want \n\n%#v", resp, validListServicesResponse)
 	}
 }
 
