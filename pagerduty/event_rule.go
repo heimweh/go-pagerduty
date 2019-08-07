@@ -20,7 +20,7 @@ type EventRule struct {
 type ListEventRulesResponse struct {
 	ExternalID    string       `json:"external_id,omitempty"`
 	ObjectVersion string       `json:"object_version,omitempty"`
-	FormatVersion int          `json:"format_version,omitempty"`
+	FormatVersion int          `json:"format_version,string,omitempty"`
 	EventRules    []*EventRule `json:"rules,omitempty"`
 }
 
