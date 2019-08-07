@@ -13,7 +13,7 @@ func TestEventRuleList(t *testing.T) {
 
 	mux.HandleFunc("/event_rules", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "GET")
-		w.Write([]byte(`{"external_id": "1", "object_version": "objVersion", "format_version": 2, "rules":[{"id": "1"}]}`))
+		w.Write([]byte(`{"external_id": "1", "object_version": "objVersion", "format_version": "2", "rules":[{"id": "1"}]}`))
 	})
 
 	resp, _, err := client.EventRules.List()
