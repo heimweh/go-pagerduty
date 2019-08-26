@@ -112,21 +112,7 @@ func (s *TeamService) AddUser(teamID, userID string) (*Response, error) {
 
 // AddUserWithRole adds a user with the specified role (one of observer, manager, or responder[default])
 func (s *TeamService) AddUserWithRole(teamID, userID string, role string) (*Response, error) {
-	tr := new(teamRole)
-
-	switch role {
-	case "manager":
-		tr = &teamRole{Role: "manager"}
-	case "observer":
-		tr = &teamRole{Role: "observer"}
-	case "responder":
-		tr = &teamRole{Role: "responder"}
-	case "":
-		tr = &teamRole{Role: "responder"}
-	default:
-		tr = nil
-	}
-
+	tr := teamRole{Role: role}
 	u := fmt.Sprintf("/teams/%s/users/%s", teamID, userID)
 	return s.client.newRequestDo("PUT", u, nil, tr, nil)
 }
