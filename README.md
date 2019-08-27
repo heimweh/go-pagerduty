@@ -1,5 +1,5 @@
 # go-pagerduty
-PagerDuty API client in Go, primarily used by the [PagerDuty](https://github.com/terraform-providers/terraform-provider-pagerduty) provider in Terraform. 
+PagerDuty API client in Go, primarily used by the [PagerDuty](https://github.com/terraform-providers/terraform-provider-pagerduty) provider in Terraform.
 
 
 [![GoDoc](https://godoc.org/github.com/heimweh/go-pagerduty?status.svg)](http://godoc.org/github.com/heimweh/go-pagerduty/pagerduty)
@@ -9,29 +9,38 @@ Status](https://travis-ci.org/heimweh/go-pagerduty.svg?branch=master)](https://t
 
 ## Installation
 ```bash
-go get github.com/heimweh/go-pagerduty
+go get github.com/heimweh/go-pagerduty/pagerduty
 ```
 
 ## Example usage
 ```go
+package main
+
+import (
+	"fmt"
+	"os"
+
+	"github.com/heimweh/go-pagerduty/pagerduty"
+)
+
 func main() {
-  client, err := pagerduty.NewClient(&Config{Token: "foo"})
-  if err != nil {
-    panic(err)
-  }
+	client, err := pagerduty.NewClient(&pagerduty.Config{Token: os.Getenv("PAGERDUTY_TOKEN")})
+	if err != nil {
+		panic(err)
+	}
 
-  // List all users
-  resp, raw, err := client.Users.List(&pagerduty.ListUsersOptions{})
-  if err != nil {
-    panic(err)
-  }
+	// List all users
+	resp, raw, err := client.Users.List(&pagerduty.ListUsersOptions{})
+	if err != nil {
+		panic(err)
+	}
 
-  for _, user := range resp.Users {
-    fmt.Println(user.Name)
-  }
+	for _, user := range resp.Users {
+		fmt.Println(user.Name)
+	}
 
-  // All calls returns the raw *http.Response for further inspection
-  fmt.Println(raw.StatusCode)
+	// All calls returns the raw *http.Response for further inspection
+	fmt.Println(raw.StatusCode)
 }
 ```
 
