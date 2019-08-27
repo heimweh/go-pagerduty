@@ -29,7 +29,6 @@ func main() {
 		panic(err)
 	}
 
-	// List all users
 	resp, raw, err := client.Users.List(&pagerduty.ListUsersOptions{})
 	if err != nil {
 		panic(err)
@@ -39,7 +38,7 @@ func main() {
 		fmt.Println(user.Name)
 	}
 
-	// All calls returns the raw *http.Response for further inspection
+	// All calls returns the raw *http.Response for further inspection.
 	fmt.Println(raw.StatusCode)
 }
 ```
