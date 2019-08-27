@@ -150,6 +150,31 @@ func TestTeamsAddUser(t *testing.T) {
 	}
 }
 
+func TestTeamsAddUserWithRole(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/teams/1/users/1", func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "PUT")
+	})
+
+	if _, err := client.Teams.AddUserWithRole("1", "1", "responder"); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := client.Teams.AddUserWithRole("1", "1", "observer"); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := client.Teams.AddUserWithRole("1", "1", "manager"); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := client.Teams.AddUserWithRole("1", "1", ""); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := client.Teams.AddUserWithRole("1", "1", "garbage"); err != nil {
+		t.Fatal(err)
+	}
+}
+
 func TestTeamsRemoveUser(t *testing.T) {
 	setup()
 	defer teardown()
