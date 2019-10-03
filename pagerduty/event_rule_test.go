@@ -62,7 +62,6 @@ func TestEventRuleCreate(t *testing.T) {
 		Condition:         []interface{}{"and", []interface{}{"contains", []interface{}{"path", "payload", "source"}, "website"}},
 		CatchAll:          false,
 		AdvancedCondition: []interface{}(nil),
-		Options:           []interface{}(nil),
 	}
 
 	if !reflect.DeepEqual(resp, want) {
