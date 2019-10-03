@@ -12,11 +12,9 @@ integration:
 tools:
 	go get -u github.com/robertkrimen/godocdown/godocdown
 	go get -u github.com/kardianos/govendor
-	go get -u honnef.co/go/tools/cmd/gosimple
-	go get -u honnef.co/go/tools/cmd/unused
 	go get -u honnef.co/go/tools/cmd/staticcheck
 	go get -u github.com/client9/misspell/cmd/misspell
-	go get -u github.com/golang/lint/golint
+	go get -u golang.org/x/lint/golint
 
 vendor-status:
 	@govendor status
@@ -32,7 +30,7 @@ lint:
 	@echo -e "$(OK_MSG)"
 
 # check combines all checks into a single command
-check: fmtcheck vet misspell staticcheck simple unused lint vendor-status
+check: fmtcheck vet misspell staticcheck lint vendor-status
 
 # fmt formats Go code.
 fmt:
@@ -47,11 +45,6 @@ webdoc:
 	@sleep 1 && open http://localhost:6060 &
 	@godoc -http=:6060
 
-unused:
-	@echo -n "==> Checking that code complies with unused requirements..."
-	@unused $(GOLIST)
-	@echo -e "$(OK_MSG)"
-
 fmtcheck:
 	@echo -n "==> Checking that code complies with gofmt requirements..."
 	@gofmt_files=$$(gofmt -l $(GOFMT_FILES)) ; if [[ -n "$$gofmt_files" ]]; then \
@@ -65,11 +58,6 @@ fmtcheck:
 misspell:
 	@echo -n "==> Checking for misspelling errors..."
 	@misspell --error $(GOFMT_FILES)
-	@echo -e "$(OK_MSG)"
-
-simple:
-	@echo -n "==> Checking that code complies with gosimple requirements..."
-	@gosimple $(GOLIST)
 	@echo -e "$(OK_MSG)"
 
 staticcheck:

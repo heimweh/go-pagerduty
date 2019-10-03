@@ -150,6 +150,31 @@ func TestTeamsAddUser(t *testing.T) {
 	}
 }
 
+func TestTeamsAddUserWithRole(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/teams/1/users/1", func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "PUT")
+	})
+
+	if _, err := client.Teams.AddUserWithRole("1", "1", "responder"); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := client.Teams.AddUserWithRole("1", "1", "observer"); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := client.Teams.AddUserWithRole("1", "1", "manager"); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := client.Teams.AddUserWithRole("1", "1", ""); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := client.Teams.AddUserWithRole("1", "1", "garbage"); err != nil {
+		t.Fatal(err)
+	}
+}
+
 func TestTeamsRemoveUser(t *testing.T) {
 	setup()
 	defer teardown()
@@ -160,6 +185,36 @@ func TestTeamsRemoveUser(t *testing.T) {
 
 	if _, err := client.Teams.RemoveUser("1", "1"); err != nil {
 		t.Fatal(err)
+	}
+}
+
+func TestTeamsGetMembers(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/teams/1/members", func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "GET")
+		w.Write([]byte(`{"members": [{"user": {"id": "1"}, "role": "manager"}]}`))
+	})
+
+	resp, _, err := client.Teams.GetMembers("1", &GetMembersOptions{})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	want := &GetMembersResponse{
+		Members: []*Member{
+			{
+				User: &UserReference{
+					ID: "1",
+				},
+				Role: "manager",
+			},
+		},
+	}
+
+	if !reflect.DeepEqual(resp, want) {
+		t.Errorf("returned \n\n%#v want \n\n%#v", resp, want)
 	}
 }
 
