@@ -8,13 +8,13 @@ type RulesetService service
 
 // Ruleset represents a ruleset.
 type Ruleset struct {
-	ID          string        `json:"id,omitempty"`
-	Name        string        `json:"name,omitempty"`
-	Type        string        `json:"type,omitempty"`
-	RoutingKeys []interface{} `json:"routing_keys,omitempty"`
-	Team        string        `json:"team,omitempty"`
-	Updater     string        `json:"updater,omitempty"`
-	Creator     string        `json:"creator,omitempty"`
+	ID          string   `json:"id,omitempty"`
+	Name        string   `json:"name,omitempty"`
+	Type        string   `json:"type,omitempty"`
+	RoutingKeys []string `json:"routing_keys,omitempty"`
+	Team        string   `json:"team,omitempty"`
+	Updater     string   `json:"updater,omitempty"`
+	Creator     string   `json:"creator,omitempty"`
 }
 
 // RulesetPayload represents payload with a ruleset object
@@ -72,11 +72,6 @@ type ListRulesetRulesResponse struct {
 	More   bool           `json:"more,omitempty"`
 	Limit  int            `json:"limit,omitempty"`
 }
-
-// // RuleAdvancedCondition represents advanced conditions for rules
-// type RuleAdvancedCondition struct {
-
-// }
 
 // RuleAction represents a rule action
 type RuleAction struct {
