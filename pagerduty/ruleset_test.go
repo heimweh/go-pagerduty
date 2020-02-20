@@ -51,7 +51,7 @@ func TestRulesetCreate(t *testing.T) {
 		if !reflect.DeepEqual(v, input) {
 			t.Errorf("Request body = %+v, want %+v", v, input)
 		}
-		w.Write([]byte(`{"ruleset": {"name": "foo", "id":"1"}}`))
+		w.Write([]byte(`{"ruleset":{"name": "foo", "id":"1"}}`))
 	})
 
 	resp, _, err := client.Rulesets.Create(input)
@@ -59,17 +59,41 @@ func TestRulesetCreate(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	want := &RulesetPayload{
-		Ruleset: &Ruleset{
-			Name: "foo",
-			ID:   "1",
-		},
+	want := &Ruleset{
+		Name: "foo",
+		ID:   "1",
 	}
 
 	if !reflect.DeepEqual(resp, want) {
 		t.Errorf("returned \n\n%#v want \n\n%#v", resp, want)
 	}
 }
+func TestRulesetGet(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/rulesets/1", func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "GET")
+		w.Write([]byte(`{"ruleset":{"name": "foo", "id":"1"}}`))
+	})
+
+	ID := "1"
+	resp, _, err := client.Rulesets.Get(ID)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	want := &Ruleset{
+		Name: "foo",
+		ID:   "1",
+	}
+
+	if !reflect.DeepEqual(resp, want) {
+		t.Errorf("returned \n\n%#v want \n\n%#v", resp, want)
+	}
+}
+
 func TestRulesetUpdate(t *testing.T) {
 	setup()
 	defer teardown()
@@ -86,7 +110,7 @@ func TestRulesetUpdate(t *testing.T) {
 		if !reflect.DeepEqual(v, input) {
 			t.Errorf("Request body = %+v, want %+v", v, input)
 		}
-		w.Write([]byte(`{"ruleset": {"name": "foo", "id":"1"}}`))
+		w.Write([]byte(`{"ruleset":{"name": "foo", "id":"1"}}`))
 	})
 
 	resp, _, err := client.Rulesets.Update("1", input)
@@ -94,11 +118,9 @@ func TestRulesetUpdate(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	want := &RulesetPayload{
-		Ruleset: &Ruleset{
-			Name: "foo",
-			ID:   "1",
-		},
+	want := &Ruleset{
+		Name: "foo",
+		ID:   "1",
 	}
 
 	if !reflect.DeepEqual(resp, want) {
@@ -173,7 +195,7 @@ func TestRulesetRuleCreate(t *testing.T) {
 		if !reflect.DeepEqual(v, input) {
 			t.Errorf("Request body = %+v, want %+v", v, input)
 		}
-		w.Write([]byte(`{"rule": {"id": "1"}}`))
+		w.Write([]byte(`{"rule":{"id": "1"}}`))
 	})
 	rulesetID := "1"
 	resp, _, err := client.Rulesets.CreateRule(rulesetID, input)
@@ -181,10 +203,8 @@ func TestRulesetRuleCreate(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	want := &RulesetRulePayload{
-		Rule: &RulesetRule{
-			ID: "1",
-		},
+	want := &RulesetRule{
+		ID: "1",
 	}
 
 	if !reflect.DeepEqual(resp, want) {
@@ -214,7 +234,7 @@ func TestRulesetRuleUpdate(t *testing.T) {
 		if !reflect.DeepEqual(v, input) {
 			t.Errorf("Request body = %+v, want %+v", v, input)
 		}
-		w.Write([]byte(`{"rule": {"id": "1"}}`))
+		w.Write([]byte(`{"rule":{"id": "1"}}`))
 	})
 	rulesetID := "1"
 	ruleID := "1"
@@ -224,10 +244,34 @@ func TestRulesetRuleUpdate(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	want := &RulesetRulePayload{
-		Rule: &RulesetRule{
-			ID: "1",
-		},
+	want := &RulesetRule{
+		ID: "1",
+	}
+
+	if !reflect.DeepEqual(resp, want) {
+		t.Errorf("returned \n\n%#v want \n\n%#v", resp, want)
+	}
+}
+
+// GetRuleTest
+func TestRulesetRuleGet(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/rulesets/1/rules/1", func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "GET")
+		w.Write([]byte(`{"rule":{"id": "1"}}`))
+	})
+	rulesetID := "1"
+	ruleID := "1"
+
+	resp, _, err := client.Rulesets.GetRule(rulesetID, ruleID)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	want := &RulesetRule{
+		ID: "1",
 	}
 
 	if !reflect.DeepEqual(resp, want) {
