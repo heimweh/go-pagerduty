@@ -8,13 +8,19 @@ type RulesetService service
 
 // Ruleset represents a ruleset.
 type Ruleset struct {
-	ID          string   `json:"id,omitempty"`
-	Name        string   `json:"name,omitempty"`
-	Type        string   `json:"type,omitempty"`
-	RoutingKeys []string `json:"routing_keys,omitempty"`
-	Team        string   `json:"team,omitempty"`
-	Updater     string   `json:"updater,omitempty"`
-	Creator     string   `json:"creator,omitempty"`
+	ID          string        `json:"id,omitempty"`
+	Name        string        `json:"name,omitempty"`
+	Type        string        `json:"type,omitempty"`
+	RoutingKeys []string      `json:"routing_keys,omitempty"`
+	Team        RulesetObject `json:"team,omitempty"`
+	Updater     RulesetObject `json:"updater,omitempty"`
+	Creator     RulesetObject `json:"creator,omitempty"`
+}
+
+// RulesetObject represents a generic object that is common within a ruleset object
+type RulesetObject struct {
+	Type string `json:"type,omitempty"`
+	ID   string `json:"id,omitempty"`
 }
 
 // RulesetPayload represents payload with a ruleset object
@@ -93,28 +99,42 @@ func (s *RulesetService) List() (*ListRulesetsResponse, *Response, error) {
 }
 
 // Create creates a new ruleset.
-func (s *RulesetService) Create(ruleset *Ruleset) (*RulesetPayload, *Response, error) {
+func (s *RulesetService) Create(ruleset *Ruleset) (*Ruleset, *Response, error) {
 	u := "/rulesets"
 	v := new(RulesetPayload)
-	p := RulesetPayload{Ruleset: ruleset}
+	p := &RulesetPayload{Ruleset: ruleset}
 
 	resp, err := s.client.newRequestDo("POST", u, nil, p, v)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	return v, resp, nil
+	return v.Ruleset, resp, nil
+}
+
+// Get gets a new ruleset.
+func (s *RulesetService) Get(ID string) (*Ruleset, *Response, error) {
+	u := fmt.Sprintf("/rulesets/%s", ID)
+	v := new(RulesetPayload)
+	p := &RulesetPayload{}
+
+	resp, err := s.client.newRequestDo("GET", u, nil, p, v)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return v.Ruleset, resp, nil
 }
 
 // Delete deletes an existing ruleset.
-func (s *RulesetService) Delete(id string) (*Response, error) {
-	u := fmt.Sprintf("/rulesets/%s", id)
+func (s *RulesetService) Delete(ID string) (*Response, error) {
+	u := fmt.Sprintf("/rulesets/%s", ID)
 	return s.client.newRequestDo("DELETE", u, nil, nil, nil)
 }
 
 // Update updates an existing ruleset.
-func (s *RulesetService) Update(id string, ruleset *Ruleset) (*RulesetPayload, *Response, error) {
-	u := fmt.Sprintf("/rulesets/%s", id)
+func (s *RulesetService) Update(ID string, ruleset *Ruleset) (*Ruleset, *Response, error) {
+	u := fmt.Sprintf("/rulesets/%s", ID)
 	v := new(RulesetPayload)
 	p := RulesetPayload{Ruleset: ruleset}
 
@@ -123,7 +143,7 @@ func (s *RulesetService) Update(id string, ruleset *Ruleset) (*RulesetPayload, *
 		return nil, nil, err
 	}
 
-	return v, resp, nil
+	return v.Ruleset, resp, nil
 }
 
 // ListRules Lists Event Rules for Ruleset
@@ -140,7 +160,7 @@ func (s *RulesetService) ListRules(rulesetID string) (*ListRulesetRulesResponse,
 }
 
 // CreateRule for Ruleset
-func (s *RulesetService) CreateRule(rulesetID string, rule *RulesetRule) (*RulesetRulePayload, *Response, error) {
+func (s *RulesetService) CreateRule(rulesetID string, rule *RulesetRule) (*RulesetRule, *Response, error) {
 	u := fmt.Sprintf("/rulesets/%s/rules", rulesetID)
 	v := new(RulesetRulePayload)
 	p := RulesetRulePayload{Rule: rule}
@@ -150,11 +170,11 @@ func (s *RulesetService) CreateRule(rulesetID string, rule *RulesetRule) (*Rules
 		return nil, nil, err
 	}
 
-	return v, resp, nil
+	return v.Rule, resp, nil
 }
 
 // GetRule for Ruleset
-func (s *RulesetService) GetRule(rulesetID, ruleID string) (*RulesetRulePayload, *Response, error) {
+func (s *RulesetService) GetRule(rulesetID, ruleID string) (*RulesetRule, *Response, error) {
 	u := fmt.Sprintf("/rulesets/%s/rules/%s", rulesetID, ruleID)
 	v := new(RulesetRulePayload)
 
@@ -163,11 +183,11 @@ func (s *RulesetService) GetRule(rulesetID, ruleID string) (*RulesetRulePayload,
 		return nil, nil, err
 	}
 
-	return v, resp, nil
+	return v.Rule, resp, nil
 }
 
 // UpdateRule for Ruleset
-func (s *RulesetService) UpdateRule(rulesetID, ruleID string, rule *RulesetRule) (*RulesetRulePayload, *Response, error) {
+func (s *RulesetService) UpdateRule(rulesetID, ruleID string, rule *RulesetRule) (*RulesetRule, *Response, error) {
 	u := fmt.Sprintf("/rulesets/%s/rules/%s", rulesetID, ruleID)
 	v := new(RulesetRulePayload)
 	p := RulesetRulePayload{Rule: rule}
@@ -177,7 +197,7 @@ func (s *RulesetService) UpdateRule(rulesetID, ruleID string, rule *RulesetRule)
 		return nil, nil, err
 	}
 
-	return v, resp, nil
+	return v.Rule, resp, nil
 }
 
 // DeleteRule deletes an existing rule from the ruleset.
