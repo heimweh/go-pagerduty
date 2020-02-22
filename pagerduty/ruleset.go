@@ -8,13 +8,13 @@ type RulesetService service
 
 // Ruleset represents a ruleset.
 type Ruleset struct {
-	ID          string        `json:"id,omitempty"`
-	Name        string        `json:"name,omitempty"`
-	Type        string        `json:"type,omitempty"`
-	RoutingKeys []string      `json:"routing_keys,omitempty"`
-	Team        RulesetObject `json:"team,omitempty"`
-	Updater     RulesetObject `json:"updater,omitempty"`
-	Creator     RulesetObject `json:"creator,omitempty"`
+	ID          string         `json:"id,omitempty"`
+	Name        string         `json:"name,omitempty"`
+	Type        string         `json:"type,omitempty"`
+	RoutingKeys []string       `json:"routing_keys,omitempty"`
+	Team        *RulesetObject `json:"team,omitempty"`
+	Updater     *RulesetObject `json:"updater,omitempty"`
+	Creator     *RulesetObject `json:"creator,omitempty"`
 }
 
 // RulesetObject represents a generic object that is common within a ruleset object
@@ -39,12 +39,12 @@ type ListRulesetsResponse struct {
 
 // RulesetRule represents a Ruleset rule
 type RulesetRule struct {
-	ID                 string         `json:"id,omitempty"`
-	Position           int            `json:"position,omitempty"`
-	Disabled           bool           `json:"disabled,omitempty"`
-	Conditions         RuleConditions `json:"conditions,omitempty"`
-	AdvancedConditions []interface{}  `json:"advanced_conditions,omitempty"`
-	Actions            []*RuleAction  `json:"actions,omitempty"`
+	ID                 string          `json:"id,omitempty"`
+	Position           int             `json:"position,omitempty"`
+	Disabled           bool            `json:"disabled,omitempty"`
+	Conditions         *RuleConditions `json:"conditions,omitempty"`
+	AdvancedConditions []interface{}   `json:"advanced_conditions,omitempty"`
+	Actions            []*RuleAction   `json:"actions,omitempty"`
 }
 
 // RulesetRulePayload represents a payload for ruleset rules
