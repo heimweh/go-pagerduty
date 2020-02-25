@@ -39,12 +39,13 @@ type ListRulesetsResponse struct {
 
 // RulesetRule represents a Ruleset rule
 type RulesetRule struct {
-	ID                 string          `json:"id,omitempty"`
-	Position           int             `json:"position,omitempty"`
-	Disabled           bool            `json:"disabled,omitempty"`
-	Conditions         *RuleConditions `json:"conditions,omitempty"`
-	AdvancedConditions []interface{}   `json:"advanced_conditions,omitempty"`
-	Actions            []*RuleAction   `json:"actions,omitempty"`
+	ID                 string            `json:"id,omitempty"`
+	Position           int               `json:"position,omitempty"`
+	Disabled           bool              `json:"disabled,omitempty"`
+	Conditions         *RuleConditions   `json:"conditions,omitempty"`
+	AdvancedConditions []interface{}     `json:"advanced_conditions,omitempty"`
+	Actions            []*RuleAction     `json:"actions,omitempty"`
+	Ruleset            *RulesetReference `json:"ruleset,omitempty"`
 }
 
 // RulesetRulePayload represents a payload for ruleset rules
