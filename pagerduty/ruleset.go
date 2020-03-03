@@ -61,8 +61,8 @@ type RuleConditions struct {
 
 // RuleSubcondition represents a subcondition of a ruleset condition
 type RuleSubcondition struct {
-	Operator   string                `json:"operator,omitempty"`
-	Parameters []*ConditionParameter `json:"parameters,omitempty"`
+	Operator   string              `json:"operator,omitempty"`
+	Parameters *ConditionParameter `json:"parameters,omitempty"`
 }
 
 // ConditionParameter represents  parameters in a rule condition
