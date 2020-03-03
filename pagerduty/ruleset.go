@@ -82,7 +82,7 @@ type ListRulesetRulesResponse struct {
 
 // RuleAction represents a rule action
 type RuleAction struct {
-	Type       string            `json:"type,omitempty"`
+	Action     string            `json:"action,omitempty"`
 	Parameters map[string]string `json:"parameters,omitempty"`
 }
 

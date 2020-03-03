@@ -181,7 +181,7 @@ func TestRulesetRuleCreate(t *testing.T) {
 
 	m := make(map[string]string)
 	m["value"] = "P5DTL0K"
-	ra := RuleAction{Type: "route"}
+	ra := RuleAction{Action: "route"}
 	ra.Parameters = m
 
 	input.Actions = []*RuleAction{&ra}
@@ -220,7 +220,7 @@ func TestRulesetRuleUpdate(t *testing.T) {
 
 	m := make(map[string]string)
 	m["value"] = "P5DTL0K"
-	ra := RuleAction{Type: "route"}
+	ra := RuleAction{Action: "route"}
 	ra.Parameters = m
 
 	input.Actions = []*RuleAction{&ra}
