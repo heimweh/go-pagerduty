@@ -34,6 +34,8 @@ type ListBusinessServicesResponse struct {
 
 // ServiceRelationship represents a relationship between a business and technical service
 type ServiceRelationship struct {
+	ID                string      `json:"id,omitempty"`
+	Type              string      `json:"type,omitempty"`
 	SupportingService *ServiceObj `json:"supporting_service,omitempty"`
 	DependentService  *ServiceObj `json:"dependent_service,omitempty"`
 }
