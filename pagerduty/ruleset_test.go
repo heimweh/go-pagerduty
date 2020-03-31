@@ -142,6 +142,7 @@ func TestRulesetDelete(t *testing.T) {
 	}
 }
 
+// RulesListTest
 func TestRulesetRulesList(t *testing.T) {
 	setup()
 	defer teardown()
@@ -174,15 +175,13 @@ func TestRulesetRulesList(t *testing.T) {
 	}
 }
 
+// CreateRuleTest
 func TestRulesetRuleCreate(t *testing.T) {
 	setup()
 	defer teardown()
 	input := &RulesetRule{}
 
-	m := make(map[string]string)
-	m["value"] = "P5DTL0K"
-	ra := RuleAction{Action: "route"}
-	ra.Parameters = m
+	ra := RuleAction{}
 
 	input.Actions = []*RuleAction{&ra}
 
@@ -218,10 +217,7 @@ func TestRulesetRuleUpdate(t *testing.T) {
 	defer teardown()
 	input := &RulesetRule{}
 
-	m := make(map[string]string)
-	m["value"] = "P5DTL0K"
-	ra := RuleAction{Action: "route"}
-	ra.Parameters = m
+	ra := RuleAction{}
 
 	input.Actions = []*RuleAction{&ra}
 
