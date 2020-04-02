@@ -43,7 +43,7 @@ type RulesetRule struct {
 	Position   int               `json:"position,omitempty"`
 	Disabled   bool              `json:"disabled,omitempty"`
 	Conditions *RuleConditions   `json:"conditions,omitempty"`
-	Actions    []*RuleAction     `json:"actions,omitempty"`
+	Actions    *RuleActions      `json:"actions,omitempty"`
 	Ruleset    *RulesetReference `json:"ruleset,omitempty"`
 	Self       string            `json:"self,omitempty"`
 	CatchAll   bool              `json:"catch_all,omitempty"`
@@ -101,8 +101,8 @@ type ListRulesetRulesResponse struct {
 	Limit  int            `json:"limit,omitempty"`
 }
 
-// RuleAction represents a rule action
-type RuleAction struct {
+// RuleActions represents a rule action
+type RuleActions struct {
 	Suppress    *RuleActionSuppress     `json:"suppress,omitempty"`
 	Annotate    *RuleActionParameter    `json:"annotate,omitempty"`
 	Severity    *RuleActionParameter    `json:"severity,omitempty"`
@@ -110,7 +110,6 @@ type RuleAction struct {
 	Route       *RuleActionParameter    `json:"route,omitempty"`
 	EventAction *RuleActionParameter    `json:"event_action,omitempty"`
 	Extractions []*RuleActionExtraction `json:"extractions,omitempty"`
-	// Actions      string                  `json:"action,omitempty"`
 }
 
 // RuleActionParameter represents a generic parameter object on a rule action

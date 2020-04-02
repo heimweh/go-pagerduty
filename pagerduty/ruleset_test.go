@@ -180,15 +180,13 @@ func TestRulesetRuleCreate(t *testing.T) {
 	setup()
 	defer teardown()
 	input := &RulesetRule{}
-
-	ra := RuleAction{}
-
-	input.Actions = []*RuleAction{&ra}
+	ra := RuleActions{}
+	input.Actions = &ra
 
 	mux.HandleFunc("/rulesets/1/rules", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "POST")
 		v := new(RulesetRule)
-		v.Actions = []*RuleAction{&ra}
+		v.Actions = &RuleActions{}
 
 		json.NewDecoder(r.Body).Decode(v)
 		if !reflect.DeepEqual(v, input) {
@@ -216,15 +214,13 @@ func TestRulesetRuleUpdate(t *testing.T) {
 	setup()
 	defer teardown()
 	input := &RulesetRule{}
-
-	ra := RuleAction{}
-
-	input.Actions = []*RuleAction{&ra}
+	ra := RuleActions{}
+	input.Actions = &ra
 
 	mux.HandleFunc("/rulesets/1/rules/1", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "PUT")
 		v := new(RulesetRule)
-		v.Actions = []*RuleAction{&ra}
+		v.Actions = &RuleActions{}
 
 		json.NewDecoder(r.Body).Decode(v)
 		if !reflect.DeepEqual(v, input) {
