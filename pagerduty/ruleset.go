@@ -81,9 +81,10 @@ type RuleTimeFrame struct {
 
 // ScheduledWeekly represents a time_frame object for scheduling rules weekly
 type ScheduledWeekly struct {
-	Weekdays []int  `json:"weekdays,omitempty"`
-	Timezone string `json:"timezone,omitempty"`
-	Duration int    `json:"duration,omitempty"`
+	Weekdays  []int  `json:"weekdays,omitempty"`
+	Timezone  string `json:"timezone,omitempty"`
+	StartTime int    `json:"start_time,omitempty"`
+	Duration  int    `json:"duration,omitempty"`
 }
 
 // ActiveBetween represents an active_between object for setting a timeline for rules
