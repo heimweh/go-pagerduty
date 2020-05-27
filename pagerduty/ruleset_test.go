@@ -16,25 +16,19 @@ func TestRulesetList(t *testing.T) {
 		w.Write([]byte(`{"total": 1, "offset": 0, "more": false, "limit": 25, "rulesets":[{"id": "1"}]}`))
 	})
 
-	resp, _, err := client.Rulesets.List()
+	rulesets, _, err := client.Rulesets.List()
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	want := &ListRulesetsResponse{
-		Total:  1,
-		Offset: 0,
-		More:   false,
-		Limit:  25,
-		Rulesets: []*Ruleset{
-			{
-				ID: "1",
-			},
+	want := []*Ruleset{
+		{
+			ID: "1",
 		},
 	}
 
-	if !reflect.DeepEqual(resp, want) {
-		t.Errorf("returned \n\n%#v want \n\n%#v", resp, want)
+	if !reflect.DeepEqual(rulesets, want) {
+		t.Errorf("returned \n\n%#v want \n\n%#v", rulesets, want)
 	}
 }
 

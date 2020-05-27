@@ -56,7 +56,7 @@ func TestErrorResponses(t *testing.T) {
 
 			r := &Response{Response: &http.Response{Body: ioutil.NopCloser(bytes.NewBuffer([]byte(tc.body)))}}
 
-			if err := decodeJSON(r, v); err != nil {
+			if err := client.DecodeJSON(r, v); err != nil {
 				t.Fatal(err)
 			}
 
