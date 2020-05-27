@@ -140,8 +140,8 @@ func (s *RulesetService) List() ([]*Ruleset, *Response, error) {
 	u := "/rulesets"
 	rulesets := make([]*Ruleset, 0)
 
-	// Create a handler closure capable of parsing data from the members endpoint
-	// and appending resultant members to the return slice.
+	// Create a handler closure capable of parsing data from the rulesets endpoint
+	// and appending resultant rulesets to the return slice.
 	responseHandler := func(response *Response) (ListResp, *Response, error) {
 		var result ListRulesetsResponse
 
