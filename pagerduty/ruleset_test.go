@@ -13,22 +13,27 @@ func TestRulesetList(t *testing.T) {
 
 	mux.HandleFunc("/rulesets", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "GET")
-		w.Write([]byte(`{"total": 1, "offset": 0, "more": false, "limit": 25, "rulesets":[{"id": "1"}]}`))
+		w.Write([]byte(`{"total": 0, "offset": 0, "more": false, "limit": 0, "rulesets":[{"id": "1"}]}`))
 	})
 
-	rulesets, _, err := client.Rulesets.List()
+	resp, _, err := client.Rulesets.List()
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	want := []*Ruleset{
-		{
-			ID: "1",
+	want := &ListRulesetsResponse{
+		Total:  0,
+		Offset: 0,
+		More:   false,
+		Limit:  0,
+		Rulesets: []*Ruleset{
+			{
+				ID: "1",
+			},
 		},
 	}
-
-	if !reflect.DeepEqual(rulesets, want) {
-		t.Errorf("returned \n\n%#v want \n\n%#v", rulesets, want)
+	if !reflect.DeepEqual(resp, want) {
+		t.Errorf("returned \n\n%#v want \n\n%#v", resp, want)
 	}
 }
 

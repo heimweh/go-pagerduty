@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
@@ -54,7 +55,8 @@ type Client struct {
 
 // Response is a wrapper around http.Response
 type Response struct {
-	*http.Response
+	Response  *http.Response
+	BodyBytes []byte
 }
 
 // NewClient returns a new PagerDuty API client.
@@ -156,9 +158,14 @@ func (c *Client) do(req *http.Request, v interface{}) (*Response, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
-
-	response := &Response{resp}
+	bodyBytes, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	response := &Response{
+		Response:  resp,
+		BodyBytes: bodyBytes,
+	}
 
 	if err := c.checkResponse(response); err != nil {
 		return response, err
@@ -224,13 +231,11 @@ func (c *Client) ValidateAuth() error {
 
 // DecodeJSON decodes json body to given interface
 func (c *Client) DecodeJSON(res *Response, v interface{}) error {
-	defer res.Body.Close()
-	decoder := json.NewDecoder(res.Body)
-	return decoder.Decode(v)
+	return json.Unmarshal(res.BodyBytes, v)
 }
 
 func (c *Client) checkResponse(res *Response) error {
-	if res.StatusCode >= 200 && res.StatusCode <= 299 {
+	if res.Response.StatusCode >= 200 && res.Response.StatusCode <= 299 {
 		return nil
 	}
 
@@ -241,7 +246,7 @@ func (c *Client) decodeErrorResponse(res *Response) error {
 	// Try to decode error response or fallback with standard error
 	v := &errorResponse{Error: &Error{ErrorResponse: res}}
 	if err := c.DecodeJSON(res, v); err != nil {
-		return fmt.Errorf("%s API call to %s failed: %v", res.Request.Method, res.Request.URL.String(), res.Status)
+		return fmt.Errorf("%s API call to %s failed: %v", res.Response.Request.Method, res.Response.Request.URL.String(), res.Response.Status)
 	}
 
 	return v.Error

@@ -136,8 +136,10 @@ type RuleActionExtraction struct {
 }
 
 // List lists existing rulesets.
-func (s *RulesetService) List() ([]*Ruleset, *Response, error) {
+func (s *RulesetService) List() (*ListRulesetsResponse, *Response, error) {
 	u := "/rulesets"
+	v := new(ListRulesetsResponse)
+
 	rulesets := make([]*Ruleset, 0)
 
 	// Create a handler closure capable of parsing data from the rulesets endpoint
@@ -163,8 +165,9 @@ func (s *RulesetService) List() ([]*Ruleset, *Response, error) {
 	if err != nil {
 		return nil, nil, err
 	}
+	v.Rulesets = rulesets
 
-	return rulesets, nil, nil
+	return v, nil, nil
 }
 
 // Create creates a new ruleset.
