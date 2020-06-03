@@ -54,9 +54,9 @@ func (s *ServiceDependencyService) DisassociateServiceDependencies(dependencies 
 
 // GetServiceDependenciesForType gets all immediate dependencies of a dependent service.
 func (s *ServiceDependencyService) GetServiceDependenciesForType(serviceID, serviceType string) (*ListServiceDependencies, *Response, error) {
-	if serviceType == "business_service" {
+	if serviceType == "business_service" || serviceType == "business_service_reference" {
 		return s.getBusinessServiceDependencies(serviceID)
-	} else if serviceType == "service" {
+	} else if serviceType == "service" || serviceType == "technical_service_reference" {
 		return s.getTechnicalServiceDependencies(serviceID)
 	}
 	// return a not found error

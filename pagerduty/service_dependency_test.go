@@ -43,6 +43,42 @@ func TestServiceDependencyGetBusinessServiceDependencies(t *testing.T) {
 		t.Errorf("returned \n\n%#v want \n\n%#v", resp, want)
 	}
 }
+func TestServiceDependencyGetBusinessReferenceServiceDependencies(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/service_dependencies/business_services/1", func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "GET")
+		w.Write([]byte(`{"relationships":[{"type": "service_dependency", "supporting_service": {"type":"business_service_reference","id":"1"}, "dependent_service": {"type":"technical_service_reference","id":"1"}, "id":"1"}]}`))
+	})
+
+	serveID := "1"
+	serveType := "business_service_reference"
+	resp, _, err := client.ServiceDependencies.GetServiceDependenciesForType(serveID, serveType)
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := &ListServiceDependencies{
+		Relationships: []*ServiceDependency{
+			{
+				Type: "service_dependency",
+				ID:   "1",
+				SupportingService: &ServiceObj{
+					ID:   "1",
+					Type: "business_service_reference",
+				},
+				DependentService: &ServiceObj{
+					ID:   "1",
+					Type: "technical_service_reference",
+				},
+			},
+		},
+	}
+
+	if !reflect.DeepEqual(resp, want) {
+		t.Errorf("returned \n\n%#v want \n\n%#v", resp, want)
+	}
+}
 func TestServiceDependencyGetTechnicalServiceDependencies(t *testing.T) {
 	setup()
 	defer teardown()
@@ -54,6 +90,42 @@ func TestServiceDependencyGetTechnicalServiceDependencies(t *testing.T) {
 
 	serveID := "1"
 	serveType := "service"
+	resp, _, err := client.ServiceDependencies.GetServiceDependenciesForType(serveID, serveType)
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := &ListServiceDependencies{
+		Relationships: []*ServiceDependency{
+			{
+				Type: "service_dependency",
+				ID:   "1",
+				SupportingService: &ServiceObj{
+					ID:   "1",
+					Type: "service",
+				},
+				DependentService: &ServiceObj{
+					ID:   "1",
+					Type: "technical_service_reference",
+				},
+			},
+		},
+	}
+
+	if !reflect.DeepEqual(resp, want) {
+		t.Errorf("returned \n\n%#v want \n\n%#v", resp, want)
+	}
+}
+func TestServiceDependencyGetTechnicalServiceReferenceDependencies(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/service_dependencies/technical_services/1", func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "GET")
+		w.Write([]byte(`{"relationships":[{"type": "service_dependency", "supporting_service": {"type":"service","id":"1"}, "dependent_service": {"type":"technical_service_reference","id":"1"}, "id":"1"}]}`))
+	})
+
+	serveID := "1"
+	serveType := "technical_service_reference"
 	resp, _, err := client.ServiceDependencies.GetServiceDependenciesForType(serveID, serveType)
 	if err != nil {
 		t.Fatal(err)
