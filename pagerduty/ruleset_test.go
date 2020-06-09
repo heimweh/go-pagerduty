@@ -13,7 +13,7 @@ func TestRulesetList(t *testing.T) {
 
 	mux.HandleFunc("/rulesets", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "GET")
-		w.Write([]byte(`{"total": 1, "offset": 0, "more": false, "limit": 25, "rulesets":[{"id": "1"}]}`))
+		w.Write([]byte(`{"total": 0, "offset": 0, "more": false, "limit": 0, "rulesets":[{"id": "1"}]}`))
 	})
 
 	resp, _, err := client.Rulesets.List()
@@ -22,17 +22,16 @@ func TestRulesetList(t *testing.T) {
 	}
 
 	want := &ListRulesetsResponse{
-		Total:  1,
+		Total:  0,
 		Offset: 0,
 		More:   false,
-		Limit:  25,
+		Limit:  0,
 		Rulesets: []*Ruleset{
 			{
 				ID: "1",
 			},
 		},
 	}
-
 	if !reflect.DeepEqual(resp, want) {
 		t.Errorf("returned \n\n%#v want \n\n%#v", resp, want)
 	}
