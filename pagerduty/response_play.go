@@ -24,10 +24,17 @@ type ResponsePlay struct {
 	ConferenceURL      string                 `json:"conference_url,omitempty"`
 }
 
-// Responder represents a responder within a response play object
+// Responder represents a responder within a response play object (keeps linter happy)
 type Responder struct {
-	Type string `json:"type,omitempty"`
-	ID   string `json:"id,omitempty"`
+	Type                       string              `json:"type,omitempty"`
+	ID                         string              `json:"id,omitempty"`
+	Name                       string              `json:"name,omitempty"`
+	Description                string              `json:"description,omitempty"`
+	NumLoops                   int                 `json:"num_loops,omitempty"`
+	OnCallHandoffNotifications string              `json:"on_call_handoff_notifications,omitempty"`
+	EscalationRules            []*EscalationRule   `json:"escalation_rules,omitempty"`
+	Services                   []*ServiceReference `json:"services,omitempty"`
+	Teams                      []*TeamReference    `json:"teams,omitempty"`
 }
 
 // ResponsePlayPayload represents payload with a response play object
