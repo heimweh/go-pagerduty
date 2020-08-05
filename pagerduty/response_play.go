@@ -15,9 +15,9 @@ type ResponsePlay struct {
 	Type               string                 `json:"type,omitempty"`
 	Description        string                 `json:"description,omitempty"`
 	Team               *TeamReference         `json:"team,omitempty"`
-	Subscribers        *[]SubscriberReference `json:"subscribers,omitempty"`
+	Subscribers        []*SubscriberReference `json:"subscribers,omitempty"`
 	SubscribersMessage string                 `json:"subscribers_message"`
-	Responders         *[]Responder           `json:"responders,omitempty"`
+	Responders         []*Responder           `json:"responders,omitempty"`
 	RespondersMessage  string                 `json:"responders_message"`
 	Runnability        string                 `json:"runnability,omitempty"`
 	ConferenceNumber   string                 `json:"conference_number,omitempty"`
