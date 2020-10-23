@@ -16,7 +16,11 @@ func TestResponsePlayList(t *testing.T) {
 		w.Write([]byte(`{"total": 0, "offset": 0, "more": false, "limit": 0, "response_plays":[{"id": "1"}]}`))
 	})
 
-	resp, _, err := client.ResponsePlays.List()
+	o := &ListResponsePlayOptions{
+		From: "foo@email.com",
+	}
+
+	resp, _, err := client.ResponsePlays.List(o)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -77,7 +81,9 @@ func TestResponsePlayGet(t *testing.T) {
 	})
 
 	ID := "1"
-	resp, _, err := client.ResponsePlays.Get(ID)
+	f := "foo@email.com"
+
+	resp, _, err := client.ResponsePlays.Get(ID, f)
 
 	if err != nil {
 		t.Fatal(err)
@@ -136,7 +142,10 @@ func TestResponsePlayDelete(t *testing.T) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	if _, err := client.ResponsePlays.Delete("1"); err != nil {
+	ID := "1"
+	f := "foo@email.com"
+
+	if _, err := client.ResponsePlays.Delete(ID, f); err != nil {
 		t.Fatal(err)
 	}
 }
