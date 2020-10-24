@@ -90,8 +90,9 @@ func TestResponsePlayGet(t *testing.T) {
 	}
 
 	want := &ResponsePlay{
-		Name: "foo",
-		ID:   "1",
+		Name:      "foo",
+		ID:        "1",
+		FromEmail: f,
 	}
 
 	if !reflect.DeepEqual(resp, want) {

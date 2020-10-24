@@ -113,6 +113,9 @@ func (s *ResponsePlayService) Create(responsePlay *ResponsePlay) (*ResponsePlay,
 		return nil, nil, err
 	}
 
+	// set fromEmail
+	v.ResponsePlay.FromEmail = responsePlay.FromEmail
+
 	return v.ResponsePlay, resp, nil
 }
 
@@ -130,6 +133,9 @@ func (s *ResponsePlayService) Get(ID, From string) (*ResponsePlay, *Response, er
 	if err != nil {
 		return nil, nil, err
 	}
+
+	// set fromEmail
+	v.ResponsePlay.FromEmail = From
 
 	return v.ResponsePlay, resp, nil
 }
@@ -159,6 +165,9 @@ func (s *ResponsePlayService) Update(ID string, responsePlay *ResponsePlay) (*Re
 	if err != nil {
 		return nil, nil, err
 	}
+
+	// set fromEmail
+	v.ResponsePlay.FromEmail = responsePlay.FromEmail
 
 	return v.ResponsePlay, resp, nil
 }
