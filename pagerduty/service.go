@@ -85,6 +85,31 @@ type Service struct {
 	Type                   string                     `json:"type,omitempty"`
 }
 
+// ServiceEventRule represents a service event rule
+type ServiceEventRule struct {
+	ID         string                      `json:"id,omitempty"`
+	Self       string                      `json:"self,omitempty"`
+	Disabled   bool                        `json:"disabled,omitempty"`
+	Conditions *RuleConditions             `json:"conditions,omitempty"`
+	TimeFrame  []*RuleTimeFrame            `json:"time_frame,omitempty"`
+	Variables  []*ServiceEventRuleVariable `json:"variables,omitempty"`
+	Position   int                         `json:"position,omitempty"`
+	Actions    *RuleActions                `json:"actions,omitempty"`
+}
+
+// ServiceEventRuleVariable represents a service event rule variable
+type ServiceEventRuleVariable struct {
+	Name       string                             `json:"name,omitempty"`
+	Type       string                             `json:"type,omitempty"`
+	Parameters *ServiceEventRuleVariableParameter `json:"parameters,omitempty"`
+}
+
+// ServiceEventRuleVariableParameter represents a service event rule variable parameter
+type ServiceEventRuleVariableParameter struct {
+	Value string `json:"value"`
+	Path  string `json:"path"`
+}
+
 // GetIntegrationOptions represents options when retrieving a service integration.
 type GetIntegrationOptions struct {
 	Includes []string `url:"include,omitempty,brackets"`
@@ -115,6 +140,23 @@ type ListServicesResponse struct {
 // GetServiceOptions represents options when retrieving a service.
 type GetServiceOptions struct {
 	Includes []string `url:"include,brackets,omitempty"`
+}
+
+// ListServiceEventRuleOptions represents options when retrieving a list of event rules for a service
+type ListServiceEventRuleOptions struct {
+	Limit  int  `json:"limit,omitempty"`
+	More   bool `json:"more,omitempty"`
+	Offset int  `json:"offset,omitempty"`
+	Total  int  `json:"total,omitempty"`
+}
+
+// ListServiceEventRuleResponse represents a list of event rules for a service
+type ListServiceEventRuleResponse struct {
+	Limit      int                 `json:"limit,omitempty"`
+	More       bool                `json:"more,omitempty"`
+	Offset     int                 `json:"offset,omitempty"`
+	Total      int                 `json:"total,omitempty"`
+	EventRules []*ServiceEventRule `json:"rules,omitempty"`
 }
 
 // List lists existing services.
@@ -217,5 +259,63 @@ func (s *ServicesService) UpdateIntegration(serviceID, integrationID string, int
 // DeleteIntegration removes an existing service integration.
 func (s *ServicesService) DeleteIntegration(serviceID, integrationID string) (*Response, error) {
 	u := fmt.Sprintf("/services/%s/integrations/%s", serviceID, integrationID)
+	return s.client.newRequestDo("DELETE", u, nil, nil, nil)
+}
+
+// ListEventRules lists existing service event rules.
+func (s *ServicesService) ListEventRules(serviceID string, o *ListServiceEventRuleOptions) (*ListServiceEventRuleResponse, *Response, error) {
+	u := fmt.Sprintf("/services/%s/rules", serviceID)
+	v := new(ListServiceEventRuleResponse)
+
+	resp, err := s.client.newRequestDo("GET", u, o, nil, &v)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return v, resp, nil
+}
+
+// CreateEventRule creates a new service event rule.
+func (s *ServicesService) CreateEventRule(serviceID string, eventRule *ServiceEventRule) (*ServiceEventRule, *Response, error) {
+	u := fmt.Sprintf("/services/%s/rules", serviceID)
+	v := new(ServiceEventRule)
+
+	resp, err := s.client.newRequestDo("POST", u, nil, eventRule, &v)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return v, resp, nil
+}
+
+// GetEventRule retrieves information about a service event rule.
+func (s *ServicesService) GetEventRule(serviceID, ruleID string) (*ServiceEventRule, *Response, error) {
+	u := fmt.Sprintf("/services/%s/rules/%s", serviceID, ruleID)
+	v := new(ServiceEventRule)
+
+	resp, err := s.client.newRequestDo("GET", u, nil, nil, &v)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return v, resp, nil
+}
+
+// UpdateEventRule updates an existing service event rule.
+func (s *ServicesService) UpdateEventRule(serviceID, ruleID string, eventRule *ServiceEventRule) (*ServiceEventRule, *Response, error) {
+	u := fmt.Sprintf("/services/%s/rules/%s", serviceID, ruleID)
+	v := new(ServiceEventRule)
+
+	resp, err := s.client.newRequestDo("PUT", u, nil, eventRule, &v)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return v, resp, nil
+}
+
+// DeleteEventRule removes an existing service event rule.
+func (s *ServicesService) DeleteEventRule(serviceID, ruleID string) (*Response, error) {
+	u := fmt.Sprintf("/services/%s/rules/%s", serviceID, ruleID)
 	return s.client.newRequestDo("DELETE", u, nil, nil, nil)
 }
