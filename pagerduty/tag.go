@@ -19,7 +19,6 @@ type Tag struct {
 // ListTagsOptions represents options when listing tags.
 type ListTagsOptions struct {
 	Limit  int    `url:"limit,omitempty"`
-	More   bool   `url:"more,omitempty"`
 	Offset int    `url:"offset,omitempty"`
 	Total  int    `url:"total,omitempty"`
 	Query  string `url:"query,omitempty"`
