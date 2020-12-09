@@ -2,7 +2,7 @@ dist: trusty
 sudo: false
 language: go
 go:
-- "1.12.4"
+- "1.15.6"
 
 env:
   GO111MODULE=off
