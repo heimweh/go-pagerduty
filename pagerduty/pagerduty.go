@@ -9,6 +9,8 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"os"
+	"time"
 
 	"github.com/google/go-querystring/query"
 )
@@ -34,6 +36,7 @@ type Config struct {
 type Client struct {
 	baseURL                    *url.URL
 	client                     *http.Client
+	FileLogger                 *log.Logger
 	Config                     *Config
 	Abilities                  *AbilityService
 	Addons                     *AddonService
@@ -88,11 +91,20 @@ func NewClient(config *Config) (*Client, error) {
 		return nil, err
 	}
 
-	c := &Client{
-		baseURL: baseURL,
-		client:  config.HTTPClient,
-		Config:  config,
+	flog, err := os.OpenFile("go-pagerduty.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		return nil, err
 	}
+	// defer flog.Close()
+
+	c := &Client{
+		baseURL:    baseURL,
+		client:     config.HTTPClient,
+		Config:     config,
+		FileLogger: log.New(flog, "go-pagerduty ", log.Ldate|log.Ltime|log.Lmicroseconds|log.Llongfile),
+	}
+
+	c.FileLogger.Println("go-pagerduty initialization")
 
 	c.Abilities = &AbilityService{c}
 	c.Addons = &AddonService{c}
@@ -134,6 +146,7 @@ func (c *Client) newRequest(method, url string, body interface{}, options ...Req
 
 	if c.Config.Debug {
 		log.Printf("[DEBUG] PagerDuty - Preparing %s request to %s with body: %s", method, url, buf)
+		c.FileLogger.Printf("[DEBUG] PagerDuty - Preparing %s request to %s with body: %s", method, url, buf)
 	}
 
 	u := c.baseURL.String() + url
@@ -198,13 +211,35 @@ func (c *Client) newRequestDoOptions(method, url string, qryOptions, body, v int
 }
 
 func (c *Client) do(req *http.Request, v interface{}) (*Response, error) {
+	return c.doRetry(req, v, 0)
+}
+
+func (c *Client) doRetry(req *http.Request, v interface{}, try int) (*Response, error) {
+	if c.Config.Debug {
+		c.FileLogger.Printf("[DEBUG] Executing %s request to %s (try %d)", req.Method, req.URL, try)
+	}
+
 	resp, err := c.client.Do(req)
 	if err != nil {
-		return nil, err
+		c.FileLogger.Fatalln(fmt.Sprintf("[ERROR] API Error [1] (try %d): %#v\n\n%#v\n", try, err, resp))
+
+		if try <= 3 && resp.StatusCode == 429 {
+			time.Sleep(20 * time.Second)
+			return c.doRetry(req, v, try+1)
+		}
+
+		return nil, fmt.Errorf("API error [1] (will NOT retry): %#v\n\n%#v", err.Error(), resp)
 	}
 	bodyBytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return nil, err
+		c.FileLogger.Fatalln(fmt.Sprintf("[ERROR] API Error [2] (try %d): %#v\n\n%#v\n", try, err, resp))
+
+		if try <= 3 && resp.StatusCode == 429 {
+			time.Sleep(20 * time.Second)
+			return c.doRetry(req, v, try+1)
+		}
+
+		return nil, fmt.Errorf("API error [2] (will NOT retry): %#v\n\n%#v", err.Error(), resp)
 	}
 	response := &Response{
 		Response:  resp,
@@ -212,12 +247,26 @@ func (c *Client) do(req *http.Request, v interface{}) (*Response, error) {
 	}
 
 	if err := c.checkResponse(response); err != nil {
-		return response, err
+		c.FileLogger.Fatalln(fmt.Sprintf("[ERROR] API Error [3] (try %d): %#v\n\n%#v\n\n%#v\n", try, err, resp, response))
+
+		if try <= 3 && resp.StatusCode == 429 {
+			time.Sleep(20 * time.Second)
+			return c.doRetry(req, v, try+1)
+		}
+
+		return nil, fmt.Errorf("API error [3] (will NOT retry): %#v\n\n%#v", err.Error(), resp)
 	}
 
 	if v != nil {
 		if err := c.DecodeJSON(response, v); err != nil {
-			return response, err
+			c.FileLogger.Fatalln(fmt.Sprintf("[ERROR] API Error [4] (try %d): %#v\n\n%#v\n", try, err, resp))
+
+			if try <= 3 && resp.StatusCode == 429 {
+				time.Sleep(20 * time.Second)
+				return c.doRetry(req, v, try+1)
+			}
+
+			return nil, fmt.Errorf("API error [4] (will NOT retry): %#v\n\n%#v", err.Error(), resp)
 		}
 	}
 
