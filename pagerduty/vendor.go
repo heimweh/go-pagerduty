@@ -52,12 +52,31 @@ func (s *VendorService) List(o *ListVendorsOptions) (*ListVendorsResponse, *Resp
 	u := "/vendors"
 	v := new(ListVendorsResponse)
 
-	resp, err := s.client.newRequestDo("GET", u, o, nil, v)
+	vs := make([]*Vendor, 0)
+
+	responseHandler := func(response *Response) (ListResp, *Response, error) {
+		var result ListVendorsResponse
+
+		if err := s.client.DecodeJSON(response, &result); err != nil {
+			return ListResp{}, response, err
+		}
+
+		vs = append(vs, result.Vendors...)
+
+		return ListResp{
+			More:   result.More,
+			Offset: result.Offset,
+			Limit:  result.Limit,
+		}, response, nil
+	}
+
+	err := s.client.newRequestPagedGetDo(u, responseHandler)
 	if err != nil {
 		return nil, nil, err
 	}
+	v.Vendors = vs
 
-	return v, resp, nil
+	return v, nil, nil
 }
 
 // Get retrieves information about a vendor.
