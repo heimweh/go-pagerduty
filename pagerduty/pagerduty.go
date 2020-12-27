@@ -262,14 +262,14 @@ func (c *Client) handleErrorResponse(err error, resp *http.Response, errtype int
 	c.FileLogger.Print(fmt.Sprintf("[ERROR] API Error [%d] (try %d): %#v\n\n%#v\n\n%#v\n", errtype, trynum, err, err.Error(), resp))
 
 	if (errtype == 1 && err.(net.Error).Temporary()) || (errtype == 3 && resp.StatusCode == 429) {
-		return nil, fmt.Errorf("Retryable connection error [%d]: %s", errtype, err.Error()), true
+		return nil, fmt.Errorf("%s (Retryable connection error [%d])", err.Error(), errtype), true
 	}
 
-	return nil, fmt.Errorf("Non-retryable connection error [%d] (try %d): %s", errtype, trynum, err.Error()), false
+	return nil, fmt.Errorf("%s (Non-retryable connection error [%d], try %d)", err.Error(), errtype, trynum), false
 }
 
 func (c *Client) do(req *http.Request, v interface{}) (*Response, error) {
-	maxtries := 3
+	maxtries := 4
 	var resp *Response
 	var err error = nil
 	var trynum = 0
@@ -281,15 +281,15 @@ func (c *Client) do(req *http.Request, v interface{}) (*Response, error) {
 		}
 		if retry == false {
 			c.FileLogger.Print(fmt.Sprintf("[ERROR] Non-retryable error returned: %s", err.Error()))
-			return nil, fmt.Errorf("Non-retryable API error: %s", err.Error())
+			return nil, fmt.Errorf("%s (Non-retryable API error)", err.Error())
 		}
 		c.FileLogger.Print("[INFO] Sleeping between retries")
-		time.Sleep(20 * time.Second)
+		time.Sleep(30 * time.Second)
 		trynum++
 	}
 
 	if trynum > maxtries {
-		return nil, fmt.Errorf("API error despite %d low-level retries: %s", maxtries, err.Error())
+		return nil, fmt.Errorf("%s (API error despite %d low-level retries)", err.Error(), maxtries)
 	}
 
 	if c.Config.Debug {

@@ -75,12 +75,31 @@ func (s *EscalationPolicyService) List(o *ListEscalationPoliciesOptions) (*ListE
 	u := "/escalation_policies"
 	v := new(ListEscalationPoliciesResponse)
 
-	resp, err := s.client.newRequestDo("GET", u, o, nil, &v)
+	eps := make([]*EscalationPolicy, 0)
+
+	responseHandler := func(response *Response) (ListResp, *Response, error) {
+		var result ListEscalationPoliciesResponse
+
+		if err := s.client.DecodeJSON(response, &result); err != nil {
+			return ListResp{}, response, err
+		}
+
+		eps = append(eps, result.EscalationPolicies...)
+
+		return ListResp{
+			More:   result.More,
+			Offset: result.Offset,
+			Limit:  result.Limit,
+		}, response, nil
+	}
+
+	err := s.client.newRequestPagedGetDo(u, responseHandler)
 	if err != nil {
 		return nil, nil, err
 	}
+	v.EscalationPolicies = eps
 
-	return v, resp, nil
+	return v, nil, nil
 }
 
 // EscalationPolicyPayload represents an escalation policy.
