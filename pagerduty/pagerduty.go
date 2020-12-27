@@ -261,7 +261,8 @@ func (c *Client) newRequestDoOptions(method, url string, qryOptions, body, v int
 func (c *Client) handleErrorResponse(err error, resp *http.Response, errtype int, trynum int) (*Response, error, bool) {
 	c.FileLogger.Print(fmt.Sprintf("[ERROR] API Error [%d] (try %d): %#v\n\n%#v\n\n%#v\n", errtype, trynum, err, err.Error(), resp))
 
-	if (errtype == 1 && err.(net.Error).Temporary()) || (errtype == 3 && resp.StatusCode == 429) {
+	if (errtype == 1 && err.(net.Error).Temporary()) ||
+		(errtype == 3 && (resp.StatusCode == 429 || resp.StatusCode >= 500)) {
 		return nil, fmt.Errorf("%s (Retryable connection error [%d])", err.Error(), errtype), true
 	}
 
