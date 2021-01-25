@@ -95,6 +95,7 @@ type ServiceEventRule struct {
 	Variables  []*ServiceEventRuleVariable `json:"variables,omitempty"`
 	Position   int                         `json:"position,omitempty"`
 	Actions    *RuleActions                `json:"actions,omitempty"`
+	Service    *ServiceReference           `json:"service_id,omitempty"`
 }
 
 // ServiceEventRuleVariable represents a service event rule variable
