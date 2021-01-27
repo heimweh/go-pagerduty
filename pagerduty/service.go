@@ -98,6 +98,11 @@ type ServiceEventRule struct {
 	Service    *ServiceReference           `json:"service_id,omitempty"`
 }
 
+// ServiceEventRulePayload represents a payload for service event rules
+type ServiceEventRulePayload struct {
+	Rule *ServiceEventRule `json:"rule,omitempty"`
+}
+
 // ServiceEventRuleVariable represents a service event rule variable
 type ServiceEventRuleVariable struct {
 	Name       string                             `json:"name,omitempty"`
@@ -279,40 +284,42 @@ func (s *ServicesService) ListEventRules(serviceID string, o *ListServiceEventRu
 // CreateEventRule creates a new service event rule.
 func (s *ServicesService) CreateEventRule(serviceID string, eventRule *ServiceEventRule) (*ServiceEventRule, *Response, error) {
 	u := fmt.Sprintf("/services/%s/rules", serviceID)
-	v := new(ServiceEventRule)
+	v := new(ServiceEventRulePayload)
+	p := ServiceEventRulePayload{Rule: eventRule}
 
-	resp, err := s.client.newRequestDo("POST", u, nil, eventRule, &v)
+	resp, err := s.client.newRequestDo("POST", u, nil, p, &v)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	return v, resp, nil
+	return v.Rule, resp, nil
 }
 
 // GetEventRule retrieves information about a service event rule.
 func (s *ServicesService) GetEventRule(serviceID, ruleID string) (*ServiceEventRule, *Response, error) {
 	u := fmt.Sprintf("/services/%s/rules/%s", serviceID, ruleID)
-	v := new(ServiceEventRule)
+	v := new(ServiceEventRulePayload)
 
 	resp, err := s.client.newRequestDo("GET", u, nil, nil, &v)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	return v, resp, nil
+	return v.Rule, resp, nil
 }
 
 // UpdateEventRule updates an existing service event rule.
 func (s *ServicesService) UpdateEventRule(serviceID, ruleID string, eventRule *ServiceEventRule) (*ServiceEventRule, *Response, error) {
 	u := fmt.Sprintf("/services/%s/rules/%s", serviceID, ruleID)
-	v := new(ServiceEventRule)
+	v := new(ServiceEventRulePayload)
+	p := ServiceEventRulePayload{Rule: eventRule}
 
-	resp, err := s.client.newRequestDo("PUT", u, nil, eventRule, &v)
+	resp, err := s.client.newRequestDo("PUT", u, nil, p, &v)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	return v, resp, nil
+	return v.Rule, resp, nil
 }
 
 // DeleteEventRule removes an existing service event rule.

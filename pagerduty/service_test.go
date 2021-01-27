@@ -256,10 +256,7 @@ func TestServicesCreateEventRule(t *testing.T) {
 	setup()
 	defer teardown()
 
-	input := &ServiceEventRule{
-		Position: 99,
-		ID:       "1",
-	}
+	input := &ServiceEventRule{}
 
 	mux.HandleFunc("/services/1/rules", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "POST")
@@ -268,7 +265,7 @@ func TestServicesCreateEventRule(t *testing.T) {
 		if !reflect.DeepEqual(v, input) {
 			t.Errorf("Request body = %+v, want %+v", v, input)
 		}
-		w.Write([]byte(`{"id": "1", "position": 99}`))
+		w.Write([]byte(`{"rule":{"id": "1", "position": 99}}`))
 	})
 
 	resp, _, err := client.Services.CreateEventRule("1", input)
@@ -290,9 +287,7 @@ func TestServicesUpdateEventRule(t *testing.T) {
 	setup()
 	defer teardown()
 
-	input := &ServiceEventRule{
-		Position: 99,
-	}
+	input := &ServiceEventRule{}
 
 	mux.HandleFunc("/services/1/rules/1", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "PUT")
@@ -301,7 +296,7 @@ func TestServicesUpdateEventRule(t *testing.T) {
 		if !reflect.DeepEqual(v, input) {
 			t.Errorf("Request body = %+v, want %+v", v, input)
 		}
-		w.Write([]byte(`{"position": 99, "id": "1"}`))
+		w.Write([]byte(`{"rule":{"position": 99, "id": "1"}}`))
 	})
 
 	resp, _, err := client.Services.UpdateEventRule("1", "1", input)
@@ -324,7 +319,7 @@ func TestServicesGetEventRule(t *testing.T) {
 	defer teardown()
 	mux.HandleFunc("/services/1/rules/1", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "GET")
-		w.Write([]byte(`{"position": 99, "id": "1"}`))
+		w.Write([]byte(`{"rule": {"position": 99, "id": "1"}}`))
 	})
 
 	resp, _, err := client.Services.GetEventRule("1", "1")
