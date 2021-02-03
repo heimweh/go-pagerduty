@@ -222,7 +222,7 @@ var (
 				ID:        "503c11f8-9b40-4a8a-b67a-45042d397212",
 				Self:      "https://api.pagerduty.com/services/PIJ90N7/rules/503c11f8-9b40-4a8a-b67a-45042d397212",
 				Disabled:  false,
-				Variables: []*ServiceEventRuleVariable{},
+				Variables: []*RuleVariable{},
 				Conditions: &RuleConditions{
 					Operator: "and",
 					RuleSubconditions: []*RuleSubcondition{

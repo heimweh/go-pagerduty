@@ -87,33 +87,20 @@ type Service struct {
 
 // ServiceEventRule represents a service event rule
 type ServiceEventRule struct {
-	ID         string                      `json:"id,omitempty"`
-	Self       string                      `json:"self,omitempty"`
-	Disabled   bool                        `json:"disabled,omitempty"`
-	Conditions *RuleConditions             `json:"conditions,omitempty"`
-	TimeFrame  *RuleTimeFrame              `json:"time_frame,omitempty"`
-	Variables  []*ServiceEventRuleVariable `json:"variables,omitempty"`
-	Position   int                         `json:"position,omitempty"`
-	Actions    *RuleActions                `json:"actions,omitempty"`
-	Service    *ServiceReference           `json:"service_id,omitempty"`
+	ID         string            `json:"id,omitempty"`
+	Self       string            `json:"self,omitempty"`
+	Disabled   bool              `json:"disabled,omitempty"`
+	Conditions *RuleConditions   `json:"conditions,omitempty"`
+	TimeFrame  *RuleTimeFrame    `json:"time_frame,omitempty"`
+	Variables  []*RuleVariable   `json:"variables,omitempty"`
+	Position   int               `json:"position,omitempty"`
+	Actions    *RuleActions      `json:"actions,omitempty"`
+	Service    *ServiceReference `json:"service_id,omitempty"`
 }
 
 // ServiceEventRulePayload represents a payload for service event rules
 type ServiceEventRulePayload struct {
 	Rule *ServiceEventRule `json:"rule,omitempty"`
-}
-
-// ServiceEventRuleVariable represents a service event rule variable
-type ServiceEventRuleVariable struct {
-	Name       string                             `json:"name,omitempty"`
-	Type       string                             `json:"type,omitempty"`
-	Parameters *ServiceEventRuleVariableParameter `json:"parameters,omitempty"`
-}
-
-// ServiceEventRuleVariableParameter represents a service event rule variable parameter
-type ServiceEventRuleVariableParameter struct {
-	Value string `json:"value"`
-	Path  string `json:"path"`
 }
 
 // GetIntegrationOptions represents options when retrieving a service integration.
