@@ -137,7 +137,7 @@ type RuleActionParameter struct {
 
 // RuleActionIntParameter represents an integer parameter object on a rule action
 type RuleActionIntParameter struct {
-	Value int `json:"value,omitempty"`
+	Value int `json:"value"`
 }
 
 // RuleActionSuppress represents a rule suppress action object
