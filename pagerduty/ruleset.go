@@ -142,10 +142,10 @@ type RuleActionIntParameter struct {
 
 // RuleActionSuppress represents a rule suppress action object
 type RuleActionSuppress struct {
-	Value               bool   `json:"value,omitempty"`
-	ThresholdValue      int    `json:"threshold_value,omitempty"`
-	ThresholdTimeUnit   string `json:"threshold_time_unit,omitempty"`
-	ThresholdTimeAmount int    `json:"threshold_time_amount,omitempty"`
+	Value               bool   `json:"value"`
+	ThresholdValue      int    `json:"threshold_value"`
+	ThresholdTimeUnit   string `json:"threshold_time_unit"`
+	ThresholdTimeAmount int    `json:"threshold_time_amount"`
 }
 
 // RuleActionExtraction represents a rule extraction action object
