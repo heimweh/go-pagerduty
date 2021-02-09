@@ -272,9 +272,9 @@ func TestServicesCreateEventRule(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-
+	pos := 99
 	want := &ServiceEventRule{
-		Position: 99,
+		Position: &pos,
 		ID:       "1",
 	}
 
@@ -304,8 +304,9 @@ func TestServicesUpdateEventRule(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	pos := 99
 	want := &ServiceEventRule{
-		Position: 99,
+		Position: &pos,
 		ID:       "1",
 	}
 
@@ -327,8 +328,9 @@ func TestServicesGetEventRule(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	pos := 99
 	want := &ServiceEventRule{
-		Position: 99,
+		Position: &pos,
 		ID:       "1",
 	}
 

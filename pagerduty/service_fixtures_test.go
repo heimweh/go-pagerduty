@@ -137,6 +137,7 @@ const (
 var (
 	defaultTestServiceAcknowledgementTimeout = 600
 	defaultAutoResolveTimeout                = 14400
+	defaultPosition                          = 0
 
 	ag                        = "intelligent"
 	validListServicesResponse = &ListServicesResponse{
@@ -222,6 +223,7 @@ var (
 				ID:        "503c11f8-9b40-4a8a-b67a-45042d397212",
 				Self:      "https://api.pagerduty.com/services/PIJ90N7/rules/503c11f8-9b40-4a8a-b67a-45042d397212",
 				Disabled:  false,
+				Position:  &defaultPosition,
 				Variables: []*RuleVariable{},
 				Conditions: &RuleConditions{
 					Operator: "and",
