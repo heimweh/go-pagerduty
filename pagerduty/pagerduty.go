@@ -263,10 +263,10 @@ func (c *Client) handleErrorResponse(err error, resp *http.Response, errtype int
 
 	if (errtype == 1 && err.(net.Error).Temporary()) ||
 		(errtype == 3 && (resp.StatusCode == 429 || resp.StatusCode >= 500)) {
-		return nil, fmt.Errorf("%s (Retryable connection error [%d])", err.Error(), errtype), true
+		return nil, fmt.Errorf("%w (Retryable connection error [%d])", err, errtype), true
 	}
 
-	return nil, fmt.Errorf("%s (Non-retryable connection error [%d], try %d)", err.Error(), errtype, trynum), false
+	return nil, fmt.Errorf("%w (Non-retryable connection error [%d], try %d)", err, errtype, trynum), false
 }
 
 func (c *Client) do(req *http.Request, v interface{}) (*Response, error) {
