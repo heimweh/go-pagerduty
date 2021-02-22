@@ -282,7 +282,7 @@ func (c *Client) do(req *http.Request, v interface{}) (*Response, error) {
 		}
 		if retry == false {
 			c.FileLogger.Print(fmt.Sprintf("[ERROR] Non-retryable error returned: %s", err.Error()))
-			return nil, fmt.Errorf("%s (Non-retryable API error)", err.Error())
+			return nil, fmt.Errorf("%w (Non-retryable API error)", err)
 		}
 		c.FileLogger.Print("[INFO] Sleeping between retries")
 		time.Sleep(30 * time.Second)
@@ -290,7 +290,7 @@ func (c *Client) do(req *http.Request, v interface{}) (*Response, error) {
 	}
 
 	if trynum > maxtries {
-		return nil, fmt.Errorf("%s (API error despite %d low-level retries)", err.Error(), maxtries)
+		return nil, fmt.Errorf("%w (API error despite %d low-level retries)", err, maxtries)
 	}
 
 	if c.Config.Debug {
