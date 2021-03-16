@@ -21,6 +21,12 @@ type ScheduledAction struct {
 
 // AlertGroupingParameters are the parameters for configuring alert grouping.
 type AlertGroupingParameters struct {
+	Type   string               `json:"type,omitempty"`
+	Config *AlertGroupingConfig `json:"config,omitempty"`
+}
+
+// AlertGroupingConfig is the config settings for the parameters to configure alert grouping.
+type AlertGroupingConfig struct {
 	Timeout   string   `json:"timeout,omitempty"`
 	Aggregate string   `json:"aggregate,omitempty"`
 	Fields    []string `json:"fields,omitempty"`
