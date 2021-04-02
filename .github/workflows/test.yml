@@ -1,21 +1,25 @@
-name: test
-on: [push]
-
+name: Test
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
 jobs:
   test:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          path: src/github.com/heimweh/go-pagerduty/
+    name: Test
+    runs-on: ubuntu-20.04
+    env:
+      GO111MODULE: off
 
-      - name: Set up Go
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@master
+
+      - name: Setup go
         uses: actions/setup-go@v2
         with:
-          go-version: 1.16
+          go-version: '^1.17'
 
-      - run: |
-          export GOPATH=${GITHUB_WORKSPACE}
-          cd ${GITHUB_WORKSPACE}/src/github.com/heimweh/go-pagerduty/
-          go test -v ./...
+      - name: Setup dependencies
+        run: make tools
+
+      - name: Run tests
+        run: make ci-test
