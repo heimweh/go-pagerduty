@@ -36,7 +36,7 @@ func (s *EventRuleService) List() (*ListEventRulesResponse, *Response, error) {
 	return v, resp, nil
 }
 
-// Create creates a new escalation policy.
+// Create creates a new event rule.
 func (s *EventRuleService) Create(eventRule *EventRule) (*EventRule, *Response, error) {
 	u := "/event_rules"
 	v := new(EventRule)
@@ -49,13 +49,13 @@ func (s *EventRuleService) Create(eventRule *EventRule) (*EventRule, *Response, 
 	return v, resp, nil
 }
 
-// Delete deletes an existing escalation policy.
+// Delete deletes an existing event rule.
 func (s *EventRuleService) Delete(id string) (*Response, error) {
 	u := fmt.Sprintf("/event_rules/%s", id)
 	return s.client.newRequestDo("DELETE", u, nil, nil, nil)
 }
 
-// Update updates an existing escalation policy.
+// Update updates an existing event rule.
 func (s *EventRuleService) Update(id string, eventRule *EventRule) (*EventRule, *Response, error) {
 	u := fmt.Sprintf("/event_rules/%s", id)
 	v := new(EventRule)

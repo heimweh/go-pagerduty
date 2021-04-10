@@ -232,3 +232,123 @@ func TestServicesDeleteIntegration(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+
+func TestServicesListEventRule(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/services/1/rules", func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "GET")
+		w.Write([]byte(validListServiceEventRulesJSON))
+	})
+
+	resp, _, err := client.Services.ListEventRules("1", &ListServiceEventRuleOptions{})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if !reflect.DeepEqual(resp, validListServiceEventRuleResponse) {
+		t.Errorf("returned \n\n%#v want \n\n%#v", resp, validListServiceEventRuleResponse)
+	}
+}
+
+func TestServicesCreateEventRule(t *testing.T) {
+	setup()
+	defer teardown()
+
+	input := &ServiceEventRule{}
+
+	mux.HandleFunc("/services/1/rules", func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "POST")
+		v := new(ServiceEventRule)
+		json.NewDecoder(r.Body).Decode(v)
+		if !reflect.DeepEqual(v, input) {
+			t.Errorf("Request body = %+v, want %+v", v, input)
+		}
+		w.Write([]byte(`{"rule":{"id": "1", "position": 99}}`))
+	})
+
+	resp, _, err := client.Services.CreateEventRule("1", input)
+	if err != nil {
+		t.Fatal(err)
+	}
+	pos := 99
+	want := &ServiceEventRule{
+		Position: &pos,
+		ID:       "1",
+	}
+
+	if !reflect.DeepEqual(resp, want) {
+		t.Errorf("returned \n\n%#v want \n\n%#v", resp, want)
+	}
+}
+
+func TestServicesUpdateEventRule(t *testing.T) {
+	setup()
+	defer teardown()
+
+	input := &ServiceEventRule{}
+
+	mux.HandleFunc("/services/1/rules/1", func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "PUT")
+		v := new(ServiceEventRule)
+		json.NewDecoder(r.Body).Decode(v)
+		if !reflect.DeepEqual(v, input) {
+			t.Errorf("Request body = %+v, want %+v", v, input)
+		}
+		w.Write([]byte(`{"rule":{"position": 99, "id": "1"}}`))
+	})
+
+	resp, _, err := client.Services.UpdateEventRule("1", "1", input)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	pos := 99
+	want := &ServiceEventRule{
+		Position: &pos,
+		ID:       "1",
+	}
+
+	if !reflect.DeepEqual(resp, want) {
+		t.Errorf("returned \n\n%#v want \n\n%#v", resp, want)
+	}
+}
+
+func TestServicesGetEventRule(t *testing.T) {
+	setup()
+	defer teardown()
+	mux.HandleFunc("/services/1/rules/1", func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "GET")
+		w.Write([]byte(`{"rule": {"position": 99, "id": "1"}}`))
+	})
+
+	resp, _, err := client.Services.GetEventRule("1", "1")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	pos := 99
+	want := &ServiceEventRule{
+		Position: &pos,
+		ID:       "1",
+	}
+
+	if !reflect.DeepEqual(resp, want) {
+		t.Errorf("returned \n\n%#v want \n\n%#v", resp, want)
+	}
+}
+
+func TestServicesDeleteEventRule(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/services/1/rules/1", func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "DELETE")
+		w.WriteHeader(http.StatusNoContent)
+	})
+
+	if _, err := client.Services.DeleteEventRule("1", "1"); err != nil {
+		t.Fatal(err)
+	}
+}

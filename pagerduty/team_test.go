@@ -67,6 +67,47 @@ func TestTeamsCreate(t *testing.T) {
 	}
 }
 
+func TestTeamsCreateWithParent(t *testing.T) {
+	setup()
+	defer teardown()
+
+	input := &Team{
+		Name: "foo",
+		Parent: &TeamReference{
+			ID:   "1",
+			Type: "team_reference",
+		},
+	}
+
+	mux.HandleFunc("/teams", func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "POST")
+		v := new(Team)
+		json.NewDecoder(r.Body).Decode(v)
+		if !reflect.DeepEqual(v.Team, input) {
+			t.Errorf("Request body = %+v, want %+v", v, input)
+		}
+		w.Write([]byte(`{"team": {"name": "foo", "id": "1", "parent": {"id": "1", "type": "team_reference"}}}`))
+	})
+
+	resp, _, err := client.Teams.Create(input)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	want := &Team{
+		Name: "foo",
+		ID:   "1",
+		Parent: &TeamReference{
+			ID:   "1",
+			Type: "team_reference",
+		},
+	}
+
+	if !reflect.DeepEqual(resp, want) {
+		t.Errorf("returned \n\n%#v want \n\n%#v", resp, want)
+	}
+}
+
 func TestTeamsDelete(t *testing.T) {
 	setup()
 	defer teardown()

@@ -85,19 +85,68 @@ const (
   "total": null,
   "more": false
 }`
+	validListServiceEventRulesJSON = `{
+  "rules": [
+    {
+      "variables": [],
+      "time_frame": null,
+      "self": "https://api.pagerduty.com/services/PIJ90N7/rules/503c11f8-9b40-4a8a-b67a-45042d397212",
+      "position": 0,
+      "id": "503c11f8-9b40-4a8a-b67a-45042d397212",
+      "disabled": false,
+      "conditions": {
+        "subconditions": [
+          {
+            "parameters": {
+              "value": "my-app-event-fail",
+              "path": "custom_details.AlarmName"
+            },
+            "operator": "equals"
+          }
+        ],
+        "operator": "and"
+      },
+      "actions": {
+        "suspend": null,
+        "suppress": {
+          "value": true,
+          "threshold_value": null,
+          "threshold_time_unit": null,
+          "threshold_time_amount": null
+        },
+        "severity": {
+          "value": "warning"
+        },
+        "priority": {
+          "value": "PEIZXDR"
+        },
+        "extractions": [],
+        "event_action": null,
+        "automation_actions": [],
+        "annotate": null
+      }
+    }
+  ],
+  "limit": 25,
+  "offset": 0,
+  "total": null,
+  "more": false
+}`
 )
 
 var (
 	defaultTestServiceAcknowledgementTimeout = 600
 	defaultAutoResolveTimeout                = 14400
+	defaultPosition                          = 0
 
+	ag                        = "intelligent"
 	validListServicesResponse = &ListServicesResponse{
 		Services: []*Service{
 			&Service{
 				AcknowledgementTimeout: &defaultTestServiceAcknowledgementTimeout,
 				Addons:                 nil,
 				AlertCreation:          "create_alerts_and_incidents",
-				AlertGrouping:          "intelligent",
+				AlertGrouping:          &ag,
 				AlertGroupingTimeout:   nil,
 				AutoResolveTimeout:     &defaultAutoResolveTimeout,
 				CreatedAt:              "2015-11-06T11:12:51-05:00",
@@ -164,6 +213,42 @@ var (
 					},
 				},
 				Type: "service",
+			},
+		},
+		Limit: 25,
+	}
+	validListServiceEventRuleResponse = &ListServiceEventRuleResponse{
+		EventRules: []*ServiceEventRule{
+			{
+				ID:        "503c11f8-9b40-4a8a-b67a-45042d397212",
+				Self:      "https://api.pagerduty.com/services/PIJ90N7/rules/503c11f8-9b40-4a8a-b67a-45042d397212",
+				Disabled:  false,
+				Position:  &defaultPosition,
+				Variables: []*RuleVariable{},
+				Conditions: &RuleConditions{
+					Operator: "and",
+					RuleSubconditions: []*RuleSubcondition{
+						{
+							Operator: "equals",
+							Parameters: &ConditionParameter{
+								Value: "my-app-event-fail",
+								Path:  "custom_details.AlarmName",
+							},
+						},
+					},
+				},
+				Actions: &RuleActions{
+					Suppress: &RuleActionSuppress{
+						Value: true,
+					},
+					Severity: &RuleActionParameter{
+						Value: "warning",
+					},
+					Priority: &RuleActionParameter{
+						Value: "PEIZXDR",
+					},
+					Extractions: []*RuleActionExtraction{},
+				},
 			},
 		},
 		Limit: 25,
