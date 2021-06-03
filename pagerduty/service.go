@@ -36,14 +36,14 @@ type SupportHours struct {
 	Type       string `json:"type,omitempty"`
 }
 
-// AlertGroupingConfig - populate timeout if AlertGroupingParameters Type is 'time', populate Aggregate & Fields if 'content_grouping'
+// AlertGroupingConfig - populate timeout if AlertGroupingParameters Type is 'time', populate Aggregate & Fields if Type is 'content_grouping'
 type AlertGroupingConfig struct {
 	Timeout   int      `json:"timeout,omitempty"`
 	Aggregate string   `json:"aggregate,omitempty"`
 	Fields    []string `json:"fields,omitempty"`
 }
 
-// AlertGroupingParameters
+// AlertGroupingParameters defines how alerts are grouped into incidents
 type AlertGroupingParameters struct {
 	Type   string               `json:"type,omitempty"`
 	Config *AlertGroupingConfig `json:"config,omitempty"`
