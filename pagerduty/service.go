@@ -78,7 +78,7 @@ type Service struct {
 	AlertCreation           string                     `json:"alert_creation,omitempty"`
 	AlertGrouping           *string                    `json:"alert_grouping"`
 	AlertGroupingTimeout    *int                       `json:"alert_grouping_timeout,omitempty"`
-	AlertGroupingParameters *AlertGroupingParameters   `json:"alert_grouping_parameters"`
+	AlertGroupingParameters *AlertGroupingParameters   `json:"alert_grouping_parameters,omitempty"`
 	AutoResolveTimeout      *int                       `json:"auto_resolve_timeout"`
 	CreatedAt               string                     `json:"created_at,omitempty"`
 	Description             string                     `json:"description,omitempty"`
