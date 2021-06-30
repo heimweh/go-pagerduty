@@ -369,7 +369,6 @@ func cacheGetAbilities(v interface{}) error {
 	r := new(CacheAbilitiesRecord)
 	err := cacheGet("misc", "abilities", r)
 	if err != nil {
-		log.Printf("===== cacheGetAbilities error: %+v", err)
 		return err
 	}
 	b, _ := json.Marshal(r)
