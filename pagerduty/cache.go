@@ -96,6 +96,51 @@ func PopulateMemoryCache() {
 		Abilities: abilities,
 	}
 	cachePut("misc", "abilities", abilitiesRecord)
+
+	if _, present := os.LookupEnv("TF_PAGERDUTY_CACHE_PREFILL"); present {
+		log.Println("===== Prefilling memory cache =====")
+		var pdo = ListUsersOptions{
+			Include: []string{"contact_methods", "notification_rules"},
+			Limit:   100,
+		}
+
+		fullUsers, err := pdClient.Users.ListAll(&pdo)
+		if err != nil {
+			log.Println("===== PopulateMemoryCache: Couldn't load users from PD =====")
+			return
+		}
+
+		for _, fu := range fullUsers {
+			u := new(User)
+			b, _ := json.Marshal(fu)
+			json.Unmarshal(b, u)
+
+			err = cachePutUser(u)
+			if err != nil {
+				log.Printf("===== PopulateMemoryCache: Error putting user %v to cache: %v", fu.ID, err)
+			} else {
+				log.Printf("===== PopulateMemoryCache: Put user %v to cache", fu.ID)
+			}
+
+			for _, c := range fu.ContactMethods {
+				err = cachePutContactMethod(c)
+				if err != nil {
+					log.Printf("===== PopulateMemoryCache: Error putting contact method %v to cache: %v", c.ID, err)
+				} else {
+					log.Printf("===== PopulateMemoryCache: Put contact method %v to cache", c.ID)
+				}
+			}
+
+			for _, r := range fu.NotificationRules {
+				err = cachePutNotificationRule(r)
+				if err != nil {
+					log.Printf("===== getFullUserToCache: Error putting notification rule %v to cache: %v", r.ID, err)
+				} else {
+					log.Printf("===== getFullUserToCache: Put notification rule %v to cache", r.ID)
+				}
+			}
+		}
+	}
 }
 
 func PopulateMongoCache() {
