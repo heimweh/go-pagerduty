@@ -45,6 +45,7 @@ type User struct {
 }
 
 // FullUser represents a user fetched with include[]=contact_methods,notification_rules.
+// This is only used when caching is enabled
 type FullUser struct {
 	AvatarURL         string              `json:"avatar_url,omitempty"`
 	Color             string              `json:"color,omitempty"`
@@ -126,6 +127,7 @@ type ListUsersResponse struct {
 	Users  []*User `json:"users,omitempty"`
 }
 
+// ListFullUsersResponse represents a list response containing FullUser objects.
 type ListFullUsersResponse struct {
 	Limit  int         `json:"limit,omitempty"`
 	More   bool        `json:"more,omitempty"`
@@ -152,6 +154,7 @@ func (s *UserService) List(o *ListUsersOptions) (*ListUsersResponse, *Response, 
 	return v, resp, nil
 }
 
+// ListAll lists users into FullUser objects
 func (s *UserService) ListAll(o *ListUsersOptions) ([]*FullUser, error) {
 	var users = make([]*FullUser, 0, 25)
 	var v *ListFullUsersResponse
@@ -223,6 +226,7 @@ func (s *UserService) Get(id string, o *GetUserOptions) (*User, *Response, error
 	return v.User, resp, nil
 }
 
+// GetFull retrieves information about a user including contact methods and notification rules.
 func (s *UserService) GetFull(id string) (*FullUser, *Response, error) {
 	u := fmt.Sprintf("/users/%s", id)
 	v := new(FullUser)
