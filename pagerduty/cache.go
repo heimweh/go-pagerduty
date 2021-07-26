@@ -33,17 +33,18 @@ var memoryCache = map[string]*sync.Map{
 	"misc":               {},
 }
 
-type CacheAbilitiesRecord struct {
+type cacheAbilitiesRecord struct {
 	ID        string
 	Abilities *ListAbilitiesResponse
 }
 
-type CacheLastRefreshRecord struct {
+type cacheLastRefreshRecord struct {
 	ID        string
 	Users     time.Time
 	Abilities time.Time
 }
 
+// InitCache initializes the cache according to the setting in TF_PAGERDUTY_CACHE
 func InitCache(c *Client) {
 	pdClient = c
 	if cacheMongoURL = os.Getenv("TF_PAGERDUTY_CACHE"); strings.HasPrefix(cacheMongoURL, "mongodb://") {
@@ -88,10 +89,11 @@ func InitCache(c *Client) {
 	}
 }
 
+// PopulateMemoryCache does initial population of the cache if memory caching is selected
 func PopulateMemoryCache() {
 	abilities, _, _ := pdClient.Abilities.List()
 
-	abilitiesRecord := &CacheAbilitiesRecord{
+	abilitiesRecord := &cacheAbilitiesRecord{
 		ID:        "abilities",
 		Abilities: abilities,
 	}
@@ -143,17 +145,17 @@ func PopulateMemoryCache() {
 	}
 }
 
+// PopulateMongoCache does initial population of the cache if Mongo caching is selected
 func PopulateMongoCache() {
 	filter := bson.D{primitive.E{Key: "ID", Value: "lastrefresh"}}
-	lastRefreshRecord := new(CacheLastRefreshRecord)
+	lastRefreshRecord := new(cacheLastRefreshRecord)
 	err := mongoCache["misc"].FindOne(context.TODO(), filter).Decode(lastRefreshRecord)
 	if err == nil {
 		if time.Since(lastRefreshRecord.Users) < cacheMaxAge {
 			log.Printf("===== PagerDuty cache was refreshed at %s, not refreshing =====", lastRefreshRecord.Users.Format(time.RFC3339))
 			return
-		} else {
-			log.Printf("===== PagerDuty cache was refreshed at %s, refreshing =====", lastRefreshRecord.Users.Format(time.RFC3339))
 		}
+		log.Printf("===== PagerDuty cache was refreshed at %s, refreshing =====", lastRefreshRecord.Users.Format(time.RFC3339))
 	}
 
 	var pdo = ListUsersOptions{
@@ -187,7 +189,7 @@ func PopulateMongoCache() {
 
 	abilities, _, _ := pdClient.Abilities.List()
 
-	abilitiesRecord := &CacheAbilitiesRecord{
+	abilitiesRecord := &cacheAbilitiesRecord{
 		ID:        "abilities",
 		Abilities: abilities,
 	}
@@ -226,7 +228,7 @@ func PopulateMongoCache() {
 		log.Fatal(err)
 	}
 
-	cacheLastRefreshRecord := &CacheLastRefreshRecord{
+	cacheLastRefreshRecord := &cacheLastRefreshRecord{
 		ID:        "lastrefresh",
 		Users:     time.Now(),
 		Abilities: time.Now(),
@@ -238,6 +240,7 @@ func PopulateMongoCache() {
 	}
 }
 
+// PopulateCache does initial population of the cache
 func PopulateCache() {
 	if cacheType == "mongo" {
 		PopulateMongoCache()
@@ -261,18 +264,16 @@ func getFullUserToCache(id string, v interface{}) error {
 	if err != nil {
 		log.Printf("===== getFullUserToCache: Error putting user %v to cache: %v", id, err)
 		return err
-	} else {
-		log.Printf("===== getFullUserToCache: Put user %v to cache", id)
 	}
+	log.Printf("===== getFullUserToCache: Put user %v to cache", id)
 
 	for _, c := range fu.ContactMethods {
 		err = cachePutContactMethod(c)
 		if err != nil {
 			log.Printf("===== getFullUserToCache: Error putting contact method %v to cache: %v", id, err)
 			return err
-		} else {
-			log.Printf("===== getFullUserToCache: Put contact method %v to cache", id)
 		}
+		log.Printf("===== getFullUserToCache: Put contact method %v to cache", id)
 	}
 
 	for _, r := range fu.NotificationRules {
@@ -280,37 +281,36 @@ func getFullUserToCache(id string, v interface{}) error {
 		if err != nil {
 			log.Printf("===== getFullUserToCache: Error putting notification rule %v to cache: %v", id, err)
 			return err
-		} else {
-			log.Printf("===== getFullUserToCache: Put notification rule %v to cache", id)
 		}
+		log.Printf("===== getFullUserToCache: Put notification rule %v to cache", id)
 	}
 	return nil
 }
 
-func memoryCacheGet(collection_name string, id string, v interface{}) error {
-	log.Printf("===== memoryCacheGet %v from %v", id, collection_name)
-	if collection, ok := memoryCache[collection_name]; ok {
+func memoryCacheGet(collectionName string, id string, v interface{}) error {
+	log.Printf("===== memoryCacheGet %v from %v", id, collectionName)
+	if collection, ok := memoryCache[collectionName]; ok {
 		if item, ok := collection.Load(id); ok {
 			err := json.Unmarshal(item.([]byte), v)
 			if err != nil {
-				log.Printf("===== memoryCacheGet Error unmarshaling JSON getting %v from %q: %v", id, collection_name, err)
+				log.Printf("===== memoryCacheGet Error unmarshaling JSON getting %v from %q: %v", id, collectionName, err)
 				return err
 			}
-			log.Printf("===== memoryCacheGet Got %v from %q cache", id, collection_name)
+			log.Printf("===== memoryCacheGet Got %v from %q cache", id, collectionName)
 			return nil
-		} else if collection_name == "users" {
+		} else if collectionName == "users" {
 			// special case for filling users into memory cache on demand
 			return getFullUserToCache(id, v)
 		} else {
-			return fmt.Errorf("memoryCacheGet Item %q is not in %q hash", id, collection_name)
+			return fmt.Errorf("memoryCacheGet Item %q is not in %q hash", id, collectionName)
 		}
 	} else {
-		return fmt.Errorf("memoryCacheGet No such collection: %q", collection_name)
+		return fmt.Errorf("memoryCacheGet No such collection: %q", collectionName)
 	}
 }
 
-func mongoCacheGet(collection_name string, id string, v interface{}) error {
-	if collection, ok := mongoCache[collection_name]; ok {
+func mongoCacheGet(collectionName string, id string, v interface{}) error {
+	if collection, ok := mongoCache[collectionName]; ok {
 		filter := bson.D{primitive.E{Key: "id", Value: id}}
 		r := collection.FindOne(context.TODO(), filter)
 		err := r.Decode(v)
@@ -318,100 +318,92 @@ func mongoCacheGet(collection_name string, id string, v interface{}) error {
 			return err
 		}
 		return nil
-	} else {
-		return fmt.Errorf("mongoCacheGet No such collection: %q", collection_name)
 	}
+	return fmt.Errorf("mongoCacheGet No such collection: %q", collectionName)
 }
 
-func cacheGet(collection_name string, id string, v interface{}) error {
+func cacheGet(collectionName string, id string, v interface{}) error {
 	if cacheType == "mongo" {
-		return mongoCacheGet(collection_name, id, v)
+		return mongoCacheGet(collectionName, id, v)
 	} else if cacheType == "memory" {
-		return memoryCacheGet(collection_name, id, v)
-	} else {
-		return fmt.Errorf("cacheGet Cache is not enabled")
+		return memoryCacheGet(collectionName, id, v)
 	}
+	return fmt.Errorf("cacheGet Cache is not enabled")
 }
 
-func mongoCachePut(collection_name string, id string, v interface{}) error {
-	if collection, ok := mongoCache[collection_name]; ok {
+func mongoCachePut(collectionName string, id string, v interface{}) error {
+	if collection, ok := mongoCache[collectionName]; ok {
 		filter := bson.D{primitive.E{Key: "id", Value: id}}
 		opts := options.Replace().SetUpsert(true)
 		res, err := collection.ReplaceOne(context.TODO(), filter, &v, opts)
 		if err != nil {
-			log.Printf("===== Error updating %v: %q", collection_name, err)
+			log.Printf("===== Error updating %v: %q", collectionName, err)
 			return err
 		}
 		if res.MatchedCount != 0 {
-			log.Printf("===== replaced an existing item %q in %v cache", id, collection_name)
+			log.Printf("===== replaced an existing item %q in %v cache", id, collectionName)
 			return nil
 		}
 		if res.UpsertedCount != 0 {
-			log.Printf("===== inserted a new item %q in %v cache", id, collection_name)
+			log.Printf("===== inserted a new item %q in %v cache", id, collectionName)
 		}
 		return nil
-	} else {
-		return fmt.Errorf("no such collection %q", collection_name)
 	}
+	return fmt.Errorf("no such collection %q", collectionName)
 }
 
-func memoryCachePut(collection_name string, id string, v interface{}) error {
-	if collection, ok := memoryCache[collection_name]; ok {
+func memoryCachePut(collectionName string, id string, v interface{}) error {
+	if collection, ok := memoryCache[collectionName]; ok {
 		b, _ := json.Marshal(v)
 		collection.Store(id, b)
 		return nil
-	} else {
-		return fmt.Errorf("no such collection: %q", collection_name)
 	}
+	return fmt.Errorf("no such collection: %q", collectionName)
 }
 
-func cachePut(collection_name string, id string, v interface{}) error {
+func cachePut(collectionName string, id string, v interface{}) error {
 	if cacheType == "mongo" {
-		return mongoCachePut(collection_name, id, v)
+		return mongoCachePut(collectionName, id, v)
 	} else if cacheType == "memory" {
-		return memoryCachePut(collection_name, id, v)
-	} else {
-		return fmt.Errorf("cachePut Cache is not enabled")
+		return memoryCachePut(collectionName, id, v)
 	}
+	return fmt.Errorf("cachePut Cache is not enabled")
 }
 
-func mongoCacheDelete(collection_name string, id string) error {
-	if collection, ok := mongoCache[collection_name]; ok {
+func mongoCacheDelete(collectionName string, id string) error {
+	if collection, ok := mongoCache[collectionName]; ok {
 		filter := bson.D{primitive.E{Key: "id", Value: id}}
 		_, err := collection.DeleteOne(context.TODO(), filter)
 		if err != nil {
 			log.Printf("===== mongoCacheDelete mongo error: %q", err)
 			return err
 		}
-		log.Printf("===== mongoCacheDetele deleted item %v from %q", id, collection_name)
+		log.Printf("===== mongoCacheDetele deleted item %v from %q", id, collectionName)
 		return nil
-	} else {
-		return fmt.Errorf("mongoCacheDelete No such collection %q", collection_name)
 	}
+	return fmt.Errorf("mongoCacheDelete No such collection %q", collectionName)
 }
 
-func memoryCacheDelete(collection_name string, id string) error {
-	if collection, ok := memoryCache[collection_name]; ok {
+func memoryCacheDelete(collectionName string, id string) error {
+	if collection, ok := memoryCache[collectionName]; ok {
 		collection.Delete(id)
-		log.Printf("===== memoryCacheDelete deleted item %v from %q", id, collection_name)
+		log.Printf("===== memoryCacheDelete deleted item %v from %q", id, collectionName)
 		return nil
-	} else {
-		return fmt.Errorf("memoryCacheDelete No such collection: %q", collection_name)
 	}
+	return fmt.Errorf("memoryCacheDelete No such collection: %q", collectionName)
 }
 
-func cacheDelete(collection_name string, id string) error {
+func cacheDelete(collectionName string, id string) error {
 	if cacheType == "mongo" {
-		return mongoCacheDelete(collection_name, id)
+		return mongoCacheDelete(collectionName, id)
 	} else if cacheType == "memory" {
-		return memoryCacheDelete(collection_name, id)
-	} else {
-		return fmt.Errorf("cacheDelete Cache is not enabled")
+		return memoryCacheDelete(collectionName, id)
 	}
+	return fmt.Errorf("cacheDelete Cache is not enabled")
 }
 
 func cacheGetAbilities(v interface{}) error {
-	r := new(CacheAbilitiesRecord)
+	r := new(cacheAbilitiesRecord)
 	err := cacheGet("misc", "abilities", r)
 	if err != nil {
 		return err
