@@ -270,19 +270,19 @@ func getFullUserToCache(id string, v interface{}) error {
 	for _, c := range fu.ContactMethods {
 		err = cachePutContactMethod(c)
 		if err != nil {
-			log.Printf("===== getFullUserToCache: Error putting contact method %v to cache: %v", id, err)
+			log.Printf("===== getFullUserToCache: Error putting contact method %v to cache: %v", c.ID, err)
 			return err
 		}
-		log.Printf("===== getFullUserToCache: Put contact method %v to cache", id)
+		log.Printf("===== getFullUserToCache: Put contact method %v to cache", c.ID)
 	}
 
 	for _, r := range fu.NotificationRules {
 		err = cachePutNotificationRule(r)
 		if err != nil {
-			log.Printf("===== getFullUserToCache: Error putting notification rule %v to cache: %v", id, err)
+			log.Printf("===== getFullUserToCache: Error putting notification rule %v to cache: %v", r.ID, err)
 			return err
 		}
-		log.Printf("===== getFullUserToCache: Put notification rule %v to cache", id)
+		log.Printf("===== getFullUserToCache: Put notification rule %v to cache", r.ID)
 	}
 	return nil
 }
