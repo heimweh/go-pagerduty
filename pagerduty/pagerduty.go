@@ -77,7 +77,7 @@ func NewClient(config *Config) (*Client, error) {
 		config.BaseURL = defaultBaseURL
 	}
 
-	config.UserAgent = "heimweh/go-pagerduty(terraform-caching)"
+	config.UserAgent = "heimweh/go-pagerduty(terraform)"
 
 	baseURL, err := url.Parse(config.BaseURL)
 	if err != nil {
