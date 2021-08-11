@@ -13,7 +13,7 @@ func TestBusinessServiceList(t *testing.T) {
 
 	mux.HandleFunc("/business_services", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "GET")
-		w.Write([]byte(`{"total": 1, "offset": 0, "more": false, "limit": 25, "business_services":[{"id": "1"}]}`))
+		w.Write([]byte(`{"total": 0, "offset": 0, "more": false, "limit": 0, "business_services":[{"id": "1"}]}`))
 	})
 
 	resp, _, err := client.BusinessServices.List()
@@ -22,10 +22,10 @@ func TestBusinessServiceList(t *testing.T) {
 	}
 
 	want := &ListBusinessServicesResponse{
-		Total:  1,
+		Total:  0,
 		Offset: 0,
 		More:   false,
-		Limit:  25,
+		Limit:  0,
 		BusinessServices: []*BusinessService{
 			{
 				ID: "1",
