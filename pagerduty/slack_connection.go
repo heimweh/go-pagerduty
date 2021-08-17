@@ -8,14 +8,13 @@ type SlackConnectionService service
 
 // SlackConnection represents a slack connection.
 type SlackConnection struct {
-	ID               string           `json:"id,omitempty"`
-	SourceID         string           `json:"source_id,omitempty"`
-	SourceName       string           `json:"source_name,omitempty"`
-	SourceType       string           `json:"source_type,omitempty"`
-	ChannelID        string           `json:"channel_id,omitempty"`
-	ChannelName      string           `json:"channel_name,omitempty"`
-	Config           ConnectionConfig `json:"config,omitempty"`
-	NotificationType string           `json:"notification_type,omitempty"`
+	ID          string           `json:"id,omitempty"`
+	SourceID    string           `json:"source_id,omitempty"`
+	SourceName  string           `json:"source_name,omitempty"`
+	SourceType  string           `json:"source_type,omitempty"`
+	ChannelID   string           `json:"channel_id,omitempty"`
+	ChannelName string           `json:"channel_name,omitempty"`
+	Config      ConnectionConfig `json:"config,omitempty"`
 }
 
 // ConnectionConfig represents a config object in a slack connection
