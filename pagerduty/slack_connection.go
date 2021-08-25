@@ -22,7 +22,7 @@ type SlackConnection struct {
 type ConnectionConfig struct {
 	Events     []string `json:"events,omitempty"`
 	Priorities []string `json:"priorities"`
-	Urgency    string   `json:"urgency"`
+	Urgency    *string  `json:"urgency"`
 }
 
 // SlackConnectionPayload represents payload with a slack connect object
