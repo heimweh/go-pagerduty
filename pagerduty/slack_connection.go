@@ -14,14 +14,15 @@ type SlackConnection struct {
 	SourceType  string           `json:"source_type,omitempty"`
 	ChannelID   string           `json:"channel_id,omitempty"`
 	ChannelName string           `json:"channel_name,omitempty"`
+	WorkspaceID string           `json:"workspace_id,omitempty"`
 	Config      ConnectionConfig `json:"config,omitempty"`
 }
 
 // ConnectionConfig represents a config object in a slack connection
 type ConnectionConfig struct {
 	Events     []string `json:"events,omitempty"`
-	Priorities []string `json:"type"`
-	Urgency    string   `json:"self,omitempty"`
+	Priorities []string `json:"priorities"`
+	Urgency    string   `json:"urgency"`
 }
 
 // SlackConnectionPayload represents payload with a slack connect object
