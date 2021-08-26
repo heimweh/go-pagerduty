@@ -61,8 +61,9 @@ func TestSlackConnectionCreate(t *testing.T) {
 	}
 
 	want := &SlackConnection{
-		ID:       "1",
-		SourceID: "1",
+		ID:          "1",
+		SourceID:    "1",
+		WorkspaceID: "1",
 	}
 
 	if !reflect.DeepEqual(resp, want) {
