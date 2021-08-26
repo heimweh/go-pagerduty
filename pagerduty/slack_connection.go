@@ -84,6 +84,8 @@ func (s *SlackConnectionService) Create(workspaceID string, sconn *SlackConnecti
 	if err != nil {
 		return nil, nil, err
 	}
+	// Slack Connection in Terraform Provider needs workspaceID set to the object
+	v.SlackConnection.WorkspaceID = workspaceID
 
 	return v.SlackConnection, resp, nil
 }
