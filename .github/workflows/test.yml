@@ -10,9 +10,14 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        with:
+          path: src/github.com/heimweh/go-pagerduty/
       - name: Set up Go
         uses: actions/setup-go@v2
         with:
           go-version: 1.16
-      - run: make tools
-      - run: make test
+      - run: |
+          export GOPATH=${GITHUB_WORKSPACE}
+          cd ${GITHUB_WORKSPACE}/src/github.com/heimweh/go-pagerduty/
+          make tools
+          make test
