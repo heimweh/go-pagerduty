@@ -141,12 +141,16 @@ type Service struct {
 	Name                    string                     `json:"name,omitempty"`
 	ScheduledActions        []*ScheduledAction         `json:"scheduled_actions,omitempty"`
 	Self                    string                     `json:"self,omitempty"`
-	Service                 *Service                   `json:"service,omitempty"`
 	Status                  string                     `json:"status,omitempty"`
 	Summary                 string                     `json:"summary,omitempty"`
 	SupportHours            *SupportHours              `json:"support_hours,omitempty"`
 	Teams                   []*TeamReference           `json:"teams,omitempty"`
 	Type                    string                     `json:"type,omitempty"`
+}
+
+// ServicePayload represents a service.
+type ServicePayload struct {
+	Service *Service `json:"service,omitempty"`
 }
 
 // ServiceEventRule represents a service event rule
@@ -232,9 +236,9 @@ func (s *ServicesService) List(o *ListServicesOptions) (*ListServicesResponse, *
 // Create creates a new service.
 func (s *ServicesService) Create(service *Service) (*Service, *Response, error) {
 	u := "/services"
-	v := new(Service)
+	v := new(ServicePayload)
 
-	resp, err := s.client.newRequestDo("POST", u, nil, &Service{Service: service}, &v)
+	resp, err := s.client.newRequestDo("POST", u, nil, &ServicePayload{Service: service}, &v)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -251,7 +255,7 @@ func (s *ServicesService) Delete(id string) (*Response, error) {
 // Get retrieves information about a service.
 func (s *ServicesService) Get(id string, o *GetServiceOptions) (*Service, *Response, error) {
 	u := fmt.Sprintf("/services/%s", id)
-	v := new(Service)
+	v := new(ServicePayload)
 
 	resp, err := s.client.newRequestDo("GET", u, o, nil, &v)
 	if err != nil {
@@ -264,9 +268,9 @@ func (s *ServicesService) Get(id string, o *GetServiceOptions) (*Service, *Respo
 // Update updates an existing service.
 func (s *ServicesService) Update(id string, service *Service) (*Service, *Response, error) {
 	u := fmt.Sprintf("/services/%s", id)
-	v := new(Service)
+	v := new(ServicePayload)
 
-	resp, err := s.client.newRequestDo("PUT", u, nil, &Service{Service: service}, &v)
+	resp, err := s.client.newRequestDo("PUT", u, nil, &ServicePayload{Service: service}, &v)
 	if err != nil {
 		return nil, nil, err
 	}
