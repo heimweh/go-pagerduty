@@ -42,7 +42,7 @@ func TestUsersCreate(t *testing.T) {
 
 	mux.HandleFunc("/users", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "POST")
-		v := new(User)
+		v := new(UserPayload)
 		json.NewDecoder(r.Body).Decode(v)
 		if !reflect.DeepEqual(v.User, input) {
 			t.Errorf("Request body = %+v, want %+v", v, input)
@@ -110,7 +110,7 @@ func TestUsersUpdate(t *testing.T) {
 
 	mux.HandleFunc("/users/1", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "PUT")
-		v := new(User)
+		v := new(UserPayload)
 		json.NewDecoder(r.Body).Decode(v)
 		if !reflect.DeepEqual(v.User, input) {
 			t.Errorf("Request body = %+v, want %+v", v, input)
@@ -141,7 +141,7 @@ func TestUsersAddContactMethod(t *testing.T) {
 
 	mux.HandleFunc("/users/1/contact_methods", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "POST")
-		v := new(ContactMethod)
+		v := new(ContactMethodPayload)
 		json.NewDecoder(r.Body).Decode(v)
 		if !reflect.DeepEqual(v.ContactMethod, input) {
 			t.Errorf("Request body = %+v, want %+v", v, input)
@@ -173,7 +173,7 @@ func TestUsersUpdateContactMethod(t *testing.T) {
 
 	mux.HandleFunc("/users/1/contact_methods/1", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "PUT")
-		v := new(ContactMethod)
+		v := new(ContactMethodPayload)
 		json.NewDecoder(r.Body).Decode(v)
 		if !reflect.DeepEqual(v.ContactMethod, input) {
 			t.Errorf("Request body = %+v, want %+v", v, input)

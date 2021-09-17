@@ -44,7 +44,7 @@ func TestTeamsCreate(t *testing.T) {
 
 	mux.HandleFunc("/teams", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "POST")
-		v := new(Team)
+		v := new(TeamPayload)
 		json.NewDecoder(r.Body).Decode(v)
 		if !reflect.DeepEqual(v.Team, input) {
 			t.Errorf("Request body = %+v, want %+v", v, input)
@@ -81,7 +81,7 @@ func TestTeamsCreateWithParent(t *testing.T) {
 
 	mux.HandleFunc("/teams", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "POST")
-		v := new(Team)
+		v := new(TeamPayload)
 		json.NewDecoder(r.Body).Decode(v)
 		if !reflect.DeepEqual(v.Team, input) {
 			t.Errorf("Request body = %+v, want %+v", v, input)
@@ -155,7 +155,7 @@ func TestTeamsUpdate(t *testing.T) {
 
 	mux.HandleFunc("/teams/1", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "PUT")
-		v := new(Team)
+		v := new(TeamPayload)
 		json.NewDecoder(r.Body).Decode(v)
 		if !reflect.DeepEqual(v.Team, input) {
 			t.Errorf("Request body = %+v, want %+v", v, input)
