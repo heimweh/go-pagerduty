@@ -36,7 +36,7 @@ func TestServicesCreate(t *testing.T) {
 
 	mux.HandleFunc("/services", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "POST")
-		v := new(Service)
+		v := new(ServicePayload)
 		json.NewDecoder(r.Body).Decode(v)
 		if !reflect.DeepEqual(v.Service, input) {
 			t.Errorf("Request body = %+v, want %+v", v, input)
@@ -106,7 +106,7 @@ func TestServicesUpdate(t *testing.T) {
 
 	mux.HandleFunc("/services/1", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "PUT")
-		v := new(Service)
+		v := new(ServicePayload)
 		json.NewDecoder(r.Body).Decode(v)
 		if !reflect.DeepEqual(v.Service, input) {
 			t.Errorf("Request body = %+v, want %+v", v, input)
