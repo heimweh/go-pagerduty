@@ -1,9 +1,6 @@
 name: test
 on: [push]
 
-env:
-  GO111MODULE: off
-
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -12,12 +9,13 @@ jobs:
         uses: actions/checkout@v2
         with:
           path: src/github.com/heimweh/go-pagerduty/
+
       - name: Set up Go
         uses: actions/setup-go@v2
         with:
           go-version: 1.16
+
       - run: |
           export GOPATH=${GITHUB_WORKSPACE}
           cd ${GITHUB_WORKSPACE}/src/github.com/heimweh/go-pagerduty/
-          make tools
-          make test
+          go test -v ./...
