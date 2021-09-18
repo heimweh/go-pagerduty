@@ -140,7 +140,7 @@ func TestServicesCreateIntegration(t *testing.T) {
 
 	mux.HandleFunc("/services/1/integrations", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "POST")
-		v := new(Integration)
+		v := new(IntegrationPayload)
 		json.NewDecoder(r.Body).Decode(v)
 		if !reflect.DeepEqual(v.Integration, input) {
 			t.Errorf("Request body = %+v, want %+v", v, input)
@@ -173,7 +173,7 @@ func TestServicesUpdateIntegration(t *testing.T) {
 
 	mux.HandleFunc("/services/1/integrations/1", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "PUT")
-		v := new(Integration)
+		v := new(IntegrationPayload)
 		json.NewDecoder(r.Body).Decode(v)
 		if !reflect.DeepEqual(v.Integration, input) {
 			t.Errorf("Request body = %+v, want %+v", v, input)

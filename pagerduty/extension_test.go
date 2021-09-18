@@ -42,7 +42,7 @@ func TestExtensionsCreate(t *testing.T) {
 
 	mux.HandleFunc("/extensions", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "POST")
-		v := new(Extension)
+		v := new(ExtensionPayload)
 		json.NewDecoder(r.Body).Decode(v)
 		if !reflect.DeepEqual(v.Extension, input) {
 			t.Errorf("Request body = %+v, want %+v", v, input)

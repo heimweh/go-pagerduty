@@ -45,7 +45,7 @@ func TestAddonsInstall(t *testing.T) {
 	mux.HandleFunc("/addons", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "POST")
 		w.WriteHeader(http.StatusCreated)
-		v := new(Addon)
+		v := new(AddonPayload)
 		json.NewDecoder(r.Body).Decode(v)
 		if !reflect.DeepEqual(v.Addon, input) {
 			t.Errorf("Request body = %+v, want %+v", v, input)
@@ -102,7 +102,7 @@ func TestAddonsUpdate(t *testing.T) {
 
 	mux.HandleFunc("/addons/1", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "PUT")
-		v := new(Addon)
+		v := new(AddonPayload)
 		json.NewDecoder(r.Body).Decode(v)
 		if !reflect.DeepEqual(v.Addon, input) {
 			t.Errorf("Request body = %+v, want %+v", v, input)

@@ -44,7 +44,7 @@ func TestSchedulesCreate(t *testing.T) {
 
 	mux.HandleFunc("/schedules", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "POST")
-		v := new(Schedule)
+		v := new(SchedulePayload)
 		json.NewDecoder(r.Body).Decode(v)
 		if !reflect.DeepEqual(v.Schedule, input) {
 			t.Errorf("Request body = %+v, want %+v", v, input)
@@ -114,7 +114,7 @@ func TestSchedulesUpdate(t *testing.T) {
 
 	mux.HandleFunc("/schedules/1", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "PUT")
-		v := new(Schedule)
+		v := new(SchedulePayload)
 		json.NewDecoder(r.Body).Decode(v)
 		if !reflect.DeepEqual(v.Schedule, input) {
 			t.Errorf("Request body = %+v, want %+v", v, input)
