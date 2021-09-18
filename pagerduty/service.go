@@ -60,7 +60,6 @@ type Integration struct {
 	CreatedAt        string            `json:"created_at,omitempty"`
 	HTMLURL          string            `json:"html_url,omitempty"`
 	ID               string            `json:"id,omitempty"`
-	Integration      *Integration      `json:"integration,omitempty"`
 	IntegrationEmail string            `json:"integration_email,omitempty"`
 	IntegrationKey   string            `json:"integration_key,omitempty"`
 	Name             string            `json:"name,omitempty"`
@@ -114,6 +113,11 @@ type ServiceEventRule struct {
 	Position   *int              `json:"position,omitempty"`
 	Actions    *RuleActions      `json:"actions,omitempty"`
 	Service    *ServiceReference `json:"service_id,omitempty"`
+}
+
+// IntegrationPayload represents an integration.
+type IntegrationPayload struct {
+	Integration *Integration `json:"integration,omitempty"`
 }
 
 // ServiceEventRulePayload represents a payload for service event rules
@@ -231,9 +235,9 @@ func (s *ServicesService) Update(id string, service *Service) (*Service, *Respon
 // CreateIntegration creates a new service integration.
 func (s *ServicesService) CreateIntegration(serviceID string, integration *Integration) (*Integration, *Response, error) {
 	u := fmt.Sprintf("/services/%s/integrations", serviceID)
-	v := new(Integration)
+	v := new(IntegrationPayload)
 
-	resp, err := s.client.newRequestDo("POST", u, nil, &Integration{Integration: integration}, &v)
+	resp, err := s.client.newRequestDo("POST", u, nil, &IntegrationPayload{Integration: integration}, &v)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -244,7 +248,7 @@ func (s *ServicesService) CreateIntegration(serviceID string, integration *Integ
 // GetIntegration retrieves information about a service integration.
 func (s *ServicesService) GetIntegration(serviceID, integrationID string, o *GetIntegrationOptions) (*Integration, *Response, error) {
 	u := fmt.Sprintf("/services/%s/integrations/%s", serviceID, integrationID)
-	v := new(Integration)
+	v := new(IntegrationPayload)
 
 	resp, err := s.client.newRequestDo("GET", u, o, nil, &v)
 	if err != nil {
@@ -257,9 +261,9 @@ func (s *ServicesService) GetIntegration(serviceID, integrationID string, o *Get
 // UpdateIntegration updates an existing service integration.
 func (s *ServicesService) UpdateIntegration(serviceID, integrationID string, integration *Integration) (*Integration, *Response, error) {
 	u := fmt.Sprintf("/services/%s/integrations/%s", serviceID, integrationID)
-	v := new(Integration)
+	v := new(IntegrationPayload)
 
-	resp, err := s.client.newRequestDo("PUT", u, nil, &Integration{Integration: integration}, &v)
+	resp, err := s.client.newRequestDo("PUT", u, nil, &IntegrationPayload{Integration: integration}, &v)
 	if err != nil {
 		return nil, nil, err
 	}

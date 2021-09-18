@@ -42,7 +42,7 @@ func TestMaintenanceWindowsCreate(t *testing.T) {
 
 	mux.HandleFunc("/maintenance_windows", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "POST")
-		v := new(MaintenanceWindow)
+		v := new(MaintenanceWindowPayload)
 		json.NewDecoder(r.Body).Decode(v)
 		if !reflect.DeepEqual(v.MaintenanceWindow, input) {
 			t.Errorf("Request body = %+v, want %+v", v, input)

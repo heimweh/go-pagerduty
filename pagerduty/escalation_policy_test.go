@@ -42,7 +42,7 @@ func TestEscalationPoliciesCreate(t *testing.T) {
 
 	mux.HandleFunc("/escalation_policies", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "POST")
-		v := new(EscalationPolicy)
+		v := new(EscalationPolicyPayload)
 		json.NewDecoder(r.Body).Decode(v)
 		if !reflect.DeepEqual(v.EscalationPolicy, input) {
 			t.Errorf("Request body = %+v, want %+v", v, input)
@@ -142,7 +142,7 @@ func TestEscalationPoliciesUpdateTeams(t *testing.T) {
 
 	mux.HandleFunc("/escalation_policies/1", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "PUT")
-		v := new(EscalationPolicy)
+		v := new(EscalationPolicyPayload)
 		json.NewDecoder(r.Body).Decode(v)
 		if !reflect.DeepEqual(v.EscalationPolicy, input) {
 			t.Errorf("Request body = %+v, want %+v", v, input)
