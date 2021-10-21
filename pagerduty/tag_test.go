@@ -36,6 +36,36 @@ func TestTagsList(t *testing.T) {
 	}
 }
 
+func TestTagsListForEntity(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/users/1/tags", func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "GET")
+		w.Write([]byte(`{"tags": [{"id": "1"}]}`))
+	})
+
+	entity := "users"
+	entityID := "1"
+
+	resp, _, err := client.Tags.ListTagsForEntity(entity, entityID)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	want := &ListTagsResponse{
+		Tags: []*Tag{
+			{
+				ID: "1",
+			},
+		},
+	}
+
+	if !reflect.DeepEqual(resp, want) {
+		t.Errorf("returned \n\n%#v want \n\n%#v", resp, want)
+	}
+}
+
 func TestTagsCreate(t *testing.T) {
 	setup()
 	defer teardown()
