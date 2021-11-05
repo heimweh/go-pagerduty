@@ -28,7 +28,7 @@ func TestBusinessServiceSubscriberList(t *testing.T) {
 		Limit:  0,
 		BusinessServiceSubscribers: []*BusinessServiceSubscriber{
 			{
-				ID: "1",
+				ID:   "1",
 				Type: "team",
 			},
 		},

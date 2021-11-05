@@ -14,7 +14,7 @@ type BusinessServiceSubscriber struct {
 
 // BusinessServiceSubscriberPayload represents payload with a business service subscriber object
 type BusinessServiceSubscriberPayload struct {
-	BusinessServiceSubscriber  []*BusinessServiceSubscriber `json:"subscribers,omitempty"`
+	BusinessServiceSubscriber []*BusinessServiceSubscriber `json:"subscribers,omitempty"`
 }
 
 // ListBusinessServiceSubscribersResponse represents a list response of business service subscribers.
@@ -68,7 +68,7 @@ func (s *BusinessServiceSubscriberService) Create(businessServiceID string, subs
 	subscriberArr := make([]*BusinessServiceSubscriber, 0)
 	subscriberArr = append(subscriberArr, subscriber)
 	p := &BusinessServiceSubscriberPayload{BusinessServiceSubscriber: subscriberArr}
-	
+
 	resp, err := s.client.newRequestDo("POST", u, nil, p, v)
 	if err != nil {
 		return nil, err
