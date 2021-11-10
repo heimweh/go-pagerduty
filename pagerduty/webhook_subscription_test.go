@@ -60,7 +60,7 @@ func TestWebhookSubscriptionCreate(t *testing.T) {
 	}
 
 	want := &WebhookSubscription{
-		ID:          "1",
+		ID: "1",
 	}
 
 	if !reflect.DeepEqual(resp, want) {
@@ -85,7 +85,7 @@ func TestWebhookSubscriptionGet(t *testing.T) {
 	}
 
 	want := &WebhookSubscription{
-		ID:       "1",
+		ID: "1",
 	}
 
 	if !reflect.DeepEqual(resp, want) {
@@ -119,7 +119,7 @@ func TestWebhookSubscriptionUpdate(t *testing.T) {
 	}
 
 	want := &WebhookSubscription{
-		ID:       "1",
+		ID: "1",
 	}
 
 	if !reflect.DeepEqual(resp, want) {
