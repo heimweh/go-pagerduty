@@ -1,6 +1,9 @@
 package pagerduty
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
 // BusinessServiceSubscriberService handles the communication with business service
 // subscriber related methods of the PagerDuty API.
@@ -8,13 +11,21 @@ type BusinessServiceSubscriberService service
 
 // BusinessService represents a business service.
 type BusinessServiceSubscriber struct {
-	ID   string `json:"subscriber_id,omitempty"`
-	Type string `json:"subscriber_type,omitempty"`
+	ID               string `json:"subscriber_id,omitempty"`
+	Type             string `json:"subscriber_type,omitempty"`
+	SubscribableID   string `json:"subscribable_id,omitempty"`
+	SubscribableType string `json:"subscribable_type,omitempty"`
+	Result           string `json:"result,omitempty"`
 }
 
 // BusinessServiceSubscriberPayload represents payload with a business service subscriber object
 type BusinessServiceSubscriberPayload struct {
 	BusinessServiceSubscriber []*BusinessServiceSubscriber `json:"subscribers,omitempty"`
+}
+
+// CreateBusinessServiceSubscribersResponse represents a create response of business service subscription result.
+type CreateBusinessServiceSubscribersResponse struct {
+	BusinessServiceSubscriber []*BusinessServiceSubscriber `json:"subscriptions,omitempty"`
 }
 
 // ListBusinessServiceSubscribersResponse represents a list response of business service subscribers.
@@ -72,6 +83,19 @@ func (s *BusinessServiceSubscriberService) Create(businessServiceID string, subs
 	resp, err := s.client.newRequestDo("POST", u, nil, p, v)
 	if err != nil {
 		return nil, err
+	}
+
+	var result CreateBusinessServiceSubscribersResponse
+
+	if err := s.client.DecodeJSON(resp, &result); err != nil {
+		return nil, err
+	}
+
+	subscriptionResp := result.BusinessServiceSubscriber[0]
+
+	if subscriptionResp.Result != "success" {
+		message := fmt.Sprintf("resulting status of the subscription was: %s", subscriptionResp.Result)
+		return nil, errors.New(message)
 	}
 
 	return resp, nil
