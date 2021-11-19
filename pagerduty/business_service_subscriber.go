@@ -91,11 +91,17 @@ func (s *BusinessServiceSubscriberService) Create(businessServiceID string, subs
 		return nil, err
 	}
 
-	subscriptionResp := result.BusinessServiceSubscriber[0]
+	subscriptionResp := result.BusinessServiceSubscriber
+	errorMessage := ""
+	for _, subscription := range subscriptionResp {
+		if subscription.Result != "success" {
+			// append error message to message variable
+			errorMessage = errorMessage + fmt.Sprintf("resulting status for subscription of %s %s to %s %s was: %s. ", subscription.Type, subscription.ID, subscription.SubscribableType, subscription.SubscribableID, subscription.Result)
+		}
+	}
 
-	if subscriptionResp.Result != "success" {
-		message := fmt.Sprintf("resulting status of the subscription was: %s", subscriptionResp.Result)
-		return nil, errors.New(message)
+	if errorMessage != "" {
+		return nil, errors.New(errorMessage)
 	}
 
 	return resp, nil
