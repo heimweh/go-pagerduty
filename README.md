@@ -1,15 +1,13 @@
 # go-pagerduty
-PagerDuty API client in Go, primarily used by the [PagerDuty](https://github.com/PagerDuty/terraform-provider-pagerduty) provider in Terraform.
+PagerDuty API client in Go, primarily used by the [PagerDuty](https://github.com/nordcloud/terraform-provider-pagerduty) provider in Terraform.
 
+This project is a fork of [heimweh/go-pagerduty](https://github.com/heimweh/go-pagerduty).
 
-[![GoDoc](https://godoc.org/github.com/heimweh/go-pagerduty?status.svg)](http://godoc.org/github.com/heimweh/go-pagerduty/pagerduty)
-[![Build
-Status](https://travis-ci.org/heimweh/go-pagerduty.svg?branch=master)](https://travis-ci.org/heimweh/go-pagerduty)
-
+[![GoDoc](https://godoc.org/github.com/nordcloud/go-pagerduty?status.svg)](http://godoc.org/github.com/nordcloud/go-pagerduty/pagerduty)
 
 ## Installation
 ```bash
-go get github.com/heimweh/go-pagerduty/pagerduty
+go get github.com/nordcloud/go-pagerduty/pagerduty
 ```
 
 ## Example usage
@@ -20,7 +18,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/heimweh/go-pagerduty/pagerduty"
+	"github.com/nordcloud/go-pagerduty/pagerduty"
 )
 
 func main() {
@@ -44,7 +42,7 @@ func main() {
 ```
 
 ## Contributing
-1. Fork it ( https://github.com/heimweh/go-pagerduty/fork )
+1. Fork it (https://github.com/nordcloud/go-pagerduty/fork)
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
