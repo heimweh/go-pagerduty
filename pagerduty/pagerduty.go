@@ -2,11 +2,14 @@ package pagerduty
 
 import (
 	"bytes"
+	"context"
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
+	"net"
 	"net/http"
 	"net/url"
 	"os"
@@ -32,11 +35,17 @@ type Config struct {
 	Debug      bool
 }
 
+// Internal logger
+type Logger struct {
+	logger *log.Logger
+	f      *os.File
+}
+
 // Client manages the communication with the PagerDuty API
 type Client struct {
 	baseURL                    *url.URL
 	client                     *http.Client
-	FileLogger                 *log.Logger
+	FileLogger                 *Logger
 	Config                     *Config
 	Abilities                  *AbilityService
 	Addons                     *AddonService
@@ -74,37 +83,76 @@ type RequestOptions struct {
 	Value string
 }
 
+func (l *Logger) openFile() error {
+	f, err := os.OpenFile("go-pagerduty.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		return err
+	}
+	l.f = f
+	l.logger = log.New(
+		l.f,
+		fmt.Sprintf("go-pagerduty (%d) ", os.Getpid()),
+		log.Ldate|log.Ltime|log.Lmicroseconds|log.Llongfile,
+	)
+	return nil
+}
+
+func (l *Logger) closeFile() error {
+	return l.f.Close()
+}
+
+// Print a string log value into a file
+func (l *Logger) Print(s string) {
+	err := l.openFile()
+	if err != nil {
+		return
+	}
+
+	l.logger.Println(s)
+
+	err = l.closeFile()
+}
+
 // NewClient returns a new PagerDuty API client.
 func NewClient(config *Config) (*Client, error) {
-	if config.HTTPClient == nil {
-		config.HTTPClient = http.DefaultClient
+	config.HTTPClient = &http.Client{
+		Transport: (&http.Transport{
+			Dial: (&net.Dialer{
+				Timeout:   60 * time.Second,
+				KeepAlive: 40 * time.Second,
+			}).Dial,
+			DialContext: (&net.Dialer{
+				Timeout: 45 * time.Second,
+			}).DialContext,
+			TLSHandshakeTimeout: 60 * time.Second,
+			TLSClientConfig: &tls.Config{
+				CipherSuites: []uint16{
+					tls.TLS_RSA_WITH_RC4_128_SHA,
+					tls.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
+				},
+			},
+		}),
 	}
 
 	if config.BaseURL == "" {
 		config.BaseURL = defaultBaseURL
 	}
 
-	config.UserAgent = "heimweh/go-pagerduty(terraform)"
+	config.UserAgent = "nordcloud/go-pagerduty(terraform)"
 
 	baseURL, err := url.Parse(config.BaseURL)
 	if err != nil {
 		return nil, err
 	}
 
-	flog, err := os.OpenFile("go-pagerduty.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-	if err != nil {
-		return nil, err
-	}
-	// defer flog.Close()
-
 	c := &Client{
 		baseURL:    baseURL,
 		client:     config.HTTPClient,
 		Config:     config,
-		FileLogger: log.New(flog, "go-pagerduty ", log.Ldate|log.Ltime|log.Lmicroseconds|log.Llongfile),
+		FileLogger: &Logger{},
 	}
 
-	c.FileLogger.Println("go-pagerduty initialization")
+	c.FileLogger.Print("go-pagerduty initialization")
 
 	c.Abilities = &AbilityService{c}
 	c.Addons = &AddonService{c}
@@ -146,7 +194,7 @@ func (c *Client) newRequest(method, url string, body interface{}, options ...Req
 
 	if c.Config.Debug {
 		log.Printf("[DEBUG] PagerDuty - Preparing %s request to %s with body: %s", method, url, buf)
-		c.FileLogger.Printf("[DEBUG] PagerDuty - Preparing %s request to %s with body: %s", method, url, buf)
+		c.FileLogger.Print(fmt.Sprintf("[DEBUG] PagerDuty - Preparing %s request to %s with body: %s", method, url, buf))
 	}
 
 	u := c.baseURL.String() + url
@@ -210,36 +258,59 @@ func (c *Client) newRequestDoOptions(method, url string, qryOptions, body, v int
 	return c.do(req, v)
 }
 
-func (c *Client) do(req *http.Request, v interface{}) (*Response, error) {
-	return c.doRetry(req, v, 0)
+func (c *Client) handleErrorResponse(err error, resp *http.Response, errtype int, trynum int) (*Response, error, bool) {
+	c.FileLogger.Print(fmt.Sprintf("[ERROR] API Error [%d] (try %d): %#v\n\n%#v\n\n%#v\n", errtype, trynum, err, err.Error(), resp))
+
+	if (errtype == 1 && err.(net.Error).Temporary()) || (errtype == 3 && resp.StatusCode == 429) {
+		return nil, fmt.Errorf("Retryable connection error [%d]: %s", errtype, err.Error()), true
+	}
+
+	return nil, fmt.Errorf("Non-retryable connection error [%d] (try %d): %s", errtype, trynum, err.Error()), false
 }
 
-func (c *Client) doRetry(req *http.Request, v interface{}, try int) (*Response, error) {
+func (c *Client) do(req *http.Request, v interface{}) (*Response, error) {
+	maxtries := 3
+	var resp *Response
+	var err error = nil
+	var trynum = 0
+	var retry = false
+	for trynum <= maxtries {
+		resp, err, retry = c.doRetry(req.Clone(context.Background()), v, trynum)
+		if err == nil {
+			break
+		}
+		if retry == false {
+			c.FileLogger.Print(fmt.Sprintf("[ERROR] Non-retryable error returned: %s", err.Error()))
+			return nil, fmt.Errorf("Non-retryable API error: %s", err.Error())
+		}
+		c.FileLogger.Print("[INFO] Sleeping between retries")
+		time.Sleep(20 * time.Second)
+		trynum++
+	}
+
+	if trynum > maxtries {
+		return nil, fmt.Errorf("API error despite %d low-level retries: %s", maxtries, err.Error())
+	}
+
 	if c.Config.Debug {
-		c.FileLogger.Printf("[DEBUG] Executing %s request to %s (try %d)", req.Method, req.URL, try)
+		c.FileLogger.Print(fmt.Sprintf("[DEBUG] Returning %#v %#v", resp, err))
+	}
+
+	return resp, err
+}
+
+func (c *Client) doRetry(req *http.Request, v interface{}, trynum int) (*Response, error, bool) {
+	if c.Config.Debug {
+		c.FileLogger.Print(fmt.Sprintf("[DEBUG] Executing %s request to %s (try %d)", req.Method, req.URL, trynum))
 	}
 
 	resp, err := c.client.Do(req)
 	if err != nil {
-		c.FileLogger.Fatalln(fmt.Sprintf("[ERROR] API Error [1] (try %d): %#v\n\n%#v\n", try, err, resp))
-
-		if try <= 3 && resp.StatusCode == 429 {
-			time.Sleep(20 * time.Second)
-			return c.doRetry(req, v, try+1)
-		}
-
-		return nil, fmt.Errorf("API error [1] (will NOT retry): %#v\n\n%#v", err.Error(), resp)
+		return c.handleErrorResponse(err, resp, 1, trynum)
 	}
 	bodyBytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		c.FileLogger.Fatalln(fmt.Sprintf("[ERROR] API Error [2] (try %d): %#v\n\n%#v\n", try, err, resp))
-
-		if try <= 3 && resp.StatusCode == 429 {
-			time.Sleep(20 * time.Second)
-			return c.doRetry(req, v, try+1)
-		}
-
-		return nil, fmt.Errorf("API error [2] (will NOT retry): %#v\n\n%#v", err.Error(), resp)
+		return c.handleErrorResponse(err, resp, 2, trynum)
 	}
 	response := &Response{
 		Response:  resp,
@@ -247,30 +318,23 @@ func (c *Client) doRetry(req *http.Request, v interface{}, try int) (*Response, 
 	}
 
 	if err := c.checkResponse(response); err != nil {
-		c.FileLogger.Fatalln(fmt.Sprintf("[ERROR] API Error [3] (try %d): %#v\n\n%#v\n\n%#v\n", try, err, resp, response))
-
-		if try <= 3 && resp.StatusCode == 429 {
-			time.Sleep(20 * time.Second)
-			return c.doRetry(req, v, try+1)
-		}
-
-		return nil, fmt.Errorf("API error [3] (will NOT retry): %#v\n\n%#v", err.Error(), resp)
+		return c.handleErrorResponse(err, resp, 3, trynum)
 	}
 
 	if v != nil {
 		if err := c.DecodeJSON(response, v); err != nil {
-			c.FileLogger.Fatalln(fmt.Sprintf("[ERROR] API Error [4] (try %d): %#v\n\n%#v\n", try, err, resp))
-
-			if try <= 3 && resp.StatusCode == 429 {
-				time.Sleep(20 * time.Second)
-				return c.doRetry(req, v, try+1)
-			}
-
-			return nil, fmt.Errorf("API error [4] (will NOT retry): %#v\n\n%#v", err.Error(), resp)
+			return c.handleErrorResponse(err, resp, 4, trynum)
 		}
 	}
 
-	return response, nil
+	if c.Config.Debug {
+		c.FileLogger.Print(fmt.Sprintf("[DEBUG] Returning value for %s request to %s (try %d)", req.Method, req.URL, trynum))
+	}
+
+	if response != nil {
+		return response, nil, false
+	}
+	return nil, fmt.Errorf("[FATAL] No error was thrown but no valid response received"), true
 }
 
 // ListResp represents a list response from the PagerDuty API
