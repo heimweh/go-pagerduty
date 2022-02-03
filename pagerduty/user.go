@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"strings"
+	"time"
 )
 
 // UserService handles the communication with user
@@ -289,11 +290,34 @@ func (s *UserService) ListContactMethods(userID string) (*ListContactMethodsResp
 	return v, resp, nil
 }
 
+func retry(attempts int, sleep time.Duration, userID string, contactMethods *ContactMethod, f func(string, *ContactMethod) (*ContactMethod, *Response, error)) (c *ContactMethod, r *Response, err error) {
+	for i := 0; i < attempts; i++ {
+		if i > 0 {
+			log.Println("retrying after error:", err)
+			time.Sleep(sleep)
+		}
+		c, r, err = f(userID, contactMethods)
+		if err == nil {
+			return c, r, nil
+		}
+	}
+	return nil, nil, fmt.Errorf("after %d attempts, last error: %s", attempts, err)
+}
+
 // CreateContactMethod creates a new contact method for a user.
 // If the same contact method already exists, it will fetch the existing one, return a 200 instead of fail. This feature is useful in terraform
 // provider, as when the desired user contact method already exists, terraform will be able to sync it to the state automatically. Otherwise,
 // we need to manually fix the conflicts.
+// Besides, it will retry 3 times with 10s interval before exiting to maximize the chance of success.
 func (s *UserService) CreateContactMethod(userID string, contactMethod *ContactMethod) (*ContactMethod, *Response, error) {
+	c, r, err := retry(3, time.Second*10, userID, contactMethod, s.createContactMethod)
+	if err != nil {
+		return nil, nil, err
+	}
+	return c, r, nil
+}
+
+func (s *UserService) createContactMethod(userID string, contactMethod *ContactMethod) (*ContactMethod, *Response, error) {
 	u := fmt.Sprintf("/users/%s/contact_methods", userID)
 	v := new(ContactMethodPayload)
 
