@@ -124,6 +124,10 @@ type ListContactMethodsResponse struct {
 	ContactMethods []*ContactMethod `json:"contact_methods,omitempty"`
 }
 
+type ListNotificationRulesResponse struct {
+	NotificationRules []*NotificationRule `json:"notification_rules,omitempty"`
+}
+
 // ListUsersOptions represents options when listing users.
 type ListUsersOptions struct {
 	Limit   int      `url:"limit,omitempty"`
@@ -200,7 +204,22 @@ func (s *UserService) Create(user *User) (*User, *Response, error) {
 
 	resp, err := s.client.newRequestDo("POST", u, nil, &UserPayload{User: user}, &v)
 	if err != nil {
-		return nil, nil, err
+		if e, ok := err.(*Error); ok && strings.Compare(fmt.Sprintf("%v", e.Errors), "[Email has already been taken]") == 0 {
+			resp, _, lErr := s.List(&ListUsersOptions{Query: user.Email})
+			if lErr != nil {
+				return nil, nil, fmt.Errorf("user email address is not unique and failed to fetch existing users: %w", lErr)
+			}
+
+			for _, u := range resp.Users {
+				if isSameUser(u, user) {
+					return s.Get(u.ID, &GetUserOptions{})
+				}
+			}
+
+			return nil, nil, fmt.Errorf("user email is already used with different attributes")
+		} else {
+			return nil, nil, err
+		}
 	}
 
 	if err = cachePutUser(v.User); err != nil {
@@ -210,6 +229,12 @@ func (s *UserService) Create(user *User) (*User, *Response, error) {
 	}
 
 	return v.User, resp, nil
+}
+
+func isSameUser(existingU, newU *User) bool {
+	return existingU.Email == newU.Email &&
+		existingU.Name == newU.Name &&
+		existingU.Role == newU.Role
 }
 
 // Delete removes an existing user.
@@ -383,6 +408,19 @@ func (s *UserService) DeleteContactMethod(userID, contactMethodID string) (*Resp
 	return resp, err
 }
 
+// ListContactMethods lists contact methods for a user.
+func (s *UserService) ListNotificationRules(userID string) (*ListNotificationRulesResponse, *Response, error) {
+	u := fmt.Sprintf("/users/%s/notification_rules", userID)
+	v := new(ListNotificationRulesResponse)
+
+	resp, err := s.client.newRequestDo("GET", u, nil, nil, &v)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return v, resp, nil
+}
+
 // CreateNotificationRule creates a new notification rule for a user.
 func (s *UserService) CreateNotificationRule(userID string, rule *NotificationRule) (*NotificationRule, *Response, error) {
 	u := fmt.Sprintf("/users/%s/notification_rules", userID)
@@ -390,7 +428,22 @@ func (s *UserService) CreateNotificationRule(userID string, rule *NotificationRu
 
 	resp, err := s.client.newRequestDo("POST", u, nil, &NotificationRulePayload{NotificationRule: rule}, &v)
 	if err != nil {
-		return nil, nil, err
+		if e, ok := err.(*Error); ok && strings.Compare(fmt.Sprintf("%v", e.Errors), "[Channel Start delay must be unique for a given contact method]") == 0 {
+			resp, _, lErr := s.ListNotificationRules(userID)
+			if lErr != nil {
+				return nil, nil, fmt.Errorf("user notification rule is not unique and failed to fetch existing ones: %w", lErr)
+			}
+
+			for _, notification := range resp.NotificationRules {
+				if isSameNotification(notification, rule) {
+					return s.GetNotificationRule(userID, notification.ID)
+				}
+			}
+
+			return nil, nil, fmt.Errorf("user notification rule is not unique")
+		} else {
+			return nil, nil, err
+		}
 	}
 
 	if err = cachePutNotificationRule(v.NotificationRule); err != nil {
@@ -400,6 +453,13 @@ func (s *UserService) CreateNotificationRule(userID string, rule *NotificationRu
 	}
 
 	return v.NotificationRule, resp, nil
+}
+
+func isSameNotification(existingRule, newRule *NotificationRule) bool {
+	return existingRule.Urgency == newRule.Urgency &&
+		existingRule.StartDelayInMinutes == newRule.StartDelayInMinutes &&
+		existingRule.ContactMethod.Type == newRule.ContactMethod.Type &&
+		existingRule.ContactMethod.ID == newRule.ContactMethod.ID
 }
 
 // GetNotificationRule retrieves a notification rule for a user.
