@@ -6,12 +6,12 @@ GOPKGS ?= $(shell go list $(FILES) | grep -v /vendor/)
 default: build
 
 build:
-	@go get github.com/heimweh/go-pagerduty/pagerduty
+	@go get github.com/nordcloud/go-pagerduty/pagerduty
 
 test:
 	@echo "==> Testing ${PKG_NAME}"
 	@go test -count 1 -timeout=30s -parallel=4 ${GOPKGS} ${TESTARGS}
-	
+
 vet:
 	@echo "go vet ."
 	@go vet $$(go list ./... | grep -v vendor/) ; if [ $$? -eq 1 ]; then \

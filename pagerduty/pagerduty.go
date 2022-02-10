@@ -5,6 +5,7 @@ import (
 	"context"
 	"crypto/tls"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -13,6 +14,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"syscall"
 	"time"
 
 	"github.com/google/go-querystring/query"
@@ -35,7 +37,7 @@ type Config struct {
 	Debug      bool
 }
 
-// Internal logger
+// Logger internal logger
 type Logger struct {
 	logger *log.Logger
 	f      *os.File
@@ -83,6 +85,15 @@ type RequestOptions struct {
 	Value string
 }
 
+type ErrType int
+
+const (
+	ERR_NETWORK ErrType = iota
+	ERR_BODY_LEN
+	ERR_API
+	ERR_JSON_DATA
+)
+
 func (l *Logger) openFile() error {
 	f, err := os.OpenFile("go-pagerduty.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
@@ -116,22 +127,24 @@ func (l *Logger) Print(s string) {
 // NewClient returns a new PagerDuty API client.
 func NewClient(config *Config) (*Client, error) {
 	config.HTTPClient = &http.Client{
-		Transport: (&http.Transport{
-			Dial: (&net.Dialer{
-				Timeout:   60 * time.Second,
-				KeepAlive: 40 * time.Second,
-			}).Dial,
+		Transport: &http.Transport{
 			DialContext: (&net.Dialer{
-				Timeout: 45 * time.Second,
+				Timeout:   45 * time.Second,
+				KeepAlive: 40 * time.Second,
 			}).DialContext,
-			TLSHandshakeTimeout: 60 * time.Second,
 			TLSClientConfig: &tls.Config{
 				CipherSuites: []uint16{
 					tls.TLS_RSA_WITH_RC4_128_SHA,
 					tls.TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,
 				},
 			},
-		}),
+			TLSHandshakeTimeout:   120 * time.Second,
+			MaxIdleConns:          0,
+			MaxIdleConnsPerHost:   500,
+			MaxConnsPerHost:       0,
+			IdleConnTimeout:       0,
+			ResponseHeaderTimeout: 0,
+		},
 	}
 
 	if config.BaseURL == "" {
@@ -258,15 +271,29 @@ func (c *Client) newRequestDoOptions(method, url string, qryOptions, body, v int
 	return c.do(req, v)
 }
 
-func (c *Client) handleErrorResponse(err error, resp *http.Response, errtype int, trynum int) (*Response, error, bool) {
-	c.FileLogger.Print(fmt.Sprintf("[ERROR] API Error [%d] (try %d): %#v\n\n%#v\n\n%#v\n", errtype, trynum, err, err.Error(), resp))
+func (c *Client) handleErrorResponse(err error, resp *http.Response, errType ErrType, tryNum int) (*Response, error, bool) {
+	c.FileLogger.Print(fmt.Sprintf("[ERROR] API Error [%d] (try %d): %#v\n\n%#v\n\n%#v\n", errType, tryNum, err, err.Error(), resp))
 
-	if (errtype == 1 && err.(net.Error).Temporary()) ||
-		(errtype == 3 && (resp.StatusCode == 429 || resp.StatusCode >= 500)) {
-		return nil, fmt.Errorf("%w (Retryable connection error [%d])", err, errtype), true
+	if errors.Is(err, syscall.ECONNRESET) {
+		return nil, fmt.Errorf("%w (Retryable connection reset error [%d])", err, errType), true
+	}
+	if errors.Is(err, syscall.EPIPE) {
+		return nil, fmt.Errorf("%w (Retryable broken pipe error [%d])", err, errType), true
+	}
+	if errType == ERR_NETWORK && err.(net.Error).Temporary() {
+		return nil, fmt.Errorf("%w (Retryable network error [%d])", err, errType), true
+	}
+	if errType == ERR_BODY_LEN {
+		return nil, fmt.Errorf("%w (Retryable body length error [%d])", err, errType), true
+	}
+	if errType == ERR_API && (resp.StatusCode == 429 || resp.StatusCode >= 500) {
+		return nil, fmt.Errorf("%w (Retryable HTTP error %d [%d])", err, resp.StatusCode, errType), true
+	}
+	if errType == ERR_JSON_DATA {
+		return nil, fmt.Errorf("%w (Retryable error: invalid JSON body [%d])", err, errType), true
 	}
 
-	return nil, fmt.Errorf("%w (Non-retryable connection error [%d], try %d)", err, errtype, trynum), false
+	return nil, fmt.Errorf("%w (Non-retryable connection error [%d], try %d)", err, errType, tryNum), false
 }
 
 func (c *Client) do(req *http.Request, v interface{}) (*Response, error) {
@@ -307,11 +334,11 @@ func (c *Client) doRetry(req *http.Request, v interface{}, trynum int) (*Respons
 
 	resp, err := c.client.Do(req)
 	if err != nil {
-		return c.handleErrorResponse(err, resp, 1, trynum)
+		return c.handleErrorResponse(err, resp, ERR_NETWORK, trynum)
 	}
 	bodyBytes, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return c.handleErrorResponse(err, resp, 2, trynum)
+		return c.handleErrorResponse(err, resp, ERR_BODY_LEN, trynum)
 	}
 	response := &Response{
 		Response:  resp,
@@ -319,12 +346,12 @@ func (c *Client) doRetry(req *http.Request, v interface{}, trynum int) (*Respons
 	}
 
 	if err := c.checkResponse(response); err != nil {
-		return c.handleErrorResponse(err, resp, 3, trynum)
+		return c.handleErrorResponse(err, resp, ERR_API, trynum)
 	}
 
 	if v != nil {
 		if err := c.DecodeJSON(response, v); err != nil {
-			return c.handleErrorResponse(err, resp, 4, trynum)
+			return c.handleErrorResponse(err, resp, ERR_JSON_DATA, trynum)
 		}
 	}
 
