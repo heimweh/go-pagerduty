@@ -85,13 +85,13 @@ type RequestOptions struct {
 	Value string
 }
 
-type ErrType int
+type ErrType string
 
 const (
-	ERR_NETWORK ErrType = iota
-	ERR_BODY_LEN
-	ERR_API
-	ERR_JSON_DATA
+	ERR_NETWORK   ErrType = "network_error"
+	ERR_BODY_LEN  ErrType = "body_length_error"
+	ERR_API       ErrType = "api_error"
+	ERR_JSON_DATA ErrType = "json_data_error"
 )
 
 func (l *Logger) openFile() error {
@@ -272,28 +272,31 @@ func (c *Client) newRequestDoOptions(method, url string, qryOptions, body, v int
 }
 
 func (c *Client) handleErrorResponse(err error, resp *http.Response, errType ErrType, tryNum int) (*Response, error, bool) {
-	c.FileLogger.Print(fmt.Sprintf("[ERROR] API Error [%d] (try %d): %#v\n\n%#v\n\n%#v\n", errType, tryNum, err, err.Error(), resp))
+	c.FileLogger.Print(fmt.Sprintf("[ERROR] API Error [%s] (try %d): %#v\n\n%#v\n\n%#v\n", errType, tryNum, err, err.Error(), resp))
 
 	if errors.Is(err, syscall.ECONNRESET) {
-		return nil, fmt.Errorf("%w (Retryable connection reset error [%d])", err, errType), true
+		return nil, fmt.Errorf("%w (Retryable connection reset error [%s])", err, errType), true
 	}
 	if errors.Is(err, syscall.EPIPE) {
-		return nil, fmt.Errorf("%w (Retryable broken pipe error [%d])", err, errType), true
+		return nil, fmt.Errorf("%w (Retryable broken pipe error [%s])", err, errType), true
 	}
 	if errType == ERR_NETWORK && err.(net.Error).Temporary() {
-		return nil, fmt.Errorf("%w (Retryable network error [%d])", err, errType), true
+		return nil, fmt.Errorf("%w (Retryable network error [%s])", err, errType), true
 	}
 	if errType == ERR_BODY_LEN {
-		return nil, fmt.Errorf("%w (Retryable body length error [%d])", err, errType), true
+		return nil, fmt.Errorf("%w (Retryable body length error [%s])", err, errType), true
 	}
 	if errType == ERR_API && (resp.StatusCode == 429 || resp.StatusCode >= 500) {
-		return nil, fmt.Errorf("%w (Retryable HTTP error %d [%d])", err, resp.StatusCode, errType), true
+		return nil, fmt.Errorf("%w (Retryable HTTP error %d [%s])", err, resp.StatusCode, errType), true
+	}
+	if errType == ERR_API {
+		return nil, err, false // Pass other API errors directly to the client and let it handle retrying
 	}
 	if errType == ERR_JSON_DATA {
-		return nil, fmt.Errorf("%w (Retryable error: invalid JSON body [%d])", err, errType), true
+		return nil, fmt.Errorf("%w (Retryable error: invalid JSON body [%s])", err, errType), true
 	}
 
-	return nil, fmt.Errorf("%w (Non-retryable connection error [%d], try %d)", err, errType, tryNum), false
+	return nil, fmt.Errorf("%w (Non-retryable connection error [%s], try %d)", err, errType, tryNum), false
 }
 
 func (c *Client) do(req *http.Request, v interface{}) (*Response, error) {
