@@ -110,8 +110,12 @@ func TestSchedulesUpdate(t *testing.T) {
 
 	input := &Schedule{
 		Name: "foo",
+		ScheduleLayers: []*ScheduleLayer{
+			&ScheduleLayer{
+				Name: "Layer1",
+			},
+		},
 	}
-
 	mux.HandleFunc("/schedules/1", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "PUT")
 		v := new(SchedulePayload)
@@ -119,7 +123,7 @@ func TestSchedulesUpdate(t *testing.T) {
 		if !reflect.DeepEqual(v.Schedule, input) {
 			t.Errorf("Request body = %+v, want %+v", v, input)
 		}
-		w.Write([]byte(`{"schedule": {"name": "foo", "id": "1"}}`))
+		w.Write([]byte(`{"schedule": {"name": "foo", "id": "1", "schedule_layers": [{"name": "Layer1", "End": null}]}}`))
 	})
 
 	resp, _, err := client.Schedules.Update("1", input, &UpdateScheduleOptions{})
@@ -130,6 +134,11 @@ func TestSchedulesUpdate(t *testing.T) {
 	want := &Schedule{
 		Name: "foo",
 		ID:   "1",
+		ScheduleLayers: []*ScheduleLayer{
+			&ScheduleLayer{
+				Name: "Layer1",
+			},
+		},
 	}
 
 	if !reflect.DeepEqual(resp, want) {

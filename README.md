@@ -37,7 +37,7 @@ func main() {
 	}
 
 	// All calls returns the raw *http.Response for further inspection.
-	fmt.Println(raw.StatusCode)
+	fmt.Println(raw.Response.StatusCode)
 }
 ```
 

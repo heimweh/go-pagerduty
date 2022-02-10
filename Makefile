@@ -1,14 +1,16 @@
 GOFMT_FILES?=$$(find . -name '*.go' |grep -v vendor)
 PKG_NAME=go-pagerduty
+FILES ?= "./..."
+GOPKGS ?= $(shell go list $(FILES) | grep -v /vendor/)
 
 default: build
 
 build:
-	go install github.com/heimweh/go-pagerduty
+	@go get github.com/heimweh/go-pagerduty/pagerduty
 
 test:
-	go test -i $(TEST) || exit 1
-	echo $(TEST) | \
+	@echo "==> Testing ${PKG_NAME}"
+	@go test -count 1 -timeout=30s -parallel=4 ${GOPKGS} ${TESTARGS}
 	
 vet:
 	@echo "go vet ."
@@ -20,6 +22,6 @@ vet:
 	fi
 
 fmt:
-	gofmt -w $(GOFMT_FILES)	xargs -t -n4 go test $(TESTARGS) -timeout=30s -parallel=4
+	@gofmt -w $(GOFMT_FILES)
 
 .PHONY: build test vet fmt
