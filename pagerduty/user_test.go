@@ -65,6 +65,54 @@ func TestUsersCreate(t *testing.T) {
 	}
 }
 
+func TestDuplicateUsersCreate(t *testing.T) {
+	setup()
+	defer teardown()
+
+	input := &User{Name: "foo", Email: "foo@bar.com"}
+
+	mux.HandleFunc("/users", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == "POST" {
+			v := new(UserPayload)
+			json.NewDecoder(r.Body).Decode(v)
+			if !reflect.DeepEqual(v.User, input) {
+				t.Errorf("Request body = %+v, want %+v", v, input)
+			}
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte(`{"error":{"errors":["Email has already been taken"],"code":2001,"message":"Invalid Input Provided"}}`))
+		} else if r.Method == "GET" {
+			qry := r.URL.Query().Get("query")
+			if qry != "foo@bar.com" {
+				t.Errorf("Request query =%+v, want %+v", qry, "foo@bar.com")
+			}
+			w.Write([]byte(`{"users": [{"id": "1", "name": "foo", "email": "foo@bar.com"}]}`))
+		} else {
+			t.Errorf("Request method : %v is neither POST nor GET", r.Method)
+		}
+	})
+
+	mux.HandleFunc("/users/1", func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "GET")
+		w.Write([]byte(`{"user": {"id": "1", "name": "foo", "email": "foo@bar.com"}}`))
+	})
+
+	resp, _, err := client.Users.Create(input)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	want := &User{
+		Name:  "foo",
+		ID:    "1",
+		Email: "foo@bar.com",
+	}
+
+	if !reflect.DeepEqual(resp, want) {
+		t.Errorf("returned %#v; want %#v", resp, want)
+	}
+
+}
+
 func TestUsersDelete(t *testing.T) {
 	setup()
 	defer teardown()
@@ -252,5 +300,57 @@ func TestUsersDeleteContactMethod(t *testing.T) {
 
 	if _, err := client.Users.DeleteContactMethod("1", "1"); err != nil {
 		t.Fatal(err)
+	}
+}
+
+func TestUsersAddDuplicateNotificationRule(t *testing.T) {
+	setup()
+	defer teardown()
+
+	input := &NotificationRule{
+		ContactMethod:       &ContactMethodReference{ID: "c1", Type: "phone_contact_method"},
+		StartDelayInMinutes: 0,
+		Urgency:             "high",
+	}
+
+	mux.HandleFunc("/users/1/notification_rules", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == "POST" {
+			v := new(NotificationRulePayload)
+			json.NewDecoder(r.Body).Decode(v)
+			if !reflect.DeepEqual(v.NotificationRule, input) {
+				t.Errorf("Request body = %+v, want %+v", v, input)
+			}
+			w.WriteHeader(http.StatusBadRequest)
+			w.Write([]byte(`{"error":{"errors":["Channel Start delay must be unique for a given contact method"],"code":2001,"message":"Invalid Input Provided"}}`))
+		} else if r.Method == "GET" {
+			w.Write([]byte(`{"notification_rules": [{ "id": "n1", "urgency": "high", "start_delay_in_minutes": 0, "contact_method": {"id": "c1", "type": "phone_contact_method"} }] }`))
+		} else {
+			t.Errorf("Request method : %v is neither POST nor GET", r.Method)
+		}
+	})
+
+	mux.HandleFunc("/users/1/notification_rules/n1", func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "GET")
+		w.Write([]byte(`{"notification_rule": { "id": "n1", "urgency": "high", "start_delay_in_minutes": 0, "contact_method": {"id": "c1", "type": "phone_contact_method"}}}`))
+	})
+
+	resp, _, err := client.Users.CreateNotificationRule("1", input)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	want := &NotificationRule{
+		ContactMethod:       &ContactMethodReference{ID: "c1", Type: "phone_contact_method"},
+		StartDelayInMinutes: 0,
+		Urgency:             "high",
+		ID:                  "n1",
+	}
+
+	if !(resp.ContactMethod.ID == want.ContactMethod.ID &&
+		resp.ContactMethod.Type == want.ContactMethod.Type &&
+		resp.StartDelayInMinutes == want.StartDelayInMinutes &&
+		resp.Urgency == want.Urgency &&
+		resp.ID == want.ID) {
+		t.Errorf("returned %#v; want %#v", resp, want)
 	}
 }
