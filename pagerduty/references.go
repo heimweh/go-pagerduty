@@ -49,7 +49,7 @@ type ExtensionSchemaReference resourceReference
 // RulesetReference represents a reference to a ruleset schema
 type RulesetReference resourceReference
 
-// Orchestration represents a reference to an orchestration schema
+// OrchestrationReference represents a reference to an orchestration schema
 type OrchestrationReference resourceReference
 
 // SubscriberReference represents a reference to a subscriber schema
