@@ -3,10 +3,50 @@ package pagerduty
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"reflect"
 	"testing"
 )
+
+func TestEventOrchestrationTestList(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc(eventOrchestrationBaseUrl, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "GET")
+		w.Write([]byte(`{"total": 1, "offset": 5, "more": false, "limit": 25, "orchestrations": [{"description": "bar", "id": "4b9bbfe9-bf13-4371-87ea-4223a96b61cb", "name": "foo", "routes": 1, "team": {"id": "P3ZQXDF"}}]}`))
+	})
+
+	resp, _, err := client.EventOrchestrations.List()
+
+	log.Printf(">>> %v", resp.Total)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	want := &ListEventOrchestrationsResponse{
+		Total: 1,
+		Offset: 5,
+		More: false,
+		Limit: 25,
+		Orchestrations: []*EventOrchestration{
+			{
+				ID: "4b9bbfe9-bf13-4371-87ea-4223a96b61cb",
+				Name: "foo",
+				Description: "bar",
+				Team: &EventOrchestrationObject{
+					ID: "P3ZQXDF",
+				},
+			},
+		},
+	}
+
+	if !reflect.DeepEqual(resp, want) {
+		t.Errorf("returned \n\n%#v want \n\n%#v", resp, want)
+	}
+}
 
 func TestEventOrchestrationCreate(t *testing.T) {
 	setup()
