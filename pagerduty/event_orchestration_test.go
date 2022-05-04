@@ -23,7 +23,7 @@ func TestEventOrchestrationCreate(t *testing.T) {
 		if !reflect.DeepEqual(v, input) {
 			t.Errorf("Request body = %+v, want %+v", v, input)
 		}
-		w.Write([]byte(`{"orchestration":{"name": "foo", "description": "bar", "team": {"id": "P3ZQXDF"}, "id": "abcd"}}`))
+		w.Write([]byte(`{"orchestration":{"name": "foo", "description": "bar", "team": {"id": "P3ZQXDF"}, "id": "abcd","routes": 0, "integrations":[{"id":"9c5ff030-12da-4204-a067-25ee61a8df6c","parameters":{"routing_key":"R02","type":"global"}}]}}`))
 	})
 
 	resp, _, err := client.EventOrchestrations.Create(input)
@@ -36,6 +36,13 @@ func TestEventOrchestrationCreate(t *testing.T) {
 		Description: "bar",
 		Team:        &EventOrchestrationObject{ID: "P3ZQXDF"},
 		ID:          "abcd",
+		Routes:      0,
+		Integrations: []*EventOrchestrationIntegration{
+			{
+				ID:         "9c5ff030-12da-4204-a067-25ee61a8df6c",
+				Parameters: &EventOrchestrationIntegrationParameters{RoutingKey: "R02", Type: "global"},
+			},
+		},
 	}
 
 	if !reflect.DeepEqual(resp, want) {
@@ -51,7 +58,7 @@ func TestEventOrchestrationGet(t *testing.T) {
 
 	mux.HandleFunc(url, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "GET")
-		w.Write([]byte(`{"orchestration":{"name": "foo", "description": "bar", "team": {"id": "P3ZQXDF"}, "id": "abcd"}}`))
+		w.Write([]byte(`{"orchestration":{"name": "foo", "description": "bar", "team": {"id": "P3ZQXDF"}, "id": "abcd","routes": 2, "integrations":[{"id":"9c5ff030-12da-4204-a067-25ee61a8df6c","parameters":{"routing_key":"R02","type":"global"}}]}}`))
 	})
 
 	resp, _, err := client.EventOrchestrations.Get("abcd")
@@ -61,10 +68,17 @@ func TestEventOrchestrationGet(t *testing.T) {
 	}
 
 	want := &EventOrchestration{
-		Name: "foo",
+		Name:        "foo",
 		Description: "bar",
-		Team: &EventOrchestrationObject{ID: "P3ZQXDF"},
-		ID:   "abcd",
+		Team:        &EventOrchestrationObject{ID: "P3ZQXDF"},
+		ID:          "abcd",
+		Routes:      2,
+		Integrations: []*EventOrchestrationIntegration{
+			{
+				ID:         "9c5ff030-12da-4204-a067-25ee61a8df6c",
+				Parameters: &EventOrchestrationIntegrationParameters{RoutingKey: "R02", Type: "global"},
+			},
+		},
 	}
 
 	if !reflect.DeepEqual(resp, want) {
@@ -89,7 +103,7 @@ func TestEventOrchestrationUpdate(t *testing.T) {
 		if !reflect.DeepEqual(v, input) {
 			t.Errorf("Request body = %+v, want %+v", v, input)
 		}
-		w.Write([]byte(`{"orchestration":{"name": "foo", "description": "bar", "team": {"id": "P3ZQXDF"}, "id": "abcd"}}`))
+		w.Write([]byte(`{"orchestration":{"name": "foo", "description": "bar", "team": {"id": "P3ZQXDF"}, "id": "abcd","routes": 2, "integrations":[{"id":"9c5ff030-12da-4204-a067-25ee61a8df6c","parameters":{"routing_key":"R02","type":"global"}}]}}`))
 	})
 
 	resp, _, err := client.EventOrchestrations.Update(id, input)
@@ -102,6 +116,13 @@ func TestEventOrchestrationUpdate(t *testing.T) {
 		Description: "bar",
 		Team:        &EventOrchestrationObject{ID: "P3ZQXDF"},
 		ID:          "abcd",
+		Routes:      2,
+		Integrations: []*EventOrchestrationIntegration{
+			{
+				ID:         "9c5ff030-12da-4204-a067-25ee61a8df6c",
+				Parameters: &EventOrchestrationIntegrationParameters{RoutingKey: "R02", Type: "global"},
+			},
+		},
 	}
 
 	if !reflect.DeepEqual(resp, want) {
@@ -112,7 +133,7 @@ func TestEventOrchestrationUpdate(t *testing.T) {
 func TestEventOrchestrationDelete(t *testing.T) {
 	setup()
 	defer teardown()
-	
+
 	var id = "abcd"
 	var url = fmt.Sprintf("%s/%s", eventOrchestrationBaseUrl, id)
 
