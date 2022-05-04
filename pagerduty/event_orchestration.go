@@ -9,8 +9,8 @@ type EventOrchestrationService service
 type EventOrchestration struct {
 	ID           string                           `json:"id,omitempty"`
 	Name         string                           `json:"name,omitempty"`
-	Description  string                           `json:"description,omitempty"`
-	Team         *EventOrchestrationObject        `json:"team,omitempty"`
+	Description  string                           `json:"description"`
+	Team         *EventOrchestrationObject        `json:"team"`
 	Routes       int                              `json:"routes,omitempty"`
 	Integrations []*EventOrchestrationIntegration `json:"integrations,omitempty"`
 	// TODO: figure out if we need Updater, Creator / updated_by, created_by, updated_at, created_at, version
@@ -35,7 +35,48 @@ type EventOrchestrationPayload struct {
 	Orchestration *EventOrchestration `json:"orchestration,omitempty"`
 }
 
+type ListEventOrchestrationsResponse struct {
+	Total    int        `json:"total,omitempty"`
+	Offset   int        `json:"offset,omitempty"`
+	More     bool       `json:"more,omitempty"`
+	Limit    int        `json:"limit,omitempty"`
+	Orchestrations []*EventOrchestration `json:"orchestrations,omitempty"`
+}
+
 var eventOrchestrationBaseUrl = "/event_orchestrations"
+
+func (s *EventOrchestrationService) List() (*ListEventOrchestrationsResponse, *Response, error) {
+	v := new(ListEventOrchestrationsResponse)
+
+	orchestrations := make([]*EventOrchestration, 0)
+
+	// Create a handler closure capable of parsing data from the event orchestrations endpoint
+	// and appending resultant orchestrations to the return slice.
+	responseHandler := func(response *Response) (ListResp, *Response, error) {
+		var result ListEventOrchestrationsResponse
+
+		if err := s.client.DecodeJSON(response, &result); err != nil {
+			return ListResp{}, response, err
+		}
+
+		orchestrations = append(orchestrations, result.Orchestrations...)
+
+		// Return stats on the current page. Caller can use this information to
+		// adjust for requesting additional pages.
+		return ListResp{
+			More:   result.More,
+			Offset: result.Offset,
+			Limit:  result.Limit,
+		}, response, nil
+	}
+	err := s.client.newRequestPagedGetDo(eventOrchestrationBaseUrl, responseHandler)
+	if err != nil {
+		return nil, nil, err
+	}
+	v.Orchestrations = orchestrations
+
+	return v, nil, nil
+}
 
 func (s *EventOrchestrationService) Create(orchestration *EventOrchestration) (*EventOrchestration, *Response, error) {
 	v := new(EventOrchestrationPayload)
