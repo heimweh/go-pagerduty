@@ -8,17 +8,17 @@ import (
 	"testing"
 )
 
-func TestOrchestrationCreate(t *testing.T) {
+func TestEventOrchestrationCreate(t *testing.T) {
 	setup()
 	defer teardown()
-	input := &Orchestration{Name: "foo", Description: "bar", Team: &OrchestrationObject{ID: "P3ZQXDF"}}
+	input := &EventOrchestration{Name: "foo", Description: "bar", Team: &EventOrchestrationObject{ID: "P3ZQXDF"}}
 
-	mux.HandleFunc(orchestrationBaseUrl, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc(eventOrchestrationBaseUrl, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "POST")
-		v := new(Orchestration)
+		v := new(EventOrchestration)
 		v.Name = "foo"
 		v.Description = "bar"
-		v.Team = &OrchestrationObject{ID: "P3ZQXDF"}
+		v.Team = &EventOrchestrationObject{ID: "P3ZQXDF"}
 		json.NewDecoder(r.Body).Decode(v)
 		if !reflect.DeepEqual(v, input) {
 			t.Errorf("Request body = %+v, want %+v", v, input)
@@ -26,15 +26,15 @@ func TestOrchestrationCreate(t *testing.T) {
 		w.Write([]byte(`{"orchestration":{"name": "foo", "description": "bar", "team": {"id": "P3ZQXDF"}, "id": "abcd"}}`))
 	})
 
-	resp, _, err := client.Orchestrations.Create(input)
+	resp, _, err := client.EventOrchestrations.Create(input)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	want := &Orchestration{
+	want := &EventOrchestration{
 		Name:        "foo",
 		Description: "bar",
-		Team:        &OrchestrationObject{ID: "P3ZQXDF"},
+		Team:        &EventOrchestrationObject{ID: "P3ZQXDF"},
 		ID:          "abcd",
 	}
 
@@ -43,27 +43,27 @@ func TestOrchestrationCreate(t *testing.T) {
 	}
 }
 
-func TestOrchestrationGet(t *testing.T) {
+func TestEventOrchestrationGet(t *testing.T) {
 	setup()
 	defer teardown()
 
-	var url = fmt.Sprintf("%s/abcd", orchestrationBaseUrl)
+	var url = fmt.Sprintf("%s/abcd", eventOrchestrationBaseUrl)
 
 	mux.HandleFunc(url, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "GET")
 		w.Write([]byte(`{"orchestration":{"name": "foo", "description": "bar", "team": {"id": "P3ZQXDF"}, "id": "abcd"}}`))
 	})
 
-	resp, _, err := client.Orchestrations.Get("abcd")
+	resp, _, err := client.EventOrchestrations.Get("abcd")
 
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	want := &Orchestration{
+	want := &EventOrchestration{
 		Name: "foo",
 		Description: "bar",
-		Team: &OrchestrationObject{ID: "P3ZQXDF"},
+		Team: &EventOrchestrationObject{ID: "P3ZQXDF"},
 		ID:   "abcd",
 	}
 
@@ -72,19 +72,19 @@ func TestOrchestrationGet(t *testing.T) {
 	}
 }
 
-func TestOrchestrationUpdate(t *testing.T) {
+func TestEventOrchestrationUpdate(t *testing.T) {
 	setup()
 	defer teardown()
-	input := &Orchestration{Name: "foo", Description: "bar", Team: &OrchestrationObject{ID: "P3ZQXDF"}}
+	input := &EventOrchestration{Name: "foo", Description: "bar", Team: &EventOrchestrationObject{ID: "P3ZQXDF"}}
 	var id = "abcd"
-	var url = fmt.Sprintf("%s/%s", orchestrationBaseUrl, id)
+	var url = fmt.Sprintf("%s/%s", eventOrchestrationBaseUrl, id)
 
 	mux.HandleFunc(url, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "PUT")
-		v := new(Orchestration)
+		v := new(EventOrchestration)
 		v.Name = "foo"
 		v.Description = "bar"
-		v.Team = &OrchestrationObject{ID: "P3ZQXDF"}
+		v.Team = &EventOrchestrationObject{ID: "P3ZQXDF"}
 		json.NewDecoder(r.Body).Decode(v)
 		if !reflect.DeepEqual(v, input) {
 			t.Errorf("Request body = %+v, want %+v", v, input)
@@ -92,15 +92,15 @@ func TestOrchestrationUpdate(t *testing.T) {
 		w.Write([]byte(`{"orchestration":{"name": "foo", "description": "bar", "team": {"id": "P3ZQXDF"}, "id": "abcd"}}`))
 	})
 
-	resp, _, err := client.Orchestrations.Update(id, input)
+	resp, _, err := client.EventOrchestrations.Update(id, input)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	want := &Orchestration{
+	want := &EventOrchestration{
 		Name:        "foo",
 		Description: "bar",
-		Team:        &OrchestrationObject{ID: "P3ZQXDF"},
+		Team:        &EventOrchestrationObject{ID: "P3ZQXDF"},
 		ID:          "abcd",
 	}
 
@@ -109,19 +109,19 @@ func TestOrchestrationUpdate(t *testing.T) {
 	}
 }
 
-func TestOrchestrationDelete(t *testing.T) {
+func TestEventOrchestrationDelete(t *testing.T) {
 	setup()
 	defer teardown()
 	
 	var id = "abcd"
-	var url = fmt.Sprintf("%s/%s", orchestrationBaseUrl, id)
+	var url = fmt.Sprintf("%s/%s", eventOrchestrationBaseUrl, id)
 
 	mux.HandleFunc(url, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "DELETE")
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	if _, err := client.Orchestrations.Delete(id); err != nil {
+	if _, err := client.EventOrchestrations.Delete(id); err != nil {
 		t.Fatal(err)
 	}
 }
