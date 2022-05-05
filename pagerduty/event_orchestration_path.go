@@ -42,6 +42,10 @@ type EventOrchestrationPathRuleCondition struct {
 	Expression string `json:"expression,omitempty"`
 }
 
+// See the full list of supported actions for path types:
+// Router: https://developer.pagerduty.com/api-reference/f0fae270c70b3-get-the-router-for-a-global-event-orchestration
+// Service: https://developer.pagerduty.com/api-reference/179537b835e2d-get-the-service-orchestration-for-a-service
+// Unrouted: https://developer.pagerduty.com/api-reference/70aa1139e1013-get-the-unrouted-orchestration-for-a-global-event-orchestration
 type EventOrchestrationPathAction struct {
 	Suppress                   bool                                               `json:"suppress,omitempty"`
 	Suspend                    int                                                `json:"suspend,omitempty"`
@@ -98,12 +102,31 @@ type EventOrchestrationPathPayload struct {
 	OrchestrationPath *EventOrchestrationPath `json:"orchestration_path,omitempty"`
 }
 
-// Get for EventOrchestrationPath
-func (s *EventOrchestrationPathService) Get(serviceID string) (*EventOrchestrationPath, *Response, error) {
-	u := fmt.Sprintf("/event_orchestrations/services/%s", serviceID)
-	v := new(EventOrchestrationPathPayload)
+const PathTypeRouter string = "router"
+const PathTypeService string = "service"
+const PathTypeUnrouted string = "unrouted"
 
-	resp, err := s.client.newRequestDo("GET", u, nil, nil, &v)
+func UrlBuilder(id string, pathType string) string {
+	switch {
+	case pathType == PathTypeService:
+		return fmt.Sprintf("%s/services/%s", eventOrchestrationBaseUrl, id)
+	case pathType == PathTypeUnrouted:
+		return fmt.Sprintf("%s/%s/unrouted", eventOrchestrationBaseUrl, id)
+	case pathType == PathTypeRouter:
+		return fmt.Sprintf("%s/%s/router", eventOrchestrationBaseUrl, id)
+	default:
+		return ""
+	}
+}
+
+// Get for EventOrchestrationPath
+func (s *EventOrchestrationPathService) Get(id string, pathType string) (*EventOrchestrationPath, *Response, error) {
+	u := UrlBuilder(id, pathType)
+	v := new(EventOrchestrationPathPayload)
+	p := &EventOrchestrationPathPayload{}
+
+	resp, err := s.client.newRequestDo("GET", u, nil, p, v)
+
 	if err != nil {
 		return nil, nil, err
 	}
@@ -112,8 +135,8 @@ func (s *EventOrchestrationPathService) Get(serviceID string) (*EventOrchestrati
 }
 
 // Update for EventOrchestrationPath
-func (s *EventOrchestrationPathService) Update(serviceID string, orchestration_path *EventOrchestrationPath) (*EventOrchestrationPath, *Response, error) {
-	u := fmt.Sprintf("/event_orchestrations/services/%s", serviceID)
+func (s *EventOrchestrationPathService) Update(id string, pathType string, orchestration_path *EventOrchestrationPath) (*EventOrchestrationPath, *Response, error) {
+	u := UrlBuilder(id, pathType)
 	v := new(EventOrchestrationPathPayload)
 	p := EventOrchestrationPathPayload{OrchestrationPath: orchestration_path}
 
