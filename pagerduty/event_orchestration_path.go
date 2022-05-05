@@ -8,18 +8,19 @@ import (
 type EventOrchestrationPathService service
 
 type EventOrchestrationPath struct {
-	Type      string                          `json:"type,omitempty"`
-	Parent    *EventOrchestrationPathObject   `json:"parent,omitempty"`
-	Sets      []*EventOrchestrationPathSet    `json:"sets,omitempty"`
-	CatchAll  *EventOrchestrationPathCatchAll `json:"catch_all,omitempty"`
-	CreatedAt string                          `json:"created_at,omitempty"`
-	CreatedBy *EventOrchestrationPathObject   `json:"created_by,omitempty"`
-	UpdatedAt string                          `json:"updated_at,omitempty"`
-	UpdatedBy *EventOrchestrationPathObject   `json:"updated_by,omitempty"`
-	Version   string                          `json:"version,omitempty"`
+	Type      string                           `json:"type,omitempty"`
+	Parent    *EventOrchestrationPathReference `json:"parent,omitempty"`
+	Sets      []*EventOrchestrationPathSet     `json:"sets,omitempty"`
+	CatchAll  *EventOrchestrationPathCatchAll  `json:"catch_all,omitempty"`
+	CreatedAt string                           `json:"created_at,omitempty"`
+	CreatedBy *EventOrchestrationPathReference `json:"created_by,omitempty"`
+	UpdatedAt string                           `json:"updated_at,omitempty"`
+	UpdatedBy *EventOrchestrationPathReference `json:"updated_by,omitempty"`
+	Version   string                           `json:"version,omitempty"`
 }
 
-type EventOrchestrationPathObject struct {
+// A reference to a related object (e.g. an EventOrchestration, User, Team, etc)
+type EventOrchestrationPathReference struct {
 	ID   string `json:"id,omitempty"`
 	Type string `json:"type,omitempty"`
 	Self string `json:"self,omitempty"`
@@ -34,11 +35,12 @@ type EventOrchestrationPathRule struct {
 	ID         string                                 `json:"id,omitempty"`
 	Label      string                                 `json:"label,omitempty"`
 	Conditions []*EventOrchestrationPathRuleCondition `json:"conditions,omitempty"`
-	Actions    *EventOrchestrationPathRuleAction      `json:"actions,omitempty"`
+	Actions    *EventOrchestrationPathRuleActions     `json:"actions,omitempty"`
 	Disabled   bool                                   `json:"disabled,omitempty"`
 }
 
 type EventOrchestrationPathRuleCondition struct {
+	// A PCL string: https://developer.pagerduty.com/docs/ZG9jOjM1NTE0MDc0-pcl-overview
 	Expression string `json:"expression,omitempty"`
 }
 
@@ -46,7 +48,8 @@ type EventOrchestrationPathRuleCondition struct {
 // Router: https://developer.pagerduty.com/api-reference/f0fae270c70b3-get-the-router-for-a-global-event-orchestration
 // Service: https://developer.pagerduty.com/api-reference/179537b835e2d-get-the-service-orchestration-for-a-service
 // Unrouted: https://developer.pagerduty.com/api-reference/70aa1139e1013-get-the-unrouted-orchestration-for-a-global-event-orchestration
-type EventOrchestrationPathAction struct {
+type EventOrchestrationPathRuleActions struct {
+	RouteTo                    string                                             `json:"route_to,omitempty"`
 	Suppress                   bool                                               `json:"suppress,omitempty"`
 	Suspend                    int                                                `json:"suspend,omitempty"`
 	Priority                   string                                             `json:"priority,omitempty"`
@@ -57,12 +60,6 @@ type EventOrchestrationPathAction struct {
 	EventAction                string                                             `json:"event_action,omitempty"`
 	Variables                  []*EventOrchestrationPathActionVariables           `json:"variables,omitempty"`
 	Extractions                []*EventOrchestrationPathActionExtractions         `json:"extractions,omitempty"`
-}
-
-type EventOrchestrationPathRuleAction struct {
-	*EventOrchestrationPathAction
-	RouteTo  string `json:"route_to,omitempty"`
-	Disabled bool   `json:"disabled,omitempty"`
 }
 
 type EventOrchestrationPathPagerdutyAutomationAction struct {
@@ -95,7 +92,7 @@ type EventOrchestrationPathActionExtractions struct {
 }
 
 type EventOrchestrationPathCatchAll struct {
-	Actions *EventOrchestrationPathAction `json:"actions,omitempty"`
+	Actions *EventOrchestrationPathRuleActions `json:"actions,omitempty"`
 }
 
 type EventOrchestrationPathPayload struct {
