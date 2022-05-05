@@ -2,17 +2,17 @@ package pagerduty
 
 import (
 	// "encoding/json"
-	// "fmt"
+	"fmt"
 	"net/http"
 	"reflect"
 	"testing"
 )
 
-func TestEventOrchestrationPathRouterPathGet(t *testing.T) {
+func TestEventOrchestrationPathGetRouterPath(t *testing.T) {
 	setup()
 	defer teardown()
 
-	var url = UrlBuilder("E-ORC-1", PathTypeRouter)
+	var url = fmt.Sprintf("%s/E-ORC-1/router", eventOrchestrationBaseUrl)
 	mux.HandleFunc(url, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "GET")
 		w.Write([]byte(`{
@@ -51,12 +51,98 @@ func TestEventOrchestrationPathRouterPathGet(t *testing.T) {
 	}
 }
 
-func TestEventOrchestrationPathUpdate(t *testing.T) {
+func TestEventOrchestrationPathGetUnroutedPath(t *testing.T) {
+	setup()
+	defer teardown()
+
+	var url = fmt.Sprintf("%s/E-ORC-1/unrouted", eventOrchestrationBaseUrl)
+	mux.HandleFunc(url, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "GET")
+		w.Write([]byte(`{
+			"orchestration_path": {
+				"type": "unrouted",
+				"parent": {
+					"id": "E-ORC-1",
+					"self": "https://api.pagerduty.com/event_orchestrations/E-ORC-1",
+					"type": "event_orchestration_reference"
+				}
+			}
+		}`))
+	})
+
+	resp, _, err := client.EventOrchestrationPaths.Get("E-ORC-1", PathTypeUnrouted)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	want := &EventOrchestrationPath{
+		Type: "unrouted",
+		Parent: &EventOrchestrationPathReference{
+			ID:   "E-ORC-1",
+			Self: "https://api.pagerduty.com/event_orchestrations/E-ORC-1",
+			Type: "event_orchestration_reference",
+		},
+	}
+
+	if !reflect.DeepEqual(resp.Type, want.Type) {
+		t.Errorf("returned \n\n%#v want \n\n%#v", resp, want)
+	}
+
+	if !reflect.DeepEqual(resp.Parent, want.Parent) {
+		t.Errorf("returned \n\n%#v want \n\n%#v", resp, want)
+	}
+}
+
+func TestEventOrchestrationPathGetServicePath(t *testing.T) {
+	setup()
+	defer teardown()
+
+	var url = fmt.Sprintf("%s/services/POOPBUG", eventOrchestrationBaseUrl)
+	mux.HandleFunc(url, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "GET")
+		w.Write([]byte(`{
+			"orchestration_path": {
+				"type": "service",
+				"parent": {
+					"id": "POOPBUG",
+					"self": "https://api.pagerduty.com/service/POOPBUG",
+					"type": "service_reference"
+				}
+			}
+		}`))
+	})
+
+	resp, _, err := client.EventOrchestrationPaths.Get("POOPBUG", PathTypeService)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	want := &EventOrchestrationPath{
+		Type: "service",
+		Parent: &EventOrchestrationPathReference{
+			ID:   "POOPBUG",
+			Self: "https://api.pagerduty.com/service/POOPBUG",
+			Type: "service_reference",
+		},
+	}
+
+	if !reflect.DeepEqual(resp.Type, want.Type) {
+		t.Errorf("returned \n\n%#v want \n\n%#v", resp, want)
+	}
+
+	if !reflect.DeepEqual(resp.Parent, want.Parent) {
+		t.Errorf("returned \n\n%#v want \n\n%#v", resp, want)
+	}
+}
+
+func TestEventOrchestrationPathRouterPathUpdate(t *testing.T) {
 	setup()
 	defer teardown()
 	// input := &EventOrchestration{Name: "foo", Description: "bar", Team: &EventOrchestrationObject{ID: "P3ZQXDF"}}
 	// var id = "abcd"
-	// var url = fmt.Sprintf("%s/%s", eventOrchestrationBaseUrl, id)
+	// var url = fmt.Sprintf("%s/E-ORC-1/router", eventOrchestrationBaseUrl)
 
 	// mux.HandleFunc(url, func(w http.ResponseWriter, r *http.Request) {
 	// 	testMethod(t, r, "PUT")

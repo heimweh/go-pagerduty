@@ -104,7 +104,7 @@ const PathTypeRouter string = "router"
 const PathTypeService string = "service"
 const PathTypeUnrouted string = "unrouted"
 
-func UrlBuilder(id string, pathType string) string {
+func orchestrationPathUrlBuilder(id string, pathType string) string {
 	switch {
 	case pathType == PathTypeService:
 		return fmt.Sprintf("%s/services/%s", eventOrchestrationBaseUrl, id)
@@ -119,7 +119,7 @@ func UrlBuilder(id string, pathType string) string {
 
 // Get for EventOrchestrationPath
 func (s *EventOrchestrationPathService) Get(id string, pathType string) (*EventOrchestrationPath, *Response, error) {
-	u := UrlBuilder(id, pathType)
+	u := orchestrationPathUrlBuilder(id, pathType)
 	v := new(EventOrchestrationPathPayload)
 
 	resp, err := s.client.newRequestDo("GET", u, nil, nil, &v)
@@ -133,7 +133,7 @@ func (s *EventOrchestrationPathService) Get(id string, pathType string) (*EventO
 
 // Update for EventOrchestrationPath
 func (s *EventOrchestrationPathService) Update(id string, pathType string, orchestration_path *EventOrchestrationPath) (*EventOrchestrationPath, *Response, error) {
-	u := UrlBuilder(id, pathType)
+	u := orchestrationPathUrlBuilder(id, pathType)
 	v := new(EventOrchestrationPathPayload)
 	p := EventOrchestrationPathPayload{OrchestrationPath: orchestration_path}
 
