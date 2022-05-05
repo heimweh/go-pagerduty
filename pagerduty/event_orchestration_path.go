@@ -1,8 +1,8 @@
 package pagerduty
 
-// import (
-// 	"fmt"
-// )
+import (
+	"fmt"
+)
 
 // TODO: Check omitempty for all structs
 type EventOrchestrationPathService service
@@ -92,4 +92,35 @@ type EventOrchestrationPathActionExtractions struct {
 
 type EventOrchestrationPathCatchAll struct {
 	Actions *EventOrchestrationPathAction `json:"actions,omitempty"`
+}
+
+type EventOrchestrationPathPayload struct {
+	OrchestrationPath *EventOrchestrationPath `json:"orchestration_path,omitempty"`
+}
+
+// Get for EventOrchestrationPath
+func (s *EventOrchestrationPathService) Get(serviceID string) (*EventOrchestrationPath, *Response, error) {
+	u := fmt.Sprintf("/event_orchestrations/services/%s", serviceID)
+	v := new(EventOrchestrationPathPayload)
+
+	resp, err := s.client.newRequestDo("GET", u, nil, nil, &v)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return v.OrchestrationPath, resp, nil
+}
+
+// Update for EventOrchestrationPath
+func (s *EventOrchestrationPathService) Update(serviceID string, orchestration_path *EventOrchestrationPath) (*EventOrchestrationPath, *Response, error) {
+	u := fmt.Sprintf("/event_orchestrations/services/%s", serviceID)
+	v := new(EventOrchestrationPathPayload)
+	p := EventOrchestrationPathPayload{OrchestrationPath: orchestration_path}
+
+	resp, err := s.client.newRequestDo("PUT", u, nil, p, &v)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return v.OrchestrationPath, resp, nil
 }
