@@ -16,33 +16,34 @@ func TestEventOrchestrationPathRouterPathGet(t *testing.T) {
 	mux.HandleFunc(url, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "GET")
 		w.Write([]byte(`{
-			"type": "router",
-			"parent": {
-				"id": "E-ORC-1",
-				"self": "https://api.pagerduty.com/event_orchestrations/E-ORC-1",
-				"type": "event_orchestration_reference"
-			},
-			"self": "https://api.pagerduty.com/event_orchestrations/E-ORC-1/router",
-			"sets": [
-				{
-					"id": "start",
-					"rules": [
-						{ "actions": {}, "conditions": [], "id": "rule-1", "label": null }
-					]
-				}
-			],
-			"catch_all": { "actions": {} },
-			"created_at": "2022-03-22T16:32:20Z",
-			"created_by": null,
-			"updated_at": "2022-03-22T16:32:20Z",
-			"updated_by": {
-				"id": "POVFTKB",
-				"self": "https://api.pagerduty.com/users/POVFTKB",
-				"type": "user_reference"
-			},
-			"version": "new_version_1"
-		}
-		`))
+			"orchestration_path": {
+				"type": "router",
+				"parent": {
+					"id": "E-ORC-1",
+					"self": "https://api.pagerduty.com/event_orchestrations/E-ORC-1",
+					"type": "event_orchestration_reference"
+				},
+				"self": "https://api.pagerduty.com/event_orchestrations/E-ORC-1/router",
+				"sets": [
+					{
+						"id": "start",
+						"rules": [
+							{ "actions": {}, "conditions": [], "id": "rule-1", "label": null }
+						]
+					}
+				],
+				"catch_all": { "actions": {} },
+				"created_at": "2022-03-22T16:32:20Z",
+				"created_by": null,
+				"updated_at": "2022-03-22T16:32:20Z",
+				"updated_by": {
+					"id": "POVFTKB",
+					"self": "https://api.pagerduty.com/users/POVFTKB",
+					"type": "user_reference"
+				},
+				"version": "new_version_1"
+			}
+		}`))
 	})
 
 	resp, _, err := client.EventOrchestrationPaths.Get("E-ORC-1", PathTypeRouter)

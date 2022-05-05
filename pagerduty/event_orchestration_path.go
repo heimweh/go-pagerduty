@@ -121,9 +121,8 @@ func UrlBuilder(id string, pathType string) string {
 func (s *EventOrchestrationPathService) Get(id string, pathType string) (*EventOrchestrationPath, *Response, error) {
 	u := UrlBuilder(id, pathType)
 	v := new(EventOrchestrationPathPayload)
-	p := &EventOrchestrationPathPayload{}
 
-	resp, err := s.client.newRequestDo("GET", u, nil, p, v)
+	resp, err := s.client.newRequestDo("GET", u, nil, nil, &v)
 
 	if err != nil {
 		return nil, nil, err
