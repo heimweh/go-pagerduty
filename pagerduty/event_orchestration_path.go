@@ -9,6 +9,7 @@ type EventOrchestrationPathService service
 
 type EventOrchestrationPath struct {
 	Type      string                           `json:"type,omitempty"`
+	Self      string                           `json:"self,omitempty"`
 	Parent    *EventOrchestrationPathReference `json:"parent,omitempty"`
 	Sets      []*EventOrchestrationPathSet     `json:"sets,omitempty"`
 	CatchAll  *EventOrchestrationPathCatchAll  `json:"catch_all,omitempty"`

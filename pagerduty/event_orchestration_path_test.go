@@ -8,17 +8,44 @@ import (
 	"testing"
 )
 
-func TestEventOrchestrationPathGet(t *testing.T) {
+func TestEventOrchestrationPathRouterPathGet(t *testing.T) {
 	setup()
 	defer teardown()
 
-	var url = UrlBuilder("SERVICE1", "service")
+	var url = UrlBuilder("E-ORC-1", PathTypeRouter)
 	mux.HandleFunc(url, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "GET")
-		w.Write([]byte(`{ "catch_all": { "actions": {} }, "created_at": "2022-03-22T16:32:20Z", "created_by": null, "parent": { "id": "SERVICE1", "self": "https://api.pagerduty.com/services/SERVICE1", "type": "service_reference" }, "self": "https://api.pagerduty.com/event_orchestrations/services/SERVICE1", "sets": [ { "id": "start", "rules": [ { "actions": {}, "conditions": [], "id": "rule-1", "label": null } ] } ], "type": "service", "updated_at": "2022-03-22T16:32:20Z", "updated_by": { "id": "POVFTKB", "self": "https://api.pagerduty.com/users/user-name", "type": "user_reference" }, "version": "new_version_1" }`))
+		w.Write([]byte(`{
+			"type": "router",
+			"parent": {
+				"id": "E-ORC-1",
+				"self": "https://api.pagerduty.com/event_orchestrations/E-ORC-1",
+				"type": "event_orchestration_reference"
+			},
+			"self": "https://api.pagerduty.com/event_orchestrations/E-ORC-1/router",
+			"sets": [
+				{
+					"id": "start",
+					"rules": [
+						{ "actions": {}, "conditions": [], "id": "rule-1", "label": null }
+					]
+				}
+			],
+			"catch_all": { "actions": {} },
+			"created_at": "2022-03-22T16:32:20Z",
+			"created_by": null,
+			"updated_at": "2022-03-22T16:32:20Z",
+			"updated_by": {
+				"id": "POVFTKB",
+				"self": "https://api.pagerduty.com/users/POVFTKB",
+				"type": "user_reference"
+			},
+			"version": "new_version_1"
+		}
+		`))
 	})
 
-	resp, _, err := client.EventOrchestrationPaths.Get("SERVICE1", "service")
+	resp, _, err := client.EventOrchestrationPaths.Get("E-ORC-1", PathTypeRouter)
 
 	if err != nil {
 		t.Fatal(err)
@@ -26,7 +53,38 @@ func TestEventOrchestrationPathGet(t *testing.T) {
 
 	fmt.Printf(" \n\n%#v", resp)
 
-	want := &EventOrchestrationPath{}
+	want := &EventOrchestrationPath{
+		Type: "router",
+		Parent: &EventOrchestrationPathReference{
+			ID:   "E-ORC-1",
+			Self: "https://api.pagerduty.com/event_orchestrations/E-ORC-1",
+			Type: "event_orchestration_reference",
+		},
+		Self: "https://api.pagerduty.com/event_orchestrations/E-ORC-1/router",
+		Sets: []*EventOrchestrationPathSet{
+			{
+				ID: "start",
+				Rules: []*EventOrchestrationPathRule{
+					{
+						ID:         "rule-1",
+						Label:      "A first routing rule",
+						Conditions: []*EventOrchestrationPathRuleCondition{},
+						Actions:    &EventOrchestrationPathRuleActions{},
+					},
+				},
+			},
+		},
+		CatchAll:  &EventOrchestrationPathCatchAll{},
+		CreatedAt: "2022-03-22T16:32:20Z",
+		CreatedBy: nil,
+		UpdatedAt: "2022-03-22T16:32:20Z",
+		UpdatedBy: &EventOrchestrationPathReference{
+			ID:   "POVFTKB",
+			Type: "user_reference",
+			Self: "https://api.pagerduty.com/users/POVFTKB",
+		},
+		Version: "new_version_1",
+	}
 
 	if !reflect.DeepEqual(resp, want) {
 		t.Errorf("returned \n\n%#v want \n\n%#v", resp, want)
