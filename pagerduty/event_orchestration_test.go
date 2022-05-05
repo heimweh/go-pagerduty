@@ -14,7 +14,7 @@ func TestEventOrchestrationTestList(t *testing.T) {
 
 	mux.HandleFunc(eventOrchestrationBaseUrl, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "GET")
-		w.Write([]byte(`{"total": 0, "offset": 0, "more": false, "limit": 0, "orchestrations": [{"description": "bar", "id": "4b9bbfe9-bf13-4371-87ea-4223a96b61cb", "name": "foo", "routes": 1, "team": {"id": "P3ZQXDF"}}]}`))
+		w.Write([]byte(`{"total": 1, "offset": 0, "more": false, "limit": 20, "orchestrations": [{"description": "bar", "id": "4b9bbfe9-bf13-4371-87ea-4223a96b61cb", "name": "foo", "routes": 1, "team": {"id": "P3ZQXDF"}}]}`))
 	})
 
 	resp, _, err := client.EventOrchestrations.List()
@@ -24,10 +24,10 @@ func TestEventOrchestrationTestList(t *testing.T) {
 	}
 
 	want := &ListEventOrchestrationsResponse{
-		Total:  0,
+		Total:  1,
 		Offset: 0,
 		More:   false,
-		Limit:  0,
+		Limit:  20,
 		Orchestrations: []*EventOrchestration{
 			{
 				ID:          "4b9bbfe9-bf13-4371-87ea-4223a96b61cb",
