@@ -24,16 +24,16 @@ func TestEventOrchestrationTestList(t *testing.T) {
 	}
 
 	want := &ListEventOrchestrationsResponse{
-		Total: 0,
+		Total:  0,
 		Offset: 0,
-		More: false,
-		Limit: 0,
+		More:   false,
+		Limit:  0,
 		Orchestrations: []*EventOrchestration{
 			{
-				ID: "4b9bbfe9-bf13-4371-87ea-4223a96b61cb",
-				Name: "foo",
+				ID:          "4b9bbfe9-bf13-4371-87ea-4223a96b61cb",
+				Name:        "foo",
 				Description: "bar",
-				Routes: 1,
+				Routes:      1,
 				Team: &EventOrchestrationObject{
 					ID: "P3ZQXDF",
 				},
