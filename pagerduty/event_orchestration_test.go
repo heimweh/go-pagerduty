@@ -23,6 +23,8 @@ func TestEventOrchestrationTestList(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	tId := "P3ZQXDF"
+
 	want := &ListEventOrchestrationsResponse{
 		Total:  1,
 		Offset: 0,
@@ -35,7 +37,7 @@ func TestEventOrchestrationTestList(t *testing.T) {
 				Description: "bar",
 				Routes:      1,
 				Team: &EventOrchestrationObject{
-					ID: "P3ZQXDF",
+					ID: &tId,
 				},
 			},
 		},
@@ -49,14 +51,15 @@ func TestEventOrchestrationTestList(t *testing.T) {
 func TestEventOrchestrationCreate(t *testing.T) {
 	setup()
 	defer teardown()
-	input := &EventOrchestration{Name: "foo", Description: "bar", Team: &EventOrchestrationObject{ID: "P3ZQXDF"}}
+	tId := "P3ZQXDF"
+	input := &EventOrchestration{Name: "foo", Description: "bar", Team: &EventOrchestrationObject{ID: &tId}}
 
 	mux.HandleFunc(eventOrchestrationBaseUrl, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "POST")
 		v := new(EventOrchestration)
 		v.Name = "foo"
 		v.Description = "bar"
-		v.Team = &EventOrchestrationObject{ID: "P3ZQXDF"}
+		v.Team = &EventOrchestrationObject{ID: &tId}
 		json.NewDecoder(r.Body).Decode(v)
 		if !reflect.DeepEqual(v, input) {
 			t.Errorf("Request body = %+v, want %+v", v, input)
@@ -72,7 +75,7 @@ func TestEventOrchestrationCreate(t *testing.T) {
 	want := &EventOrchestration{
 		Name:        "foo",
 		Description: "bar",
-		Team:        &EventOrchestrationObject{ID: "P3ZQXDF"},
+		Team:        &EventOrchestrationObject{ID: &tId},
 		ID:          "abcd",
 		Routes:      0,
 		Integrations: []*EventOrchestrationIntegration{
@@ -105,10 +108,12 @@ func TestEventOrchestrationGet(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	tId := "P3ZQXDF"
+
 	want := &EventOrchestration{
 		Name:        "foo",
 		Description: "bar",
-		Team:        &EventOrchestrationObject{ID: "P3ZQXDF"},
+		Team:        &EventOrchestrationObject{ID: &tId},
 		ID:          "abcd",
 		Routes:      2,
 		Integrations: []*EventOrchestrationIntegration{
@@ -127,7 +132,8 @@ func TestEventOrchestrationGet(t *testing.T) {
 func TestEventOrchestrationUpdate(t *testing.T) {
 	setup()
 	defer teardown()
-	input := &EventOrchestration{Name: "foo", Description: "bar", Team: &EventOrchestrationObject{ID: "P3ZQXDF"}}
+	tId := "P3ZQXDF"
+	input := &EventOrchestration{Name: "foo", Description: "bar", Team: &EventOrchestrationObject{ID: &tId}}
 	var id = "abcd"
 	var url = fmt.Sprintf("%s/%s", eventOrchestrationBaseUrl, id)
 
@@ -136,7 +142,7 @@ func TestEventOrchestrationUpdate(t *testing.T) {
 		v := new(EventOrchestration)
 		v.Name = "foo"
 		v.Description = "bar"
-		v.Team = &EventOrchestrationObject{ID: "P3ZQXDF"}
+		v.Team = &EventOrchestrationObject{ID: &tId}
 		json.NewDecoder(r.Body).Decode(v)
 		if !reflect.DeepEqual(v, input) {
 			t.Errorf("Request body = %+v, want %+v", v, input)
@@ -152,7 +158,7 @@ func TestEventOrchestrationUpdate(t *testing.T) {
 	want := &EventOrchestration{
 		Name:        "foo",
 		Description: "bar",
-		Team:        &EventOrchestrationObject{ID: "P3ZQXDF"},
+		Team:        &EventOrchestrationObject{ID: &tId},
 		ID:          "abcd",
 		Routes:      2,
 		Integrations: []*EventOrchestrationIntegration{
