@@ -29,7 +29,7 @@ type EventOrchestrationPathReference struct {
 
 type EventOrchestrationPathSet struct {
 	ID    string                        `json:"id,omitempty"`
-	Rules []*EventOrchestrationPathRule `json:"rules,omitempty"`
+	Rules []*EventOrchestrationPathRule `json:"rules"`
 }
 
 type EventOrchestrationPathRule struct {
