@@ -35,7 +35,7 @@ type EventOrchestrationPathSet struct {
 type EventOrchestrationPathRule struct {
 	ID         string                                 `json:"id,omitempty"`
 	Label      string                                 `json:"label,omitempty"`
-	Conditions []*EventOrchestrationPathRuleCondition `json:"conditions,omitempty"`
+	Conditions []*EventOrchestrationPathRuleCondition `json:"conditions"`
 	Actions    *EventOrchestrationPathRuleActions     `json:"actions,omitempty"`
 	Disabled   bool                                   `json:"disabled,omitempty"`
 }
