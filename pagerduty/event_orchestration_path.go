@@ -55,12 +55,12 @@ type EventOrchestrationPathRuleActions struct {
 	Suspend                    int                                                `json:"suspend,omitempty"`
 	Priority                   string                                             `json:"priority,omitempty"`
 	Annotate                   string                                             `json:"annotate,omitempty"`
-	PagerdutyAutomationActions []*EventOrchestrationPathPagerdutyAutomationAction `json:"pagerduty_automation_actions,omitempty"`
-	AutomationActions          []*EventOrchestrationPathAutomationAction          `json:"automation_actions,omitempty"`
+	PagerdutyAutomationActions []*EventOrchestrationPathPagerdutyAutomationAction `json:"pagerduty_automation_actions"`
+	AutomationActions          []*EventOrchestrationPathAutomationAction          `json:"automation_actions"`
 	Severity                   string                                             `json:"severity,omitempty"`
 	EventAction                string                                             `json:"event_action,omitempty"`
-	Variables                  []*EventOrchestrationPathActionVariables           `json:"variables,omitempty"`
-	Extractions                []*EventOrchestrationPathActionExtractions         `json:"extractions,omitempty"`
+	Variables                  []*EventOrchestrationPathActionVariables           `json:"variables"`
+	Extractions                []*EventOrchestrationPathActionExtractions         `json:"extractions"`
 }
 
 type EventOrchestrationPathPagerdutyAutomationAction struct {
@@ -71,8 +71,8 @@ type EventOrchestrationPathAutomationAction struct {
 	Name       string                                          `json:"name,omitempty"`
 	Url        string                                          `json:"url,omitempty"`
 	AutoSend   bool                                            `json:"auto_send,omitempty"`
-	Headers    []*EventOrchestrationPathAutomationActionObject `json:"headers,omitempty"`
-	Parameters []*EventOrchestrationPathAutomationActionObject `json:"parameters,omitempty"`
+	Headers    []*EventOrchestrationPathAutomationActionObject `json:"headers"`
+	Parameters []*EventOrchestrationPathAutomationActionObject `json:"parameters"`
 }
 
 type EventOrchestrationPathAutomationActionObject struct {
