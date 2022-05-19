@@ -61,10 +61,10 @@ func TestOrchestrationGet(t *testing.T) {
 	}
 
 	want := &Orchestration{
-		Name: "foo",
+		Name:        "foo",
 		Description: "bar",
-		Team: &OrchestrationObject{ID: "P3ZQXDF"},
-		ID:   "abcd",
+		Team:        &OrchestrationObject{ID: "P3ZQXDF"},
+		ID:          "abcd",
 	}
 
 	if !reflect.DeepEqual(resp, want) {
@@ -112,7 +112,7 @@ func TestOrchestrationUpdate(t *testing.T) {
 func TestOrchestrationDelete(t *testing.T) {
 	setup()
 	defer teardown()
-	
+
 	var id = "abcd"
 	var url = fmt.Sprintf("%s/%s", orchestrationBaseUrl, id)
 
