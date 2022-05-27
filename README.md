@@ -49,3 +49,9 @@ func main() {
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create a new Pull Request
+
+### Testing
+
+Run all unit tests with `make test`
+
+Run a specific subset of unit test by name using `make test TESTARGS="-v -run TestTeams"` which will run all test functions with "TestTeams" in their name while `-v` enables verbose output.
