@@ -55,6 +55,13 @@ const (
           "urgency": "low"
         }
       },
+      "response_play": {
+        "id": "6c5d755a-32a0-4f55-8fe8-26fd6b504698",
+        "type":    "response_play_reference",
+        "summary": "A Response Play",
+        "self":    "https://api.pagerduty.com/response_plays/6c5d755a-32a0-4f55-8fe8-26fd6b504698",
+        "html_url": "https://subdomain.pagerduty.com/response_plays/6c5d755a-32a0-4f55-8fe8-26fd6b504698"
+      },
       "support_hours": {
         "type": "fixed_time_per_day",
         "time_zone": "America/Lima",
@@ -183,6 +190,13 @@ var (
 				},
 				LastIncidentTimestamp: "",
 				Name:                  "My Application Service",
+				ResponsePlay: &ResponsePlayReference{
+					ID:      "6c5d755a-32a0-4f55-8fe8-26fd6b504698",
+					Type:    "response_play_reference",
+					Summary: "A Response Play",
+					Self:    "https://api.pagerduty.com/response_plays/6c5d755a-32a0-4f55-8fe8-26fd6b504698",
+					HTMLURL: "https://subdomain.pagerduty.com/response_plays/6c5d755a-32a0-4f55-8fe8-26fd6b504698",
+				},
 				ScheduledActions: []*ScheduledAction{
 					{
 						Type: "urgency_change",
