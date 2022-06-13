@@ -1,5 +1,5 @@
 name: test
-on: [push]
+on: [push, pull_request]
 
 jobs:
   test:
@@ -18,4 +18,5 @@ jobs:
       - run: |
           export GOPATH=${GITHUB_WORKSPACE}
           cd ${GITHUB_WORKSPACE}/src/github.com/heimweh/go-pagerduty/
+          go vet ./...
           go test -v ./...
