@@ -51,8 +51,8 @@ type AlertGroupingParameters struct {
 
 // AutoPauseNotificationsParameters defines how alerts on this service are automatically suspended for a period of time before triggering, when identified as likely being transient.
 type AutoPauseNotificationsParameters struct {
-	Enabled bool `json:enabled,omitempty`
-	Timeout int  `json:timeout,omitempty`
+	Enabled bool `json:"enabled"`
+	Timeout *int `json:"timeout"`
 }
 
 // IncidentUrgencyRule is the default urgency for new incidents.
