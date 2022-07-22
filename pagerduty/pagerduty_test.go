@@ -32,3 +32,26 @@ func testMethod(t *testing.T, r *http.Request, want string) {
 		t.Errorf("Request method: %v, want %v", got, want)
 	}
 }
+
+func TestClientUserAgentDefault(t *testing.T) {
+	client, err := NewClient(&Config{Token: "foo"})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if client.Config.UserAgent != defaultUserAgent {
+		t.Errorf("got %q, want %q", client.Config.UserAgent, defaultUserAgent)
+	}
+}
+
+func TestClientUserAgentOverwritten(t *testing.T) {
+	newUserAgent := "foo-user-agent"
+	client, err := NewClient(&Config{Token: "foo", UserAgent: newUserAgent})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if client.Config.UserAgent != newUserAgent {
+		t.Errorf("got %q, want %q", client.Config.UserAgent, newUserAgent)
+	}
+}
