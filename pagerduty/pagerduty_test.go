@@ -78,3 +78,25 @@ func testQueryCount(t *testing.T, r *http.Request, count int) {
 		t.Errorf("Request contained unexpected number of query params: %v, want exactly %v", l, count)
 	}
 }
+func TestClientUserAgentDefault(t *testing.T) {
+	client, err := NewClient(&Config{Token: "foo"})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if client.Config.UserAgent != defaultUserAgent {
+		t.Errorf("got %q, want %q", client.Config.UserAgent, defaultUserAgent)
+	}
+}
+
+func TestClientUserAgentOverwritten(t *testing.T) {
+	newUserAgent := "foo-user-agent"
+	client, err := NewClient(&Config{Token: "foo", UserAgent: newUserAgent})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if client.Config.UserAgent != newUserAgent {
+		t.Errorf("got %q, want %q", client.Config.UserAgent, newUserAgent)
+	}
+}

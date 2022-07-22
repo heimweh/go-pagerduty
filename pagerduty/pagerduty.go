@@ -15,7 +15,8 @@ import (
 )
 
 const (
-	defaultBaseURL = "https://api.pagerduty.com"
+	defaultBaseURL   = "https://api.pagerduty.com"
+	defaultUserAgent = "heimweh/go-pagerduty(terraform)"
 )
 
 type service struct {
@@ -96,7 +97,9 @@ func NewClient(config *Config) (*Client, error) {
 		config.BaseURL = defaultBaseURL
 	}
 
-	config.UserAgent = "heimweh/go-pagerduty(terraform)"
+	if config.UserAgent == "" {
+		config.UserAgent = defaultUserAgent
+	}
 
 	baseURL, err := url.Parse(config.BaseURL)
 	if err != nil {
@@ -186,10 +189,8 @@ func (c *Client) newRequestContext(ctx context.Context, method, url string, body
 	req.Header.Add("Accept", "application/vnd.pagerduty+json;version=2")
 	req.Header.Add("Authorization", fmt.Sprintf("Token token=%s", c.Config.Token))
 	req.Header.Add("Content-Type", "application/json")
+	req.Header.Add("User-Agent", c.Config.UserAgent)
 
-	if c.Config.UserAgent != "" {
-		req.Header.Add("User-Agent", c.Config.UserAgent)
-	}
 	return req, nil
 }
 
