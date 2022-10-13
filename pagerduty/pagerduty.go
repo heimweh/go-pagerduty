@@ -23,11 +23,12 @@ type service struct {
 
 // Config represents the configuration for a PagerDuty client
 type Config struct {
-	BaseURL    string
-	HTTPClient *http.Client
-	Token      string
-	UserAgent  string
-	Debug      bool
+	BaseURL                  string
+	HTTPClient               *http.Client
+	Token                    string
+	UserAgent                string
+	XTerraformFunctionHeader string
+	Debug                    bool
 }
 
 // Client manages the communication with the PagerDuty API
@@ -162,6 +163,9 @@ func (c *Client) newRequest(method, url string, body interface{}, options ...Req
 
 	if c.Config.UserAgent != "" {
 		req.Header.Add("User-Agent", c.Config.UserAgent)
+	}
+	if c.Config.XTerraformFunctionHeader != "" {
+		req.Header.Add("x-terraform-function", c.Config.XTerraformFunctionHeader)
 	}
 	return req, nil
 }
