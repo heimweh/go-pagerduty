@@ -305,3 +305,7 @@ func (c *Client) decodeErrorResponse(res *Response) error {
 
 	return v.Error
 }
+
+func (c *Client) SetXTerraformFunctionHeader(n string) {
+	c.Config.XTerraformFunctionHeader = n
+}
