@@ -366,11 +366,11 @@ func (s *UserService) findExistingContactMethod(userID string, contactMethod *Co
 
 	for _, contact := range lResp.ContactMethods {
 		if isSameContactMethod(contact, contactMethod) {
-			return s.GetContactMethod(userID, contact.ID)
+			return nil, nil, fmt.Errorf("[User Contact method must be unique]")
 		}
 	}
 
-	return nil, nil, fmt.Errorf("[User Contact method must be unique]")
+	return s.GetContactMethod(userID, contactMethod.ID)
 }
 
 // isSameContactMethod checks if an existing contact method should be taken as the same as a new one users want to create.
