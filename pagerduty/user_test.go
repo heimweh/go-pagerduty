@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"reflect"
+	"strings"
 	"testing"
 )
 
@@ -213,7 +214,7 @@ func TestUsersAddContactMethod(t *testing.T) {
 	}
 }
 
-func TestUsersAddDuplicateContactMethod(t *testing.T) {
+func TestUsersErrorWhenContactMethodExists(t *testing.T) {
 	setup()
 	defer teardown()
 
@@ -235,25 +236,13 @@ func TestUsersAddDuplicateContactMethod(t *testing.T) {
 		}
 	})
 
-	mux.HandleFunc("/users/1/contact_methods/1", func(w http.ResponseWriter, r *http.Request) {
-		testMethod(t, r, "GET")
-		w.Write([]byte(`{"contact_method": { "address": "foo@bar.com", "id": "1", "type": "email_contact_method", "self":"api/users/1/contact_methods/1" }}`))
-	})
-
-	resp, _, err := client.Users.CreateContactMethod("1", input)
-	if err != nil {
-		t.Fatal(err)
+	want := "[User Contact method must be unique]"
+	_, _, err := client.Users.CreateContactMethod("1", input)
+	if err == nil {
+		t.Fatal("got no error")
 	}
-
-	want := &ContactMethod{
-		ID:      "1",
-		Type:    "email_contact_method",
-		Address: "foo@bar.com",
-		Self:    "api/users/1/contact_methods/1",
-	}
-
-	if !reflect.DeepEqual(resp, want) {
-		t.Errorf("returned %#v; want %#v", resp, want)
+	if err != nil && strings.Compare(err.Error(), want) != 0 {
+		t.Fatalf("expected error %s, but got %s", want, err)
 	}
 }
 
