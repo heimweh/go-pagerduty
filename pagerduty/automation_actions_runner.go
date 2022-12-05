@@ -9,17 +9,16 @@ type AutomationActionsRunnerService service
 type AutomationActionsRunner struct {
 	ID           string                       `json:"id"`
 	Name         string                       `json:"name"`
-	Summary      string                       `json:"summary,omitempty"`
 	Type         string                       `json:"type"`
-	Description  string                       `json:"description,omitempty"`
+	RunnerType   string                       `json:"runner_type"`
 	CreationTime string                       `json:"creation_time"`
-	RunnerType   string                       `json:"runner_type,omitempty"`
-	Status       string                       `json:"status"`
+	Summary      string                       `json:"summary,omitempty"`
+	Description  string                       `json:"description,omitempty"`
 	Teams        []*TeamReference             `json:"teams,omitempty"`
-	Privileges   *AutomationActionsPriviliges `json:"privileges,omitempty"`
+	Privileges   *AutomationActionsPrivileges `json:"privileges,omitempty"`
 }
 
-type AutomationActionsPriviliges struct {
+type AutomationActionsPrivileges struct {
 	Permissions []*string `json:"permissions,omitempty"`
 }
 

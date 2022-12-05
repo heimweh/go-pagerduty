@@ -30,14 +30,13 @@ func TestAutomationActionsRunnerGet(t *testing.T) {
 		CreationTime: "2022-10-21T19:42:52.127369Z",
 		RunnerType:   "sidecar",
 		Type:         "runner",
-		Status:       "Configured",
 		Teams: []*TeamReference{
 			{
 				Type: "team_reference",
 				ID:   "PQ9K7I8",
 			},
 		},
-		Privileges: &AutomationActionsPriviliges{
+		Privileges: &AutomationActionsPrivileges{
 			Permissions: []*string{&permissions_read},
 		},
 	}
@@ -78,7 +77,6 @@ func TestAutomationActionsRunnerCreate(t *testing.T) {
 		CreationTime: "2022-10-21T19:42:52.127369Z",
 		RunnerType:   "sidecar",
 		Type:         "runner",
-		Status:       "Configured",
 	}
 
 	if !reflect.DeepEqual(resp, want) {
