@@ -7,15 +7,17 @@ import "fmt"
 type AutomationActionsRunnerService service
 
 type AutomationActionsRunner struct {
-	ID           string                       `json:"id"`
-	Name         string                       `json:"name"`
-	Type         string                       `json:"type"`
-	RunnerType   string                       `json:"runner_type"`
-	CreationTime string                       `json:"creation_time"`
-	Summary      string                       `json:"summary,omitempty"`
-	Description  string                       `json:"description,omitempty"`
-	Teams        []*TeamReference             `json:"teams,omitempty"`
-	Privileges   *AutomationActionsPrivileges `json:"privileges,omitempty"`
+	ID             string                       `json:"id"`
+	Name           string                       `json:"name"`
+	Type           string                       `json:"type"`
+	RunnerType     string                       `json:"runner_type"`
+	CreationTime   string                       `json:"creation_time"`
+	LastSeenTime   *string                      `json:"last_seen,omitempty"`
+	Summary        string                       `json:"summary,omitempty"`
+	Description    string                       `json:"description,omitempty"`
+	RunbookBaseUri *string                      `json:"runbook_base_uri,omitempty"`
+	Teams          []*TeamReference             `json:"teams,omitempty"`
+	Privileges     *AutomationActionsPrivileges `json:"privileges,omitempty"`
 }
 
 type AutomationActionsPrivileges struct {
