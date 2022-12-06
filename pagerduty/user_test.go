@@ -289,6 +289,60 @@ func TestUsersUpdateContactMethod(t *testing.T) {
 	}
 }
 
+func TestUsersUpdateExistentContactMethod(t *testing.T) {
+	setup()
+	defer teardown()
+
+	input := &ContactMethod{Address: "foo@bar.com", Type: "email_contact_method"}
+	// Counter to ensure that first call to PUT method returns unique contact
+	// error, but not the following calls.
+	var putReqCount int
+
+	mux.HandleFunc("/users/1/contact_methods/1", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == "PUT" {
+			v := new(ContactMethodPayload)
+			json.NewDecoder(r.Body).Decode(v)
+			if !reflect.DeepEqual(v.ContactMethod, input) {
+				t.Errorf("Request body = %+v, want %+v", v, input)
+			}
+			if putReqCount == 0 {
+				w.WriteHeader(http.StatusBadRequest)
+				w.Write([]byte(`{"error":{"errors":["User Contact method must be unique"],"code":2001,"message":"Invalid Input Provided"}}`))
+				putReqCount++
+			} else {
+				w.Write([]byte(`{"contact_method": { "address": "foo@bar.com", "id": "1", "type": "email_contact_method", "self":"api/users/1/contact_methods/1" }}`))
+			}
+		} else if r.Method == "DELETE" {
+			w.WriteHeader(http.StatusNoContent)
+		} else if r.Method == "GET" {
+			w.Write([]byte(`{"contact_method": { "address": "foo@bar.com", "id": "1", "type": "email_contact_method", "self":"api/users/1/contact_methods/1" }}`))
+		} else {
+			t.Errorf("Request method: %v is neither PUT or GET", r.Method)
+		}
+	})
+
+	mux.HandleFunc("/users/1/contact_methods", func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "GET")
+		w.Write([]byte(`{"contact_methods": [{ "address": "foo@bar.com", "id": "1", "type": "email_contact_method", "self":"api/users/1/contact_methods/1" }] }`))
+	})
+
+	resp, _, err := client.Users.UpdateContactMethod("1", "1", input)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	want := &ContactMethod{
+		ID:      "1",
+		Type:    "email_contact_method",
+		Address: "foo@bar.com",
+		Self:    "api/users/1/contact_methods/1",
+	}
+
+	if !reflect.DeepEqual(resp, want) {
+		t.Errorf("returned %#v; want %#v", resp, want)
+	}
+}
+
 func TestUsersDeleteContactMethod(t *testing.T) {
 	setup()
 	defer teardown()
