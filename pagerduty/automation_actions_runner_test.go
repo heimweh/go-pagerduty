@@ -22,12 +22,13 @@ func TestAutomationActionsSidecarRunnerGet(t *testing.T) {
 	}
 
 	permissions_read := "read"
+	description := "us-west-2 prod sidecar runner provisioned by SRE"
 
 	want := &AutomationActionsRunner{
 		ID:             "01DA2MLYN0J5EFC1LKWXUKDDKT",
 		Name:           "us-west-2 prod sidecar runner",
 		Summary:        "us-west-2 prod sidecar runner",
-		Description:    "us-west-2 prod sidecar runner provisioned by SRE",
+		Description:    &description,
 		CreationTime:   "2022-10-21T19:42:52.127369Z",
 		LastSeenTime:   nil,
 		RunnerType:     "sidecar",
@@ -66,11 +67,12 @@ func TestAutomationActionsRunbookRunnerGet(t *testing.T) {
 
 	last_seen := "2022-10-21T19:42:53.123456Z"
 	runbook_base_uri := "acme.prod"
+	description := "us-west-2 prod sidecar runner provisioned by SRE"
 	want := &AutomationActionsRunner{
 		ID:             "01DA2MLYN0J5EFC1LKWXUKDDKT",
 		Name:           "us-west-2 prod sidecar runner",
 		Summary:        "us-west-2 prod sidecar runner",
-		Description:    "us-west-2 prod sidecar runner provisioned by SRE",
+		Description:    &description,
 		CreationTime:   "2022-10-21T19:42:52.127369Z",
 		LastSeenTime:   &last_seen,
 		RunnerType:     "runbook",
@@ -89,9 +91,10 @@ func TestAutomationActionsRunbookRunnerGet(t *testing.T) {
 func TestAutomationActionsRunnerCreate(t *testing.T) {
 	setup()
 	defer teardown()
+	description := "us-west-2 prod sidecar runner provisioned by SRE"
 	input := &AutomationActionsRunner{
 		Name:        "us-west-2 prod sidecar runner",
-		Description: "us-west-2 prod sidecar runner provisioned by SRE",
+		Description: &description,
 		RunnerType:  "sidecar",
 	}
 
@@ -113,7 +116,7 @@ func TestAutomationActionsRunnerCreate(t *testing.T) {
 	want := &AutomationActionsRunner{
 		ID:           "01DA2MLYN0J5EFC1LKWXUKDDKT",
 		Name:         "us-west-2 prod sidecar runner",
-		Description:  "us-west-2 prod sidecar runner provisioned by SRE",
+		Description:  &description,
 		CreationTime: "2022-10-21T19:42:52.127369Z",
 		RunnerType:   "sidecar",
 		Type:         "runner",

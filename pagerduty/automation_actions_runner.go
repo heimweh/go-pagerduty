@@ -14,7 +14,7 @@ type AutomationActionsRunner struct {
 	CreationTime   string                       `json:"creation_time"`
 	LastSeenTime   *string                      `json:"last_seen,omitempty"`
 	Summary        string                       `json:"summary,omitempty"`
-	Description    string                       `json:"description,omitempty"`
+	Description    *string                      `json:"description,omitempty"`
 	RunbookBaseUri *string                      `json:"runbook_base_uri,omitempty"`
 	RunbookApiKey  *string                      `json:"runbook_api_key,omitempty"`
 	Teams          []*TeamReference             `json:"teams,omitempty"`
