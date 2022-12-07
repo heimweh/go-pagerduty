@@ -16,6 +16,7 @@ type AutomationActionsRunner struct {
 	Summary        string                       `json:"summary,omitempty"`
 	Description    string                       `json:"description,omitempty"`
 	RunbookBaseUri *string                      `json:"runbook_base_uri,omitempty"`
+	RunbookApiKey  *string                      `json:"runbook_api_key,omitempty"`
 	Teams          []*TeamReference             `json:"teams,omitempty"`
 	Privileges     *AutomationActionsPrivileges `json:"privileges,omitempty"`
 }

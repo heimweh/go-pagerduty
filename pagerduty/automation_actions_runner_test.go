@@ -33,6 +33,7 @@ func TestAutomationActionsSidecarRunnerGet(t *testing.T) {
 		RunnerType:     "sidecar",
 		Type:           "runner",
 		RunbookBaseUri: nil,
+		RunbookApiKey:  nil,
 		Teams: []*TeamReference{
 			{
 				Type: "team_reference",
@@ -75,6 +76,7 @@ func TestAutomationActionsRunbookRunnerGet(t *testing.T) {
 		RunnerType:     "runbook",
 		Type:           "runner",
 		RunbookBaseUri: &runbook_base_uri,
+		RunbookApiKey:  nil,
 		Teams:          nil,
 		Privileges:     nil,
 	}
