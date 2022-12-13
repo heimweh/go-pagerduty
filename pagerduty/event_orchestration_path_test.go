@@ -199,34 +199,37 @@ func TestEventOrchestrationPathRouterPathUpdate(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	want := &EventOrchestrationPath{
-		Type: "router",
-		Parent: &EventOrchestrationPathReference{
-			ID:   "E-ORC-1",
-			Self: "https://api.pagerduty.com/event_orchestrations/E-ORC-1",
-			Type: "event_orchestration_reference",
-		},
-		Sets: []*EventOrchestrationPathSet{
-			{
-				ID: "start",
-				Rules: []*EventOrchestrationPathRule{
-					{
-						Actions: &EventOrchestrationPathRuleActions{
-							RouteTo: "P3ZQXDF",
-						},
-						Conditions: []*EventOrchestrationPathRuleCondition{
-							{
-								Expression: "event.summary matches part 'orca'",
+	want := &EventOrchestrationPathPayload{
+		OrchestrationPath: &EventOrchestrationPath{
+			Type: "router",
+			Parent: &EventOrchestrationPathReference{
+				ID:   "E-ORC-1",
+				Self: "https://api.pagerduty.com/event_orchestrations/E-ORC-1",
+				Type: "event_orchestration_reference",
+			},
+			Sets: []*EventOrchestrationPathSet{
+				{
+					ID: "start",
+					Rules: []*EventOrchestrationPathRule{
+						{
+							Actions: &EventOrchestrationPathRuleActions{
+								RouteTo: "P3ZQXDF",
 							},
-							{
-								Expression: "event.summary matches part 'humpback'",
+							Conditions: []*EventOrchestrationPathRuleCondition{
+								{
+									Expression: "event.summary matches part 'orca'",
+								},
+								{
+									Expression: "event.summary matches part 'humpback'",
+								},
 							},
+							ID: "E-ORC-RULE-1",
 						},
-						ID: "E-ORC-RULE-1",
 					},
 				},
 			},
 		},
+		Warnings: nil,
 	}
 
 	if !reflect.DeepEqual(resp, want) {
@@ -261,7 +264,13 @@ func TestEventOrchestrationPathUnroutedPathUpdate(t *testing.T) {
 		if !reflect.DeepEqual(v, input) {
 			t.Errorf("Request body = %+v, want %+v", v, input)
 		}
-		w.Write([]byte(`{"orchestration_path": { "type": "unrouted", "parent": { "id": "E-ORC-1", "self": "https://api.pagerduty.com/event_orchestrations/E-ORC-1", "type": "event_orchestration_reference" }, "sets": [ { "id": "start", "rules": [ { "actions": { "route_to": "P3ZQXDF" }, "conditions": [ { "expression": "event.summary matches part 'orca'" }, { "expression": "event.summary matches part 'humpback'" } ], "id": "E-ORC-RULE-1"}]}]}}`))
+		w.Write([]byte(`{
+			"orchestration_path": { "type": "unrouted", "parent": { "id": "E-ORC-1", "self": "https://api.pagerduty.com/event_orchestrations/E-ORC-1", "type": "event_orchestration_reference" }, "sets": [ { "id": "start", "rules": [ { "actions": { "route_to": "P3ZQXDF" }, "conditions": [ { "expression": "event.summary matches part 'orca'" }, { "expression": "event.summary matches part 'humpback'" } ], "id": "E-ORC-RULE-1"}]}]},
+			"warnings": [
+				{"feature": "variables", "feature_type": "actions", "message": "Message 1", "rule_id": "abcd001", "warning_type": "forbidden_feature"},
+				{"feature": "extractions", "feature_type": "actions", "message": "Message 2", "rule_id": "abcd002", "warning_type": "forbidden_feature"}
+			]
+		}`))
 	})
 
 	resp, _, err := client.EventOrchestrationPaths.Update("E-ORC-1", PathTypeUnrouted, input)
@@ -269,32 +278,50 @@ func TestEventOrchestrationPathUnroutedPathUpdate(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	want := &EventOrchestrationPath{
-		Type: "unrouted",
-		Parent: &EventOrchestrationPathReference{
-			ID:   "E-ORC-1",
-			Self: "https://api.pagerduty.com/event_orchestrations/E-ORC-1",
-			Type: "event_orchestration_reference",
-		},
-		Sets: []*EventOrchestrationPathSet{
-			{
-				ID: "start",
-				Rules: []*EventOrchestrationPathRule{
-					{
-						Actions: &EventOrchestrationPathRuleActions{
-							RouteTo: "P3ZQXDF",
-						},
-						Conditions: []*EventOrchestrationPathRuleCondition{
-							{
-								Expression: "event.summary matches part 'orca'",
+	want := &EventOrchestrationPathPayload{
+		OrchestrationPath: &EventOrchestrationPath{
+			Type: "unrouted",
+			Parent: &EventOrchestrationPathReference{
+				ID:   "E-ORC-1",
+				Self: "https://api.pagerduty.com/event_orchestrations/E-ORC-1",
+				Type: "event_orchestration_reference",
+			},
+			Sets: []*EventOrchestrationPathSet{
+				{
+					ID: "start",
+					Rules: []*EventOrchestrationPathRule{
+						{
+							Actions: &EventOrchestrationPathRuleActions{
+								RouteTo: "P3ZQXDF",
 							},
-							{
-								Expression: "event.summary matches part 'humpback'",
+							Conditions: []*EventOrchestrationPathRuleCondition{
+								{
+									Expression: "event.summary matches part 'orca'",
+								},
+								{
+									Expression: "event.summary matches part 'humpback'",
+								},
 							},
+							ID: "E-ORC-RULE-1",
 						},
-						ID: "E-ORC-RULE-1",
 					},
 				},
+			},
+		},
+		Warnings: []*EventOrchestrationPathWarning{
+			&EventOrchestrationPathWarning{
+				Feature: "variables",
+				FeatureType: "actions",
+				Message: "Message 1",
+				RuleId: "abcd001",
+				WarningType: "forbidden_feature",
+			},
+			&EventOrchestrationPathWarning{
+				Feature: "extractions",
+				FeatureType: "actions",
+				Message: "Message 2",
+				RuleId: "abcd002",
+				WarningType: "forbidden_feature",
 			},
 		},
 	}
@@ -361,7 +388,10 @@ func TestEventOrchestrationPathServicePathUpdate(t *testing.T) {
 		if !reflect.DeepEqual(v, input) {
 			t.Errorf("Request body = %+v, want %+v", v, input)
 		}
-		w.Write([]byte(`{"orchestration_path": { "type": "service", "parent": { "id": "E-ORC-1", "self": "https://api.pagerduty.com/event_orchestrations/E-ORC-1", "type": "event_orchestration_reference" }, "sets": [ { "id": "start", "rules": [ { "actions": { "route_to": "P3ZQXDF" }, "conditions": [ { "expression": "event.summary matches part 'orca'" }, { "expression": "event.summary matches part 'humpback'" } ], "id": "E-ORC-RULE-1"}]}]}}`))
+		w.Write([]byte(`{
+			"orchestration_path": { "type": "service", "parent": { "id": "E-ORC-1", "self": "https://api.pagerduty.com/event_orchestrations/E-ORC-1", "type": "event_orchestration_reference" }, "sets": [ { "id": "start", "rules": [ { "actions": { "route_to": "P3ZQXDF" }, "conditions": [ { "expression": "event.summary matches part 'orca'" }, { "expression": "event.summary matches part 'humpback'" } ], "id": "E-ORC-RULE-1"}]}]},
+			"warnings": []
+		}`))
 	})
 
 	resp, _, err := client.EventOrchestrationPaths.Update("P3ZQXDF", PathTypeService, input)
@@ -369,34 +399,37 @@ func TestEventOrchestrationPathServicePathUpdate(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	want := &EventOrchestrationPath{
-		Type: "service",
-		Parent: &EventOrchestrationPathReference{
-			ID:   "E-ORC-1",
-			Self: "https://api.pagerduty.com/event_orchestrations/E-ORC-1",
-			Type: "event_orchestration_reference",
-		},
-		Sets: []*EventOrchestrationPathSet{
-			{
-				ID: "start",
-				Rules: []*EventOrchestrationPathRule{
-					{
-						Actions: &EventOrchestrationPathRuleActions{
-							RouteTo: "P3ZQXDF",
-						},
-						Conditions: []*EventOrchestrationPathRuleCondition{
-							{
-								Expression: "event.summary matches part 'orca'",
+	want := &EventOrchestrationPathPayload{
+		OrchestrationPath: &EventOrchestrationPath{
+			Type: "service",
+			Parent: &EventOrchestrationPathReference{
+				ID:   "E-ORC-1",
+				Self: "https://api.pagerduty.com/event_orchestrations/E-ORC-1",
+				Type: "event_orchestration_reference",
+			},
+			Sets: []*EventOrchestrationPathSet{
+				{
+					ID: "start",
+					Rules: []*EventOrchestrationPathRule{
+						{
+							Actions: &EventOrchestrationPathRuleActions{
+								RouteTo: "P3ZQXDF",
 							},
-							{
-								Expression: "event.summary matches part 'humpback'",
+							Conditions: []*EventOrchestrationPathRuleCondition{
+								{
+									Expression: "event.summary matches part 'orca'",
+								},
+								{
+									Expression: "event.summary matches part 'humpback'",
+								},
 							},
+							ID: "E-ORC-RULE-1",
 						},
-						ID: "E-ORC-RULE-1",
 					},
 				},
 			},
 		},
+		Warnings: []*EventOrchestrationPathWarning{},
 	}
 
 	if !reflect.DeepEqual(resp, want) {
