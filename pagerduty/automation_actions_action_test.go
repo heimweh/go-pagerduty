@@ -28,12 +28,14 @@ func TestAutomationActionsActionTypeScriptGet(t *testing.T) {
 		Script:            &script,
 		InvocationCommand: &invocation_command,
 	}
+	resource_type := "action"
+	creation_time := "2022-12-12T18:51:42.048162Z"
 	want := &AutomationActionsAction{
 		ID:                   "01DF4OBNYKW84FS9CCYVYS1MOS",
 		Name:                 "Script Action created by TF",
-		CreationTime:         "2022-12-12T18:51:42.048162Z",
+		CreationTime:         &creation_time,
 		ActionType:           "script",
-		Type:                 "action",
+		Type:                 &resource_type,
 		ActionClassification: &classification,
 		ActionDataReference:  adf,
 	}
@@ -62,12 +64,14 @@ func TestAutomationActionsActionTypeProcessAutomationGet(t *testing.T) {
 		ProcessAutomationJobId: &job_id,
 	}
 	permissions_read := "read"
+	resource_type := "action"
+	creation_time := "2022-12-12T18:51:42.048162Z"
 	want := &AutomationActionsAction{
 		ID:                  "01DF4OBNYKW84FS9CCYVYS1MOS",
 		Name:                "Action created by TF",
-		CreationTime:        "2022-12-12T18:51:42.048162Z",
+		CreationTime:        &creation_time,
 		ActionType:          "process_automation",
-		Type:                "action",
+		Type:                &resource_type,
 		ActionDataReference: adf,
 		Privileges: &AutomationActionsPrivileges{
 			Permissions: []*string{&permissions_read},
@@ -117,13 +121,15 @@ func TestAutomationActionsActionTypeProcessAutomationCreate(t *testing.T) {
 	runner_type_runbook := "runbook"
 	modify_time := "2022-12-12T18:51:42.048162Z"
 	permissions_read := "read"
+	resource_type := "action"
+	creation_time := "2022-12-12T18:51:42.048162Z"
 	want := &AutomationActionsAction{
 		ID:           "01DF4OBNYKW84FS9CCYVYS1MOS",
 		Name:         "Action created by TF",
 		Description:  &description,
-		CreationTime: "2022-12-12T18:51:42.048162Z",
+		CreationTime: &creation_time,
 		ActionType:   "process_automation",
-		Type:         "action",
+		Type:         &resource_type,
 		RunnerID:     &runner_id,
 		RunnerType:   &runner_type_runbook,
 		Teams: []*TeamReference{
@@ -161,5 +167,78 @@ func TestAutomationActionsActionDelete(t *testing.T) {
 
 	if _, err := client.AutomationActionsAction.Delete("01DF4OBNYKW84FS9CCYVYS1MOS"); err != nil {
 		t.Fatal(err)
+	}
+}
+
+func TestAutomationActionsActionTypeScriptCreate(t *testing.T) {
+	setup()
+	defer teardown()
+
+	description := "Description of Action created by TF"
+	runner_id := "01DF4O9T1MDPYOUT7SUX9EXZ4R"
+	invocation_command := "/bin/bash"
+	script_data := "java --version"
+	adf := AutomationActionsActionDataReference{
+		Script:            &script_data,
+		InvocationCommand: &invocation_command,
+	}
+	input := &AutomationActionsAction{
+		Name:                "Action created by TF",
+		Description:         &description,
+		ActionType:          "script",
+		RunnerID:            &runner_id,
+		ActionDataReference: adf,
+	}
+
+	mux.HandleFunc("/automation_actions/actions", func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "POST")
+		v := new(AutomationActionsActionPayload)
+		json.NewDecoder(r.Body).Decode(v)
+		if !reflect.DeepEqual(v.Action, input) {
+			t.Errorf("Request body = %+v, want %+v", v.Action, input)
+		}
+		w.Write([]byte(`{"action":{"action_data_reference":{"script":"java --version","invocation_command":"/bin/bash"},"action_type":"script","creation_time":"2022-12-12T18:51:42.048162Z","description":"Description of Action created by TF","id":"01DF4OBNYKW84FS9CCYVYS1MOS","last_run":"2022-12-12T18:52:11.937747Z","last_run_by":{"id":"PINL781","type":"user_reference"},"modify_time":"2022-12-12T18:51:42.048162Z","name":"Action created by TF","privileges":{"permissions":["read"]},"runner":"01DF4O9T1MDPYOUT7SUX9EXZ4R","runner_type":"sidecar","services":[{"id":"PQWQ0U6","type":"service_reference"}],"teams":[{"id":"PZ31N6S","type":"team_reference"}],"type":"action"}}`))
+	})
+
+	resp, _, err := client.AutomationActionsAction.Create(input)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	runner_type_sidecar := "sidecar"
+	modify_time := "2022-12-12T18:51:42.048162Z"
+	permissions_read := "read"
+	resource_type := "action"
+	creation_time := "2022-12-12T18:51:42.048162Z"
+	want := &AutomationActionsAction{
+		ID:           "01DF4OBNYKW84FS9CCYVYS1MOS",
+		Name:         "Action created by TF",
+		Description:  &description,
+		CreationTime: &creation_time,
+		ActionType:   "script",
+		Type:         &resource_type,
+		RunnerID:     &runner_id,
+		RunnerType:   &runner_type_sidecar,
+		Teams: []*TeamReference{
+			{
+				Type: "team_reference",
+				ID:   "PZ31N6S",
+			},
+		},
+		Services: []*ServiceReference{
+			{
+				Type: "service_reference",
+				ID:   "PQWQ0U6",
+			},
+		},
+		ActionDataReference: adf,
+		Privileges: &AutomationActionsPrivileges{
+			Permissions: []*string{&permissions_read},
+		},
+		ModifyTime: &modify_time,
+	}
+
+	if !reflect.DeepEqual(resp, want) {
+		t.Errorf("returned \n\n%#v want \n\n%#v", resp, want)
 	}
 }

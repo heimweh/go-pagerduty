@@ -16,10 +16,10 @@ type AutomationActionsAction struct {
 	Services             []*ServiceReference                  `json:"services,omitempty"`
 	Teams                []*TeamReference                     `json:"teams,omitempty"`
 	Privileges           *AutomationActionsPrivileges         `json:"privileges,omitempty"`
-	Type                 string                               `json:"type"`
+	Type                 *string                              `json:"type,omitempty"`
 	ActionClassification *string                              `json:"action_classification,omitempty"`
 	RunnerType           *string                              `json:"runner_type,omitempty"`
-	CreationTime         string                               `json:"creation_time"`
+	CreationTime         *string                              `json:"creation_time,omitempty"`
 	ModifyTime           *string                              `json:"modify_time,omitempty"`
 }
 
