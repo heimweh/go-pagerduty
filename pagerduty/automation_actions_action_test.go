@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func TestAutomationActionsScriptActionGet(t *testing.T) {
+func TestAutomationActionsActionTypeScriptGet(t *testing.T) {
 	setup()
 	defer teardown()
 
@@ -43,7 +43,7 @@ func TestAutomationActionsScriptActionGet(t *testing.T) {
 	}
 }
 
-func TestAutomationActionsProcessAutomationActionGet(t *testing.T) {
+func TestAutomationActionsActionTypeProcessAutomationGet(t *testing.T) {
 	setup()
 	defer teardown()
 
@@ -79,7 +79,7 @@ func TestAutomationActionsProcessAutomationActionGet(t *testing.T) {
 	}
 }
 
-func TestAutomationActionsActionCreate(t *testing.T) {
+func TestAutomationActionsActionTypeProcessAutomationCreate(t *testing.T) {
 	setup()
 	defer teardown()
 
