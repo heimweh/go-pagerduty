@@ -2,6 +2,7 @@ package pagerduty
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"reflect"
 	"testing"
@@ -236,6 +237,78 @@ func TestAutomationActionsActionTypeScriptCreate(t *testing.T) {
 			Permissions: []*string{&permissions_read},
 		},
 		ModifyTime: &modify_time,
+	}
+
+	if !reflect.DeepEqual(resp, want) {
+		t.Errorf("returned \n\n%#v want \n\n%#v", resp, want)
+	}
+}
+
+func TestAutomationActionsActionTeamAssociationCreate(t *testing.T) {
+	setup()
+	defer teardown()
+	actionID := "01DA2MLYN0J5EFC1LKWXUKDDKT"
+	teamID := "1"
+
+	mux.HandleFunc(fmt.Sprintf("/automation_actions/actions/%s/teams", actionID), func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "POST")
+		w.Write([]byte(`{"team":{"id":"1","type":"team_reference"}}`))
+	})
+
+	resp, _, err := client.AutomationActionsAction.AssociateToTeam(actionID, teamID)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	want := &AutomationActionsActionTeamAssociationPayload{
+		&TeamReference{
+			ID:   teamID,
+			Type: "team_reference",
+		},
+	}
+
+	if !reflect.DeepEqual(resp, want) {
+		t.Errorf("returned \n\n%#v want \n\n%#v", resp, want)
+	}
+}
+
+func TestAutomationActionsActionTeamAssociationDelete(t *testing.T) {
+	setup()
+	defer teardown()
+	actionID := "01DA2MLYN0J5EFC1LKWXUKDDKT"
+	teamID := "1"
+
+	mux.HandleFunc(fmt.Sprintf("/automation_actions/actions/%s/teams/%s", actionID, teamID), func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "DELETE")
+		w.WriteHeader(http.StatusNoContent)
+	})
+
+	if _, err := client.AutomationActionsAction.DissociateToTeam(actionID, teamID); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestAutomationActionsActionTeamAssociationGet(t *testing.T) {
+	setup()
+	defer teardown()
+	actionID := "01DA2MLYN0J5EFC1LKWXUKDDKT"
+	teamID := "1"
+
+	mux.HandleFunc(fmt.Sprintf("/automation_actions/actions/%s/teams/%s", actionID, teamID), func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "GET")
+		w.Write([]byte(`{"team":{"id":"1","type":"team_reference"}}`))
+	})
+
+	resp, _, err := client.AutomationActionsAction.GetAssociationToTeam(actionID, teamID)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	want := &AutomationActionsActionTeamAssociationPayload{
+		&TeamReference{
+			ID:   teamID,
+			Type: "team_reference",
+		},
 	}
 
 	if !reflect.DeepEqual(resp, want) {
