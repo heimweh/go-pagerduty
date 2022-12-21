@@ -34,6 +34,47 @@ func TestIncidentsList(t *testing.T) {
 	}
 }
 
+func TestIncidentsListAll(t *testing.T) {
+	setup()
+	defer teardown()
+	var reqCount int
+
+	mux.HandleFunc("/incidents", func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "GET")
+		switch reqCount {
+		case 0:
+			w.Write([]byte(`{"incidents":[{"id":"P1D3Z4B"}],"limit":1,"offset":0,"more":true}`))
+			reqCount++
+		case 1:
+			w.Write([]byte(`{"incidents":[{"id":"Z1D3K79"}],"limit":1,"offset":1,"more":true}`))
+			reqCount++
+		default:
+			w.Write([]byte(`{"incidents":[{"id":"U1D3NS1"}],"limit":1,"offset":2,"more":false}`))
+		}
+	})
+
+	resp, err := client.Incidents.ListAll(&ListIncidentsOptions{})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	want := []*Incident{
+		{
+			ID: "P1D3Z4B",
+		},
+		{
+			ID: "Z1D3K79",
+		},
+		{
+			ID: "U1D3NS1",
+		},
+	}
+
+	if !reflect.DeepEqual(resp, want) {
+		t.Errorf("returned %#v; want %#v", resp, want)
+	}
+}
+
 func TestIncidentsManage(t *testing.T) {
 	setup()
 	defer teardown()
