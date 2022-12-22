@@ -2,6 +2,7 @@ package pagerduty
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"reflect"
 	"testing"
@@ -109,6 +110,49 @@ func TestAutomationActionsRunnerCreate(t *testing.T) {
 	})
 
 	resp, _, err := client.AutomationActionsRunner.Create(input)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	want := &AutomationActionsRunner{
+		ID:           "01DA2MLYN0J5EFC1LKWXUKDDKT",
+		Name:         "us-west-2 prod sidecar runner",
+		Description:  &description,
+		CreationTime: "2022-10-21T19:42:52.127369Z",
+		RunnerType:   "sidecar",
+		Type:         "runner",
+	}
+
+	if !reflect.DeepEqual(resp, want) {
+		t.Errorf("returned \n\n%#v want \n\n%#v", resp, want)
+	}
+}
+
+func TestAutomationActionsRunnerUpdate(t *testing.T) {
+	setup()
+	defer teardown()
+
+	description := "us-west-2 prod sidecar runner provisioned by SRE"
+	input := &AutomationActionsRunner{
+		Name:        "us-west-2 prod sidecar runner",
+		Description: &description,
+		RunnerType:  "sidecar",
+	}
+
+	var id = "01DF4OBNYKW84FS9CCYVYS1MOS"
+	var url = fmt.Sprintf("%s/%s", automationActionsRunnerBaseUrl, id)
+
+	mux.HandleFunc(url, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "PUT")
+		v := new(AutomationActionsRunnerPayload)
+		json.NewDecoder(r.Body).Decode(v)
+		if !reflect.DeepEqual(v.Runner, input) {
+			t.Errorf("Request body = %+v, want %+v", v.Runner, input)
+		}
+		w.Write([]byte(`{ "runner": { "id": "01DA2MLYN0J5EFC1LKWXUKDDKT", "name": "us-west-2 prod sidecar runner", "type": "runner", "description": "us-west-2 prod sidecar runner provisioned by SRE", "creation_time": "2022-10-21T19:42:52.127369Z", "runner_type": "sidecar", "status": "Configured" } }`))
+	})
+
+	resp, _, err := client.AutomationActionsRunner.Update(id, input)
 	if err != nil {
 		t.Fatal(err)
 	}
