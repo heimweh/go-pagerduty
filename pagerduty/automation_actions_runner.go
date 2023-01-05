@@ -29,11 +29,11 @@ type AutomationActionsRunnerPayload struct {
 	Runner *AutomationActionsRunner `json:"runner,omitempty"`
 }
 
-var automationActionsRunnerBaseUrl = "/automation_actions/runners"
-
 type AutomationActionsRunnerTeamAssociationPayload struct {
 	Team *TeamReference `json:"team,omitempty"`
 }
+
+var automationActionsRunnerBaseUrl = "/automation_actions/runners"
 
 // Create creates a new runner
 func (s *AutomationActionsRunnerService) Create(runner *AutomationActionsRunner) (*AutomationActionsRunner, *Response, error) {
@@ -84,7 +84,7 @@ func (s *AutomationActionsRunnerService) Delete(id string) (*Response, error) {
 
 // Associate a Runner with a team
 func (s *AutomationActionsRunnerService) AssociateToTeam(runnerID, teamID string) (*AutomationActionsRunnerTeamAssociationPayload, *Response, error) {
-	u := fmt.Sprintf("/automation_actions/runners/%s/teams", runnerID)
+	u := fmt.Sprintf("%s/%s/teams", automationActionsRunnerBaseUrl, runnerID)
 	v := new(AutomationActionsRunnerTeamAssociationPayload)
 	p := &AutomationActionsRunnerTeamAssociationPayload{
 		Team: &TeamReference{ID: teamID, Type: "team_reference"},
@@ -100,14 +100,14 @@ func (s *AutomationActionsRunnerService) AssociateToTeam(runnerID, teamID string
 
 // Dissociate an Runner with a team
 func (s *AutomationActionsRunnerService) DissociateFromTeam(runnerID, teamID string) (*Response, error) {
-	u := fmt.Sprintf("/automation_actions/runners/%s/teams/%s", runnerID, teamID)
+	u := fmt.Sprintf("%s/%s/teams/%s", automationActionsRunnerBaseUrl, runnerID, teamID)
 
 	return s.client.newRequestDoOptions("DELETE", u, nil, nil, nil)
 }
 
 // Gets the details of a Runner / team relation
 func (s *AutomationActionsRunnerService) GetAssociationToTeam(runnerID, teamID string) (*AutomationActionsRunnerTeamAssociationPayload, *Response, error) {
-	u := fmt.Sprintf("/automation_actions/runners/%s/teams/%s", runnerID, teamID)
+	u := fmt.Sprintf("%s/%s/teams/%s", automationActionsRunnerBaseUrl, runnerID, teamID)
 	v := new(AutomationActionsRunnerTeamAssociationPayload)
 
 	resp, err := s.client.newRequestDoOptions("GET", u, nil, nil, &v)
