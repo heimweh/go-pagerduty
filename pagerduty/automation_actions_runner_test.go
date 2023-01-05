@@ -224,7 +224,7 @@ func TestAutomationActionsRunnerTeamAssociationDelete(t *testing.T) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	if _, err := client.AutomationActionsRunner.DissociateToTeam(runnerID, teamID); err != nil {
+	if _, err := client.AutomationActionsRunner.DissociateFromTeam(runnerID, teamID); err != nil {
 		t.Fatal(err)
 	}
 }

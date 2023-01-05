@@ -99,7 +99,7 @@ func (s *AutomationActionsRunnerService) AssociateToTeam(runnerID, teamID string
 }
 
 // Dissociate an Runner with a team
-func (s *AutomationActionsRunnerService) DissociateToTeam(runnerID, teamID string) (*Response, error) {
+func (s *AutomationActionsRunnerService) DissociateFromTeam(runnerID, teamID string) (*Response, error) {
 	u := fmt.Sprintf("/automation_actions/runners/%s/teams/%s", runnerID, teamID)
 
 	return s.client.newRequestDoOptions("DELETE", u, nil, nil, nil)
