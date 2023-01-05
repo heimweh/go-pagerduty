@@ -184,3 +184,75 @@ func TestAutomationActionsRunnerDelete(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+
+func TestAutomationActionsRunnerTeamAssociationCreate(t *testing.T) {
+	setup()
+	defer teardown()
+	runnerID := "01DA2MLYN0J5EFC1LKWXUKDDKT"
+	teamID := "PQ9K7I8"
+
+	mux.HandleFunc(fmt.Sprintf("/automation_actions/runners/%s/teams", runnerID), func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "POST")
+		w.Write([]byte(`{"team":{"id":"PQ9K7I8","type":"team_reference"}}`))
+	})
+
+	resp, _, err := client.AutomationActionsRunner.AssociateToTeam(runnerID, teamID)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	want := &AutomationActionsRunnerTeamAssociationPayload{
+		&TeamReference{
+			ID:   teamID,
+			Type: "team_reference",
+		},
+	}
+
+	if !reflect.DeepEqual(resp, want) {
+		t.Errorf("returned \n\n%#v want \n\n%#v", resp, want)
+	}
+}
+
+func TestAutomationActionsRunnerTeamAssociationDelete(t *testing.T) {
+	setup()
+	defer teardown()
+	runnerID := "01DA2MLYN0J5EFC1LKWXUKDDKT"
+	teamID := "PQ9K7I8"
+
+	mux.HandleFunc(fmt.Sprintf("/automation_actions/runners/%s/teams/%s", runnerID, teamID), func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "DELETE")
+		w.WriteHeader(http.StatusNoContent)
+	})
+
+	if _, err := client.AutomationActionsRunner.DissociateToTeam(runnerID, teamID); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestAutomationActionsRunnerTeamAssociationGet(t *testing.T) {
+	setup()
+	defer teardown()
+	runnerID := "01DA2MLYN0J5EFC1LKWXUKDDKT"
+	teamID := "PQ9K7I8"
+
+	mux.HandleFunc(fmt.Sprintf("/automation_actions/runners/%s/teams/%s", runnerID, teamID), func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "GET")
+		w.Write([]byte(`{"team":{"id":"PQ9K7I8","type":"team_reference"}}`))
+	})
+
+	resp, _, err := client.AutomationActionsRunner.GetAssociationToTeam(runnerID, teamID)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	want := &AutomationActionsRunnerTeamAssociationPayload{
+		&TeamReference{
+			ID:   teamID,
+			Type: "team_reference",
+		},
+	}
+
+	if !reflect.DeepEqual(resp, want) {
+		t.Errorf("returned \n\n%#v want \n\n%#v", resp, want)
+	}
+}
