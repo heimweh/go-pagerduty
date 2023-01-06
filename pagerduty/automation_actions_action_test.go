@@ -391,3 +391,75 @@ func TestAutomationActionsActionTeamAssociationGet(t *testing.T) {
 		t.Errorf("returned \n\n%#v want \n\n%#v", resp, want)
 	}
 }
+
+func TestAutomationActionsActionServiceAssociationCreate(t *testing.T) {
+	setup()
+	defer teardown()
+	actionID := "01DA2MLYN0J5EFC1LKWXUKDDKT"
+	serviceID := "1"
+
+	mux.HandleFunc(fmt.Sprintf("/automation_actions/actions/%s/services", actionID), func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "POST")
+		w.Write([]byte(`{"service":{"id":"1","type":"service_reference"}}`))
+	})
+
+	resp, _, err := client.AutomationActionsAction.AssociateToService(actionID, serviceID)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	want := &AutomationActionsActionServiceAssociationPayload{
+		&ServiceReference{
+			ID:   serviceID,
+			Type: "service_reference",
+		},
+	}
+
+	if !reflect.DeepEqual(resp, want) {
+		t.Errorf("returned \n\n%#v want \n\n%#v", resp, want)
+	}
+}
+
+func TestAutomationActionsActionServiceAssociationDelete(t *testing.T) {
+	setup()
+	defer teardown()
+	actionID := "01DA2MLYN0J5EFC1LKWXUKDDKT"
+	serviceID := "1"
+
+	mux.HandleFunc(fmt.Sprintf("/automation_actions/actions/%s/services/%s", actionID, serviceID), func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "DELETE")
+		w.WriteHeader(http.StatusNoContent)
+	})
+
+	if _, err := client.AutomationActionsAction.DissociateFromService(actionID, serviceID); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestAutomationActionsActionServiceAssociationGet(t *testing.T) {
+	setup()
+	defer teardown()
+	actionID := "01DA2MLYN0J5EFC1LKWXUKDDKT"
+	serviceID := "1"
+
+	mux.HandleFunc(fmt.Sprintf("/automation_actions/actions/%s/services/%s", actionID, serviceID), func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "GET")
+		w.Write([]byte(`{"service":{"id":"1","type":"service_reference"}}`))
+	})
+
+	resp, _, err := client.AutomationActionsAction.GetAssociationToService(actionID, serviceID)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	want := &AutomationActionsActionServiceAssociationPayload{
+		&ServiceReference{
+			ID:   serviceID,
+			Type: "service_reference",
+		},
+	}
+
+	if !reflect.DeepEqual(resp, want) {
+		t.Errorf("returned \n\n%#v want \n\n%#v", resp, want)
+	}
+}
