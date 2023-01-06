@@ -144,7 +144,7 @@ func (s *AutomationActionsActionService) AssociateToService(actionID, serviceID 
 }
 
 // Dissociate an Automation Action with a service
-func (s *AutomationActionsActionService) DissociateToService(actionID, serviceID string) (*Response, error) {
+func (s *AutomationActionsActionService) DissociateFromService(actionID, serviceID string) (*Response, error) {
 	u := fmt.Sprintf("%s/%s/services/%s", automationActionsActionBaseUrl, actionID, serviceID)
 
 	return s.client.newRequestDoOptions("DELETE", u, nil, nil, nil)

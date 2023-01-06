@@ -431,7 +431,7 @@ func TestAutomationActionsActionServiceAssociationDelete(t *testing.T) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	if _, err := client.AutomationActionsAction.DissociateToService(actionID, serviceID); err != nil {
+	if _, err := client.AutomationActionsAction.DissociateFromService(actionID, serviceID); err != nil {
 		t.Fatal(err)
 	}
 }
