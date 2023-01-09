@@ -200,6 +200,10 @@ func TestIncidentWorkflowGet(t *testing.T) {
     "html_url": "https://subdomain.pagerduty.com/flex-workflows/workflows/TO38234/edit",
     "created_at": "2022-06-07T00:01:55Z",
     "last_started_at": "2022-06-07T00:01:55Z",
+    "team": {
+        "type": "team_reference",
+        "id": "T1"
+    },
     "steps": [
       {
         "id": "32OIHWEJ",
@@ -272,6 +276,10 @@ func TestIncidentWorkflowGet(t *testing.T) {
 		Name:        "Example Workflow",
 		Description: &workflowDesc,
 		Self:        "https://api.pagerduty.com/incident_workflows/TO38234",
+		Team: &TeamReference{
+			Type: "team_reference",
+			ID:   "T1",
+		},
 		Steps: []*IncidentWorkflowStep{
 			{
 				ID:          "32OIHWEJ",
