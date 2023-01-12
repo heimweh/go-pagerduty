@@ -137,6 +137,33 @@ func TestEventOrchestrationPathGetServicePath(t *testing.T) {
 	}
 }
 
+func TestEventOrchestrationPathGetServiceActiveStatus(t *testing.T) {
+	setup()
+	defer teardown()
+
+	var url = fmt.Sprintf("%s/services/POOPBUG/active", eventOrchestrationBaseUrl)
+	mux.HandleFunc(url, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "GET")
+		w.Write([]byte(`{
+      "active": false
+		}`))
+	})
+
+	resp, _, err := client.EventOrchestrationPaths.GetServiceActiveStatus("POOPBUG")
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	want := &EventOrchestrationPathServiceActiveStatus{
+		Active: false,
+	}
+
+	if !reflect.DeepEqual(resp, want) {
+		t.Errorf("returned \n\n%#v want \n\n%#v", resp, want)
+	}
+}
+
 func TestEventOrchestrationPathRouterPathUpdate(t *testing.T) {
 	setup()
 	defer teardown()
@@ -271,6 +298,36 @@ func TestEventOrchestrationPathUnroutedPathUpdate(t *testing.T) {
 			},
 		},
 	}
+
+	if !reflect.DeepEqual(resp, want) {
+		t.Errorf("returned \n\n%#v want \n\n%#v", resp, want)
+	}
+}
+
+func TestEventOrchestrationPathServiceActiveStatusUpdate(t *testing.T) {
+	setup()
+	defer teardown()
+	input := &EventOrchestrationPathServiceActiveStatus{Active: false}
+
+	var url = fmt.Sprintf("%s/services/P3ZQXDF/active", eventOrchestrationBaseUrl)
+
+	mux.HandleFunc(url, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "PUT")
+		v := new(EventOrchestrationPathServiceActiveStatus)
+		v.Active = false
+		json.NewDecoder(r.Body).Decode(v)
+		if !reflect.DeepEqual(v, input) {
+			t.Errorf("Request body = %+v, want %+v", v, input)
+		}
+		w.Write([]byte(`{"active":false}`))
+	})
+
+	resp, _, err := client.EventOrchestrationPaths.UpdateServiceActiveStatus("P3ZQXDF", input.Active)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	want := &EventOrchestrationPathServiceActiveStatus{Active: false}
 
 	if !reflect.DeepEqual(resp, want) {
 		t.Errorf("returned \n\n%#v want \n\n%#v", resp, want)
