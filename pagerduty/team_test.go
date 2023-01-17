@@ -259,6 +259,46 @@ func TestTeamsGetMembers(t *testing.T) {
 	}
 }
 
+func TestPagedTeamsGetMembers(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/teams/1/members", func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "GET")
+		if r.URL.Query().Get("offset") == "1" {
+			w.Write([]byte(`{"members": [{"user": {"id": "2"}, "role": "observer"}], "limit": 1, "offset": 1, "more": false}`))
+		} else {
+			w.Write([]byte(`{"members": [{"user": {"id": "1"}, "role": "manager"}], "limit": 1, "offset": 0, "more": true}`))
+		}
+	})
+
+	resp, _, err := client.Teams.GetMembers("1", &GetMembersOptions{})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	want := &GetMembersResponse{
+		Members: []*Member{
+			{
+				User: &UserReference{
+					ID: "1",
+				},
+				Role: "manager",
+			},
+			{
+				User: &UserReference{
+					ID: "2",
+				},
+				Role: "observer",
+			},
+		},
+	}
+
+	if !reflect.DeepEqual(resp, want) {
+		t.Errorf("returned \n\n%#v want \n\n%#v", resp, want)
+	}
+}
+
 func TestTeamsAddEscalationPolicy(t *testing.T) {
 	setup()
 	defer teardown()
