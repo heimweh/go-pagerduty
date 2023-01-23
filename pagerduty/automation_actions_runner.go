@@ -29,17 +29,18 @@ type AutomationActionsRunnerPayload struct {
 	Runner *AutomationActionsRunner `json:"runner,omitempty"`
 }
 
+type AutomationActionsRunnerTeamAssociationPayload struct {
+	Team *TeamReference `json:"team,omitempty"`
+}
+
+var automationActionsRunnerBaseUrl = "/automation_actions/runners"
+
 // Create creates a new runner
 func (s *AutomationActionsRunnerService) Create(runner *AutomationActionsRunner) (*AutomationActionsRunner, *Response, error) {
-	u := "/automation_actions/runners"
+	u := automationActionsRunnerBaseUrl
 	v := new(AutomationActionsRunnerPayload)
-	o := RequestOptions{
-		Type:  "header",
-		Label: "X-EARLY-ACCESS",
-		Value: "automation-actions-early-access",
-	}
 
-	resp, err := s.client.newRequestDoOptions("POST", u, nil, &AutomationActionsRunnerPayload{Runner: runner}, &v, o)
+	resp, err := s.client.newRequestDoOptions("POST", u, nil, &AutomationActionsRunnerPayload{Runner: runner}, &v)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -49,15 +50,24 @@ func (s *AutomationActionsRunnerService) Create(runner *AutomationActionsRunner)
 
 // Get retrieves information about a runner.
 func (s *AutomationActionsRunnerService) Get(id string) (*AutomationActionsRunner, *Response, error) {
-	u := fmt.Sprintf("/automation_actions/runners/%s", id)
+	u := fmt.Sprintf("%s/%s", automationActionsRunnerBaseUrl, id)
 	v := new(AutomationActionsRunnerPayload)
-	o := RequestOptions{
-		Type:  "header",
-		Label: "X-EARLY-ACCESS",
-		Value: "automation-actions-early-access",
+
+	resp, err := s.client.newRequestDoOptions("GET", u, nil, nil, &v)
+	if err != nil {
+		return nil, nil, err
 	}
 
-	resp, err := s.client.newRequestDoOptions("GET", u, nil, nil, &v, o)
+	return v.Runner, resp, nil
+}
+
+// Update an existing runner
+func (s *AutomationActionsRunnerService) Update(ID string, runner *AutomationActionsRunner) (*AutomationActionsRunner, *Response, error) {
+	u := fmt.Sprintf("%s/%s", automationActionsRunnerBaseUrl, ID)
+	v := new(AutomationActionsRunnerPayload)
+	p := &AutomationActionsRunnerPayload{Runner: runner}
+
+	resp, err := s.client.newRequestDo("PUT", u, nil, p, v)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -67,12 +77,43 @@ func (s *AutomationActionsRunnerService) Get(id string) (*AutomationActionsRunne
 
 // Delete deletes an existing runner.
 func (s *AutomationActionsRunnerService) Delete(id string) (*Response, error) {
-	u := fmt.Sprintf("/automation_actions/runners/%s", id)
-	o := RequestOptions{
-		Type:  "header",
-		Label: "X-EARLY-ACCESS",
-		Value: "automation-actions-early-access",
+	u := fmt.Sprintf("%s/%s", automationActionsRunnerBaseUrl, id)
+
+	return s.client.newRequestDoOptions("DELETE", u, nil, nil, nil)
+}
+
+// Associate a Runner with a team
+func (s *AutomationActionsRunnerService) AssociateToTeam(runnerID, teamID string) (*AutomationActionsRunnerTeamAssociationPayload, *Response, error) {
+	u := fmt.Sprintf("%s/%s/teams", automationActionsRunnerBaseUrl, runnerID)
+	v := new(AutomationActionsRunnerTeamAssociationPayload)
+	p := &AutomationActionsRunnerTeamAssociationPayload{
+		Team: &TeamReference{ID: teamID, Type: "team_reference"},
 	}
 
-	return s.client.newRequestDoOptions("DELETE", u, nil, nil, nil, o)
+	resp, err := s.client.newRequestDoOptions("POST", u, nil, p, &v)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return v, resp, nil
+}
+
+// Dissociate an Runner with a team
+func (s *AutomationActionsRunnerService) DissociateFromTeam(runnerID, teamID string) (*Response, error) {
+	u := fmt.Sprintf("%s/%s/teams/%s", automationActionsRunnerBaseUrl, runnerID, teamID)
+
+	return s.client.newRequestDoOptions("DELETE", u, nil, nil, nil)
+}
+
+// Gets the details of a Runner / team relation
+func (s *AutomationActionsRunnerService) GetAssociationToTeam(runnerID, teamID string) (*AutomationActionsRunnerTeamAssociationPayload, *Response, error) {
+	u := fmt.Sprintf("%s/%s/teams/%s", automationActionsRunnerBaseUrl, runnerID, teamID)
+	v := new(AutomationActionsRunnerTeamAssociationPayload)
+
+	resp, err := s.client.newRequestDoOptions("GET", u, nil, nil, &v)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return v, resp, nil
 }

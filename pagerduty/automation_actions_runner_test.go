@@ -2,6 +2,7 @@ package pagerduty
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"reflect"
 	"testing"
@@ -127,6 +128,49 @@ func TestAutomationActionsRunnerCreate(t *testing.T) {
 	}
 }
 
+func TestAutomationActionsRunnerUpdate(t *testing.T) {
+	setup()
+	defer teardown()
+
+	description := "us-west-2 prod sidecar runner provisioned by SRE"
+	input := &AutomationActionsRunner{
+		Name:        "us-west-2 prod sidecar runner",
+		Description: &description,
+		RunnerType:  "sidecar",
+	}
+
+	var id = "01DF4OBNYKW84FS9CCYVYS1MOS"
+	var url = fmt.Sprintf("%s/%s", automationActionsRunnerBaseUrl, id)
+
+	mux.HandleFunc(url, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "PUT")
+		v := new(AutomationActionsRunnerPayload)
+		json.NewDecoder(r.Body).Decode(v)
+		if !reflect.DeepEqual(v.Runner, input) {
+			t.Errorf("Request body = %+v, want %+v", v.Runner, input)
+		}
+		w.Write([]byte(`{ "runner": { "id": "01DA2MLYN0J5EFC1LKWXUKDDKT", "name": "us-west-2 prod sidecar runner", "type": "runner", "description": "us-west-2 prod sidecar runner provisioned by SRE", "creation_time": "2022-10-21T19:42:52.127369Z", "runner_type": "sidecar", "status": "Configured" } }`))
+	})
+
+	resp, _, err := client.AutomationActionsRunner.Update(id, input)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	want := &AutomationActionsRunner{
+		ID:           "01DA2MLYN0J5EFC1LKWXUKDDKT",
+		Name:         "us-west-2 prod sidecar runner",
+		Description:  &description,
+		CreationTime: "2022-10-21T19:42:52.127369Z",
+		RunnerType:   "sidecar",
+		Type:         "runner",
+	}
+
+	if !reflect.DeepEqual(resp, want) {
+		t.Errorf("returned \n\n%#v want \n\n%#v", resp, want)
+	}
+}
+
 func TestAutomationActionsRunnerDelete(t *testing.T) {
 	setup()
 	defer teardown()
@@ -138,5 +182,77 @@ func TestAutomationActionsRunnerDelete(t *testing.T) {
 
 	if _, err := client.AutomationActionsRunner.Delete("01DA2MLYN0J5EFC1LKWXUKDDKT"); err != nil {
 		t.Fatal(err)
+	}
+}
+
+func TestAutomationActionsRunnerTeamAssociationCreate(t *testing.T) {
+	setup()
+	defer teardown()
+	runnerID := "01DA2MLYN0J5EFC1LKWXUKDDKT"
+	teamID := "PQ9K7I8"
+
+	mux.HandleFunc(fmt.Sprintf("/automation_actions/runners/%s/teams", runnerID), func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "POST")
+		w.Write([]byte(`{"team":{"id":"PQ9K7I8","type":"team_reference"}}`))
+	})
+
+	resp, _, err := client.AutomationActionsRunner.AssociateToTeam(runnerID, teamID)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	want := &AutomationActionsRunnerTeamAssociationPayload{
+		&TeamReference{
+			ID:   teamID,
+			Type: "team_reference",
+		},
+	}
+
+	if !reflect.DeepEqual(resp, want) {
+		t.Errorf("returned \n\n%#v want \n\n%#v", resp, want)
+	}
+}
+
+func TestAutomationActionsRunnerTeamAssociationDelete(t *testing.T) {
+	setup()
+	defer teardown()
+	runnerID := "01DA2MLYN0J5EFC1LKWXUKDDKT"
+	teamID := "PQ9K7I8"
+
+	mux.HandleFunc(fmt.Sprintf("/automation_actions/runners/%s/teams/%s", runnerID, teamID), func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "DELETE")
+		w.WriteHeader(http.StatusNoContent)
+	})
+
+	if _, err := client.AutomationActionsRunner.DissociateFromTeam(runnerID, teamID); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestAutomationActionsRunnerTeamAssociationGet(t *testing.T) {
+	setup()
+	defer teardown()
+	runnerID := "01DA2MLYN0J5EFC1LKWXUKDDKT"
+	teamID := "PQ9K7I8"
+
+	mux.HandleFunc(fmt.Sprintf("/automation_actions/runners/%s/teams/%s", runnerID, teamID), func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "GET")
+		w.Write([]byte(`{"team":{"id":"PQ9K7I8","type":"team_reference"}}`))
+	})
+
+	resp, _, err := client.AutomationActionsRunner.GetAssociationToTeam(runnerID, teamID)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	want := &AutomationActionsRunnerTeamAssociationPayload{
+		&TeamReference{
+			ID:   teamID,
+			Type: "team_reference",
+		},
+	}
+
+	if !reflect.DeepEqual(resp, want) {
+		t.Errorf("returned \n\n%#v want \n\n%#v", resp, want)
 	}
 }
