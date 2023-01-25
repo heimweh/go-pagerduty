@@ -8,7 +8,92 @@ import (
 	"testing"
 )
 
-func TestEventOrchestrationPathGetRouterPath(t *testing.T) {
+func TestEventOrchestrationPathGlobalPathGet(t *testing.T) {
+	setup()
+	defer teardown()
+
+	var url = fmt.Sprintf("%s/E-ORC-1/global", eventOrchestrationBaseUrl)
+	mux.HandleFunc(url, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "GET")
+		w.Write([]byte(`{
+			"orchestration_path": {
+				"catch_all": {
+					"actions": {}
+				},
+				"created_at": "2022-07-13T20:44:58Z",
+				"created_by": {
+					"id": "P8B9WR7",
+					"self": "https://api.pagerduty.com/users/P8B9WR7",
+					"type": "user_reference"
+				},
+				"parent": {
+					"id": "E-ORC-1",
+					"self": "https://api.pagerduty.com/event_orchestrations/E-ORC-1",
+					"type": "event_orchestration_reference"
+				},
+				"self": "https://api.pagerduty.com/event_orchestrations/E-ORC-1/global",				
+				"type": "global",
+				"updated_at": "2022-12-15T13:57:08Z",
+				"updated_by": {
+					"id": "P8B9WR8",
+					"self": "https://api.pagerduty.com/users/P8B9WR8",
+					"type": "user_reference"
+				},
+				"version": "Abcd.1234"
+			}
+		}`))
+	})
+
+	// TODO: add sets
+	// "sets": [
+	// 				{
+	// 					"id": "start",
+	// 					"rules": []
+	// 				}
+	// 			],
+
+	resp, _, err := client.EventOrchestrationPaths.Get("E-ORC-1", PathTypeGlobal)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	want := &EventOrchestrationPath{
+		CatchAll: &EventOrchestrationPathCatchAll{
+			Actions: &EventOrchestrationPathRuleActions{},
+		},
+		CreatedAt: "2022-07-13T20:44:58Z",
+		CreatedBy: &EventOrchestrationPathReference{
+			ID:   "P8B9WR7",
+			Self: "https://api.pagerduty.com/users/P8B9WR7",
+			Type: "user_reference",
+		},
+		Parent: &EventOrchestrationPathReference{
+			ID:   "E-ORC-1",
+			Self: "https://api.pagerduty.com/event_orchestrations/E-ORC-1",
+			Type: "event_orchestration_reference",
+		},
+		Self: "https://api.pagerduty.com/event_orchestrations/E-ORC-1/global",
+		Type: "global",
+		UpdatedAt: "2022-12-15T13:57:08Z",
+		UpdatedBy: &EventOrchestrationPathReference{
+			ID:   "P8B9WR8",
+			Self: "https://api.pagerduty.com/users/P8B9WR8",
+			Type: "user_reference",
+		},
+		Version: "Abcd.1234",
+	}
+
+	if !reflect.DeepEqual(resp, want) {
+		t.Errorf("returned \n\n%#v want \n\n%#v", resp, want)
+	}
+
+	// if !reflect.DeepEqual(resp.Parent, want.Parent) {
+	// 	t.Errorf("returned \n\n%#v want \n\n%#v", resp, want)
+	// }
+}
+
+func TestEventOrchestrationPathRouterPathGet(t *testing.T) {
 	setup()
 	defer teardown()
 
@@ -51,7 +136,7 @@ func TestEventOrchestrationPathGetRouterPath(t *testing.T) {
 	}
 }
 
-func TestEventOrchestrationPathGetUnroutedPath(t *testing.T) {
+func TestEventOrchestrationPathUnroutedPathGet(t *testing.T) {
 	setup()
 	defer teardown()
 
@@ -94,7 +179,7 @@ func TestEventOrchestrationPathGetUnroutedPath(t *testing.T) {
 	}
 }
 
-func TestEventOrchestrationPathGetServicePath(t *testing.T) {
+func TestEventOrchestrationPathServicePathGet(t *testing.T) {
 	setup()
 	defer teardown()
 
