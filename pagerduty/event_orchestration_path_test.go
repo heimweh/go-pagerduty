@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-func TestEventOrchestrationPathGlobalPathGet(t *testing.T) {
+func TestEventOrchestrationPathGlobalGet(t *testing.T) {
 	setup()
 	defer teardown()
 
@@ -31,7 +31,13 @@ func TestEventOrchestrationPathGlobalPathGet(t *testing.T) {
 					"self": "https://api.pagerduty.com/event_orchestrations/E-ORC-1",
 					"type": "event_orchestration_reference"
 				},
-				"self": "https://api.pagerduty.com/event_orchestrations/E-ORC-1/global",				
+				"self": "https://api.pagerduty.com/event_orchestrations/E-ORC-1/global",
+				"sets": [
+					{
+						"id": "start",
+						"rules": []
+					}
+				],
 				"type": "global",
 				"updated_at": "2022-12-15T13:57:08Z",
 				"updated_by": {
@@ -42,15 +48,7 @@ func TestEventOrchestrationPathGlobalPathGet(t *testing.T) {
 				"version": "Abcd.1234"
 			}
 		}`))
-	})
-
-	// TODO: add sets
-	// "sets": [
-	// 				{
-	// 					"id": "start",
-	// 					"rules": []
-	// 				}
-	// 			],
+	})	
 
 	resp, _, err := client.EventOrchestrationPaths.Get("E-ORC-1", PathTypeGlobal)
 
@@ -74,6 +72,12 @@ func TestEventOrchestrationPathGlobalPathGet(t *testing.T) {
 			Type: "event_orchestration_reference",
 		},
 		Self: "https://api.pagerduty.com/event_orchestrations/E-ORC-1/global",
+		Sets: []*EventOrchestrationPathSet{
+			{
+				ID: "start",
+				Rules: []*EventOrchestrationPathRule{},
+			},
+		},
 		Type: "global",
 		UpdatedAt: "2022-12-15T13:57:08Z",
 		UpdatedBy: &EventOrchestrationPathReference{
@@ -87,13 +91,9 @@ func TestEventOrchestrationPathGlobalPathGet(t *testing.T) {
 	if !reflect.DeepEqual(resp, want) {
 		t.Errorf("returned \n\n%#v want \n\n%#v", resp, want)
 	}
-
-	// if !reflect.DeepEqual(resp.Parent, want.Parent) {
-	// 	t.Errorf("returned \n\n%#v want \n\n%#v", resp, want)
-	// }
 }
 
-func TestEventOrchestrationPathRouterPathGet(t *testing.T) {
+func TestEventOrchestrationPathRouterGet(t *testing.T) {
 	setup()
 	defer teardown()
 
@@ -136,7 +136,7 @@ func TestEventOrchestrationPathRouterPathGet(t *testing.T) {
 	}
 }
 
-func TestEventOrchestrationPathUnroutedPathGet(t *testing.T) {
+func TestEventOrchestrationPathUnroutedGet(t *testing.T) {
 	setup()
 	defer teardown()
 
@@ -179,7 +179,7 @@ func TestEventOrchestrationPathUnroutedPathGet(t *testing.T) {
 	}
 }
 
-func TestEventOrchestrationPathServicePathGet(t *testing.T) {
+func TestEventOrchestrationPathServiceGet(t *testing.T) {
 	setup()
 	defer teardown()
 
@@ -222,7 +222,225 @@ func TestEventOrchestrationPathServicePathGet(t *testing.T) {
 	}
 }
 
-func TestEventOrchestrationPathRouterPathUpdate(t *testing.T) {
+func TestEventOrchestrationPathGlobalUpdate(t *testing.T) {
+	setup()
+	defer teardown()
+	input := &EventOrchestrationPath{
+		CatchAll: &EventOrchestrationPathCatchAll{
+			Actions: &EventOrchestrationPathRuleActions{
+				Suppress: true,
+			},
+		},
+		Sets: []*EventOrchestrationPathSet{
+			{
+				ID: "start",
+				Rules: []*EventOrchestrationPathRule{
+					{
+						Actions: &EventOrchestrationPathRuleActions{
+							DropEvent: true,
+						},
+						Conditions: []*EventOrchestrationPathRuleCondition{
+							{
+								Expression: "event.summary matches part '[TEST]'",
+							},
+						},
+						ID: "240790f7",
+						Label: "drop test events",
+					},
+					{
+						Actions: &EventOrchestrationPathRuleActions{
+							AutomationActions: []*EventOrchestrationPathAutomationAction{
+								{
+									AutoSend: true,
+									Headers: []*EventOrchestrationPathAutomationActionObject{
+										{
+											Key: "x-header-1",
+											Value: "h-one",
+										},
+										{
+											Key: "x-header-2",
+											Value: "h-two",
+										},
+									},
+									Name: "test webhook",
+									Parameters: []*EventOrchestrationPathAutomationActionObject{
+										{
+											Key: "hostname",
+											Value: "{{variables.hostname}}",
+										},
+										{
+											Key: "info",
+											Value: "{{event.summary}}",
+										},
+									},
+									Url: "https://test.com",
+								},
+							},
+							EventAction: "trigger",
+							Extractions: []*EventOrchestrationPathActionExtractions{
+								{
+									Target: "event.summary",
+									Template: "{{event.summary}}, hostname: {{variables.hostname}}",
+								},
+							},
+							Priority: "PCMUB6F",
+							RouteTo: "7589a1b9",
+							Severity: "warning",
+							Variables: []*EventOrchestrationPathActionVariables{
+								{
+									Name: "hostname",
+									Path: "event.source",
+									Type: "regex",
+									Value: ".*",
+								},
+							},
+						},
+						Conditions: []*EventOrchestrationPathRuleCondition{
+							{
+								Expression: "now in Mon,Tue,Wed,Thu,Fri 08:00:00 to 18:00:00 America/Los_Angeles",
+							},
+						},
+						ID: "4ad2c1be",
+						Label: "business hours",
+					},
+				},
+			},
+			{
+				ID: "7589a1b9",
+				Rules: []*EventOrchestrationPathRule{
+					{
+						Actions: &EventOrchestrationPathRuleActions{
+							Annotate: "received more than 10 events over 5 minutes",
+						},
+						Conditions: []*EventOrchestrationPathRuleCondition{
+							{
+								Expression: "trigger_count over 5 minute > 10",
+							},
+						},
+						ID: "fed68019",
+						Label: "too many events",
+					},
+				},
+			},
+		},
+	}
+
+	var url = fmt.Sprintf("%s/E-ORC-1/global", eventOrchestrationBaseUrl)
+
+	mux.HandleFunc(url, func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "PUT")
+		v := new(EventOrchestrationPathPayload)
+		json.NewDecoder(r.Body).Decode(v)
+		if !reflect.DeepEqual(v.OrchestrationPath, input) {
+			t.Errorf("Request body = %+v, want %+v", v, input)
+		}
+		w.Write([]byte(`{
+			"orchestration_path": {
+				"catch_all": {"actions": {"suppress": true}},
+				"created_at": "2022-07-13T20:44:58Z",
+				"created_by": {"id": "P8B9WR7", "self": "https://api.pagerduty.com/users/P8B9WR7", "type": "user_reference"},
+				"parent": {
+					"id": "E-ORC-1",
+					"self": "https://api.pagerduty.com/event_orchestrations/E-ORC-1",
+					"type": "event_orchestration_reference"
+				},
+				"self": "https://api.pagerduty.com/event_orchestrations/E-ORC-1/global",
+				"sets": [
+					{
+						"id": "start",
+						"rules": [
+							{
+								"actions": {"drop_event": true},
+								"conditions": [{"expression": "event.summary matches part '[TEST]'"}],
+								"id": "240790f7",
+								"label": "drop test events"
+							},
+							{
+								"actions": {
+									"automation_actions": [
+										{
+											"auto_send": true,
+											"headers": [{"key": "x-header-1", "value": "h-one"}, {"key": "x-header-2","value": "h-two"}],
+											"name": "test webhook",
+											"parameters": [{"key": "hostname", "value": "{{variables.hostname}}"}, {"key": "info", "value": "{{event.summary}}"}],
+											"url": "https://test.com"
+										}
+									],
+									"event_action": "trigger",
+									"extractions": [
+										{
+											"regex": null, "source": null, "target": "event.summary", "template": "{{event.summary}}, hostname: {{variables.hostname}}"
+										}
+									],
+									"priority": "PCMUB6F",
+									"route_to": "7589a1b9",
+									"severity": "warning",
+									"variables": [{"name": "hostname", "path": "event.source", "type": "regex", "value": ".*"}]
+								},
+								"conditions": [{"expression": "now in Mon,Tue,Wed,Thu,Fri 08:00:00 to 18:00:00 America/Los_Angeles"}],
+								"id": "4ad2c1be",
+								"label": "business hours"
+							}
+						]
+					},
+					{
+						"id": "7589a1b9",
+						"rules": [
+							{
+								"actions": {"annotate": "received more than 10 events over 5 minutes"},
+								"conditions": [{"expression": "trigger_count over 5 minute > 10"}],
+								"id": "fed68019",
+								"label": "too many events"
+							}
+						]
+					}
+				],
+				"type": "global",
+				"updated_at": "2023-01-26T16:03:55Z",
+				"updated_by": {"id": "P8B9WR8", "self": "https://api.pagerduty.com/users/P8B9WR8", "type": "user_reference"},
+				"version": "AbCdE.5"
+			}
+		}`))
+	})
+
+	resp, _, err := client.EventOrchestrationPaths.Update("E-ORC-1", PathTypeGlobal, input)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	want := &EventOrchestrationPathPayload{
+		OrchestrationPath: &EventOrchestrationPath{
+			CatchAll: input.CatchAll,
+			CreatedAt: "2022-07-13T20:44:58Z",
+			CreatedBy: &EventOrchestrationPathReference{
+				ID:   "P8B9WR7",
+				Self: "https://api.pagerduty.com/users/P8B9WR7",
+				Type: "user_reference",
+			},
+			Parent: &EventOrchestrationPathReference{
+				ID:   "E-ORC-1",
+				Self: "https://api.pagerduty.com/event_orchestrations/E-ORC-1",
+				Type: "event_orchestration_reference",
+			},
+			Self: "https://api.pagerduty.com/event_orchestrations/E-ORC-1/global",
+			Sets: input.Sets,
+			Type: "global",
+			UpdatedAt: "2023-01-26T16:03:55Z",
+			UpdatedBy: &EventOrchestrationPathReference{
+				ID:   "P8B9WR8",
+				Self: "https://api.pagerduty.com/users/P8B9WR8",
+				Type: "user_reference",
+			},
+			Version: "AbCdE.5",
+		},
+	}
+
+	if !reflect.DeepEqual(resp, want) {
+		t.Errorf("returned \n\n%#v want \n\n%#v", resp, want)
+	}
+}
+
+func TestEventOrchestrationPathRouterUpdate(t *testing.T) {
 	setup()
 	defer teardown()
 	input := &EventOrchestrationPath{
@@ -295,7 +513,7 @@ func TestEventOrchestrationPathRouterPathUpdate(t *testing.T) {
 	}
 }
 
-func TestEventOrchestrationPathUnroutedPathUpdate(t *testing.T) {
+func TestEventOrchestrationPathUnroutedUpdate(t *testing.T) {
 	setup()
 	defer teardown()
 	input := &EventOrchestrationPath{
@@ -389,7 +607,7 @@ func TestEventOrchestrationPathUnroutedPathUpdate(t *testing.T) {
 	}
 }
 
-func TestEventOrchestrationPathServicePathUpdate(t *testing.T) {
+func TestEventOrchestrationPathServiceUpdate(t *testing.T) {
 	setup()
 	defer teardown()
 	input := &EventOrchestrationPath{
