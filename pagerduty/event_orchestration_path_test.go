@@ -456,15 +456,9 @@ func TestEventOrchestrationPathRouterUpdate(t *testing.T) {
 
 	mux.HandleFunc(url, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "PUT")
-		v := new(EventOrchestrationPath)
-		v.Type = "router"
-		v.Parent = &EventOrchestrationPathReference{
-			ID:   "E-ORC-1",
-			Self: "https://api.pagerduty.com/event_orchestrations/E-ORC-1",
-			Type: "event_orchestration_reference",
-		}
+		v := new(EventOrchestrationPathPayload)
 		json.NewDecoder(r.Body).Decode(v)
-		if !reflect.DeepEqual(v, input) {
+		if !reflect.DeepEqual(v.OrchestrationPath, input) {
 			t.Errorf("Request body = %+v, want %+v", v, input)
 		}
 		w.Write([]byte(`{"orchestration_path": { "type": "router", "parent": { "id": "E-ORC-1", "self": "https://api.pagerduty.com/event_orchestrations/E-ORC-1", "type": "event_orchestration_reference" }, "sets": [ { "id": "start", "rules": [ { "actions": { "route_to": "P3ZQXDF" }, "conditions": [ { "expression": "event.summary matches part 'orca'" }, { "expression": "event.summary matches part 'humpback'" } ], "id": "E-ORC-RULE-1"}]}]}}`))
@@ -529,15 +523,9 @@ func TestEventOrchestrationPathUnroutedUpdate(t *testing.T) {
 
 	mux.HandleFunc(url, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "PUT")
-		v := new(EventOrchestrationPath)
-		v.Type = "unrouted"
-		v.Parent = &EventOrchestrationPathReference{
-			ID:   "E-ORC-1",
-			Self: "https://api.pagerduty.com/event_orchestrations/E-ORC-1",
-			Type: "event_orchestration_reference",
-		}
+		v := new(EventOrchestrationPathPayload)
 		json.NewDecoder(r.Body).Decode(v)
-		if !reflect.DeepEqual(v, input) {
+		if !reflect.DeepEqual(v.OrchestrationPath, input) {
 			t.Errorf("Request body = %+v, want %+v", v, input)
 		}
 		w.Write([]byte(`{
@@ -623,15 +611,9 @@ func TestEventOrchestrationPathServiceUpdate(t *testing.T) {
 
 	mux.HandleFunc(url, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "PUT")
-		v := new(EventOrchestrationPath)
-		v.Type = "service"
-		v.Parent = &EventOrchestrationPathReference{
-			ID:   "E-ORC-1",
-			Self: "https://api.pagerduty.com/event_orchestrations/E-ORC-1",
-			Type: "event_orchestration_reference",
-		}
+		v := new(EventOrchestrationPathPayload)
 		json.NewDecoder(r.Body).Decode(v)
-		if !reflect.DeepEqual(v, input) {
+		if !reflect.DeepEqual(v.OrchestrationPath, input) {
 			t.Errorf("Request body = %+v, want %+v", v, input)
 		}
 		w.Write([]byte(`{
