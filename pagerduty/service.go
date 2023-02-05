@@ -156,6 +156,10 @@ type Service struct {
 	Type                             string                            `json:"type,omitempty"`
 }
 
+type EventOrchestrationServiceStatusPayload struct {
+	Active bool `json:"active"`
+}
+
 // ServicePayload represents a service.
 type ServicePayload struct {
 	Service *Service `json:"service,omitempty"`
@@ -394,4 +398,29 @@ func (s *ServicesService) UpdateEventRule(serviceID, ruleID string, eventRule *S
 func (s *ServicesService) DeleteEventRule(serviceID, ruleID string) (*Response, error) {
 	u := fmt.Sprintf("/services/%s/rules/%s", serviceID, ruleID)
 	return s.client.newRequestDo("DELETE", u, nil, nil, nil)
+}
+
+func (s *ServicesService) GetEventOrchestrationServiceStatus(serviceID string) (*EventOrchestrationServiceStatusPayload, *Response, error) {
+	u := fmt.Sprintf("/event_orchestrations/services/%s/active", serviceID)
+	v := new(EventOrchestrationServiceStatusPayload)
+
+	resp, err := s.client.newRequestDo("GET", u, nil, nil, &v)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return v, resp, nil
+}
+
+func (s *ServicesService) UpdateEventOrchestrationServiceStatus(serviceID string, active bool) (*EventOrchestrationServiceStatusPayload, *Response, error) {
+	u := fmt.Sprintf("/event_orchestrations/services/%s/active", serviceID)
+	v := new(EventOrchestrationServiceStatusPayload)
+	p := EventOrchestrationServiceStatusPayload{Active: active}
+
+	resp, err := s.client.newRequestDo("PUT", u, nil, p, &v)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return v, resp, nil
 }
