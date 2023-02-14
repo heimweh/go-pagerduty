@@ -9,7 +9,7 @@ type WebhookSubscriptionService service
 type WebhookSubscription struct {
 	ID             string         `json:"id,omitempty"`
 	Type           string         `json:"type,omitempty"`
-	Active         bool           `json:"active,omitempty"`
+	Active         bool           `json:"active"`
 	Description    string         `json:"description,omitempty"`
 	DeliveryMethod DeliveryMethod `json:"delivery_method,omitempty"`
 	Events         []string       `json:"events,omitempty"`
