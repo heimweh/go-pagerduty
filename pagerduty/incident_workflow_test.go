@@ -13,7 +13,6 @@ func TestIncidentWorkflowList(t *testing.T) {
 	mux.HandleFunc("/incident_workflows", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "GET")
 		testQueryMaxCount(t, r, 1)
-		testHeader(t, r, "x-early-access", "incident-workflows-early-access")
 		offset := r.URL.Query().Get("offset")
 
 		switch offset {
@@ -58,7 +57,6 @@ func TestIncidentWorkflowList_SecondPage(t *testing.T) {
 
 	mux.HandleFunc("/incident_workflows", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "GET")
-		testHeader(t, r, "x-early-access", "incident-workflows-early-access")
 		testQueryCount(t, r, 1)
 		offset := r.URL.Query().Get("offset")
 
@@ -99,7 +97,6 @@ func TestIncidentWorkflowList_Limit(t *testing.T) {
 
 	mux.HandleFunc("/incident_workflows", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "GET")
-		testHeader(t, r, "x-early-access", "incident-workflows-early-access")
 		testQueryCount(t, r, 1)
 		testQueryValue(t, r, "limit", "42")
 
@@ -135,7 +132,6 @@ func TestIncidentWorkflowList_WithOptions(t *testing.T) {
 
 	mux.HandleFunc("/incident_workflows", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "GET")
-		testHeader(t, r, "x-early-access", "incident-workflows-early-access")
 
 		testQueryMinCount(t, r, 1)
 		testQueryMaxCount(t, r, 2)
@@ -186,7 +182,6 @@ func TestIncidentWorkflowGet(t *testing.T) {
 
 	mux.HandleFunc("/incident_workflows/IW1", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "GET")
-		testHeader(t, r, "x-early-access", "incident-workflows-early-access")
 		testBody(t, r, "")
 
 		w.Write([]byte(`
@@ -326,7 +321,6 @@ func TestIncidentWorkflowCreate(t *testing.T) {
 
 	mux.HandleFunc("/incident_workflows", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "POST")
-		testHeader(t, r, "x-early-access", "incident-workflows-early-access")
 		testBody(t, r, `{"incident_workflow":{"name":"Example Workflow","description":"This workflow serves as an example","steps":[{"name":"Example Step","description":"An example workflow step","action_configuration":{"action_id":"example/action/v1","inputs":[{"name":"Example input","value":"{{ example-value }}"}]}},{"name":"Subsequent Step","description":"A subsequent step in this workflow","action_configuration":{"action_id":"example/action/v1","inputs":[{"name":"Example input","value":"{{ example-value }}"}]}}]}}`)
 
 		w.Write([]byte(`
@@ -488,7 +482,6 @@ func TestIncidentWorkflowDelete(t *testing.T) {
 
 	mux.HandleFunc("/incident_workflows/IW1", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "DELETE")
-		testHeader(t, r, "x-early-access", "incident-workflows-early-access")
 		w.WriteHeader(200)
 	})
 
@@ -508,7 +501,6 @@ func TestIncidentWorkflowUpdate(t *testing.T) {
 
 	mux.HandleFunc("/incident_workflows/IW1", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "PUT")
-		testHeader(t, r, "x-early-access", "incident-workflows-early-access")
 		testBody(t, r, `{"incident_workflow":{"description":"Updated description","steps":[{"id":"32OIHWEJ"},{"id":"D3IT0D3","name":"Subsequent Step Updated Name"}]}}`)
 
 		w.Write([]byte(`

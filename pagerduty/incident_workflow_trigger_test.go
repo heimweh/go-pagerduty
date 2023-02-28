@@ -12,7 +12,6 @@ func TestIncidentWorkflowTriggerList(t *testing.T) {
 
 	mux.HandleFunc("/incident_workflows/triggers", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "GET")
-		testHeader(t, r, "x-early-access", "incident-workflows-early-access")
 		testQueryMaxCount(t, r, 1)
 		pageToken := r.URL.Query().Get("page_token")
 
@@ -60,7 +59,6 @@ func TestIncidentWorkflowTriggerList_SecondPage(t *testing.T) {
 
 	mux.HandleFunc("/incident_workflows/triggers", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "GET")
-		testHeader(t, r, "x-early-access", "incident-workflows-early-access")
 		testQueryCount(t, r, 1)
 		pageToken := r.URL.Query().Get("page_token")
 
@@ -98,7 +96,6 @@ func TestIncidentWorkflowTriggerList_Limit(t *testing.T) {
 
 	mux.HandleFunc("/incident_workflows/triggers", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "GET")
-		testHeader(t, r, "x-early-access", "incident-workflows-early-access")
 		testQueryCount(t, r, 1)
 		testQueryValue(t, r, "limit", "42")
 
@@ -131,7 +128,6 @@ func TestIncidentWorkflowTriggerList_WithOptions(t *testing.T) {
 
 	mux.HandleFunc("/incident_workflows/triggers", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "GET")
-		testHeader(t, r, "x-early-access", "incident-workflows-early-access")
 
 		testQueryMinCount(t, r, 1)
 		testQueryMaxCount(t, r, 2)
@@ -178,7 +174,6 @@ func TestIncidentWorkflowTriggerGet(t *testing.T) {
 
 	mux.HandleFunc("/incident_workflows/triggers/IWT1", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "GET")
-		testHeader(t, r, "x-early-access", "incident-workflows-early-access")
 		testBody(t, r, "")
 
 		w.Write([]byte(`
@@ -263,7 +258,6 @@ func TestIncidentWorkflowTriggerCreate(t *testing.T) {
 
 	mux.HandleFunc("/incident_workflows/triggers", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "POST")
-		testHeader(t, r, "x-early-access", "incident-workflows-early-access")
 		testBody(t, r, `{"trigger_type":"manual","workflow":{"id":"TO38234"},"services":[{"id":"PIJ90N7"}],"condition":"incident.priority matches 'P1'"}`)
 
 		w.Write([]byte(`
@@ -358,7 +352,6 @@ func TestIncidentWorkflowTriggerDelete(t *testing.T) {
 
 	mux.HandleFunc("/incident_workflows/triggers/IWT1", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "DELETE")
-		testHeader(t, r, "x-early-access", "incident-workflows-early-access")
 		w.WriteHeader(200)
 	})
 
@@ -378,7 +371,6 @@ func TestIncidentWorkflowTriggerUpdate(t *testing.T) {
 
 	mux.HandleFunc("/incident_workflows/triggers/IW1", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "PUT")
-		testHeader(t, r, "x-early-access", "incident-workflows-early-access")
 		testBody(t, r, `{"services":[{"id":"PIJ90N7"}],"condition":"incident.priority matches 'P1'"}`)
 
 		w.Write([]byte(`
