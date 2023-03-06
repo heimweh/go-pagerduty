@@ -2,7 +2,9 @@ package pagerduty
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
+	"os"
 	"reflect"
 	"testing"
 )
@@ -259,7 +261,7 @@ func TestTeamsGetMembers(t *testing.T) {
 	}
 }
 
-func TestPagedTeamsGetMembers(t *testing.T) {
+func TestTeamsPagedGetMembers(t *testing.T) {
 	setup()
 	defer teardown()
 
@@ -275,6 +277,115 @@ func TestPagedTeamsGetMembers(t *testing.T) {
 	resp, _, err := client.Teams.GetMembers("1", &GetMembersOptions{})
 	if err != nil {
 		t.Fatal(err)
+	}
+
+	want := &GetMembersResponse{
+		Members: []*Member{
+			{
+				User: &UserReference{
+					ID: "1",
+				},
+				Role: "manager",
+			},
+			{
+				User: &UserReference{
+					ID: "2",
+				},
+				Role: "observer",
+			},
+		},
+	}
+
+	if !reflect.DeepEqual(resp, want) {
+		t.Errorf("returned \n\n%#v want \n\n%#v", resp, want)
+	}
+}
+
+func TestTeamsCachedGetMembers(t *testing.T) {
+	if v := os.Getenv("TF_PAGERDUTY_TEST_CACHE"); v == "" {
+		t.Skip("TF_PAGERDUTY_TEST_CACHE not set. Skipping Incident TeamsGetMembersCached test")
+	}
+	if v := os.Getenv("TF_PAGERDUTY_CACHE"); v == "" {
+		t.Skip("TF_PAGERDUTY_CACHE not set. Skipping Incident TeamsGetMembersCached test")
+	}
+
+	setup()
+	defer teardown()
+
+	var count int
+	mux.HandleFunc("/teams/1/members", func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "GET")
+		if count > 0 {
+			w.WriteHeader(http.StatusGone)
+			fmt.Fprint(w, `{"error": {"message": "Subsequent calls should be responded from cache", "code": 0}}`)
+		}
+		w.Write([]byte(`{"members": [{"user": {"id": "1"}, "role": "manager"}]}`))
+		count++
+	})
+
+	var resp *GetMembersResponse
+	var err error
+	for i := 0; i < 2; i++ {
+		resp, _, err = client.Teams.GetMembers("1", &GetMembersOptions{})
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	want := &GetMembersResponse{
+		Members: []*Member{
+			{
+				User: &UserReference{
+					ID: "1",
+				},
+				Role: "manager",
+			},
+		},
+	}
+
+	if !reflect.DeepEqual(resp, want) {
+		t.Errorf("returned \n\n%#v want \n\n%#v", resp, want)
+	}
+}
+
+func TestTeamsCachedPagedGetMembers(t *testing.T) {
+	if v := os.Getenv("TF_PAGERDUTY_TEST_CACHE"); v == "" {
+		t.Skip("TF_PAGERDUTY_TEST_CACHE not set. Skipping Incident TeamsGetMembersCached test")
+	}
+	if v := os.Getenv("TF_PAGERDUTY_CACHE"); v == "" {
+		t.Skip("TF_PAGERDUTY_CACHE not set. Skipping Incident TeamsGetMembersCached test")
+	}
+
+	setup()
+	defer teardown()
+
+	var count int
+	mux.HandleFunc("/teams/2/members", func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "GET")
+		if r.URL.Query().Get("offset") == "1" {
+			if count > 1 {
+				w.WriteHeader(http.StatusGone)
+				fmt.Fprint(w, `{"error": {"message": "Subsequent calls should be responded from cache", "code": 0}}`)
+			}
+			w.Write([]byte(`{"members": [{"user": {"id": "2"}, "role": "observer"}], "limit": 1, "offset": 1, "more": false}`))
+			count++
+		} else {
+			if count > 0 {
+				w.WriteHeader(http.StatusGone)
+				fmt.Fprint(w, `{"error": {"message": "Subsequent calls should be responded from cache", "code": 0}}`)
+			}
+			w.Write([]byte(`{"members": [{"user": {"id": "1"}, "role": "manager"}], "limit": 1, "offset": 0, "more": true}`))
+			count++
+		}
+	})
+
+	var err error
+	var resp *GetMembersResponse
+	for i := 0; i < 2; i++ {
+		resp, _, err = client.Teams.GetMembers("2", &GetMembersOptions{})
+		if err != nil {
+			t.Fatal(err)
+		}
 	}
 
 	want := &GetMembersResponse{
