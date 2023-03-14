@@ -150,6 +150,91 @@ func TestUsersGet(t *testing.T) {
 	}
 }
 
+func TestUsersGetLicense(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/users/1/license", func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "GET")
+		w.Write([]byte(`{"license": {"id": "1", "type": "license"}}`))
+	})
+
+	resp, _, err := client.Users.GetLicense("1")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	want := &License{ID: "1", Type: "license"}
+
+	if !reflect.DeepEqual(resp, want) {
+		t.Errorf("returned %#v; want %#v", resp, want)
+	}
+}
+
+func TestUsersGetWithLicense(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/users/1", func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "GET")
+		w.Write([]byte(`{"user": {"id": "1"}}`))
+	})
+	mux.HandleFunc("/users/1/license", func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "GET")
+		w.Write([]byte(`{"license": {"id": "1", "type": "license"}}`))
+	})
+
+	resp, err := client.Users.GetWithLicense("1", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	want := &User{
+		ID:      "1",
+		License: &LicenseReference{ID: "1", Type: "license_reference"},
+	}
+
+	if !reflect.DeepEqual(resp, want) {
+		t.Errorf("returned %#v; want %#v", resp, want)
+	}
+}
+
+func TestListAllWithLicenses(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/users", func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "GET")
+		w.Write([]byte(`{"users": [{"id": "P1D3Z4B", "role": "user"}]}`))
+	})
+	mux.HandleFunc("/license_allocations", func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "GET")
+		w.Write([]byte(`{"license_allocations": [
+			{
+				"user": {"id": "P1D3Z4B", "type": "user_reference"},
+				"license": {"id": "P1D3XYZ", "type": "license"}
+			}
+		]}`))
+	})
+
+	resp, err := client.Users.ListAllWithLicenses(&ListUsersOptions{})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	want := []*User{
+		{
+			ID:      "P1D3Z4B",
+			Role:    "user",
+			License: &LicenseReference{ID: "P1D3XYZ", Type: "license_reference"},
+		},
+	}
+
+	if !reflect.DeepEqual(resp, want) {
+		t.Errorf("returned %#v; want %#v", resp, want)
+	}
+}
+
 func TestUsersUpdate(t *testing.T) {
 	setup()
 	defer teardown()
