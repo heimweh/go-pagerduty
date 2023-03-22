@@ -44,6 +44,7 @@ type Client struct {
 	Rulesets                     *RulesetService
 	EventOrchestrations          *EventOrchestrationService
 	EventOrchestrationPaths      *EventOrchestrationPathService
+	EventOrchestrationIntegrations *EventOrchestrationIntegrationService
 	Schedules                    *ScheduleService
 	Services                     *ServicesService
 	Teams                        *TeamService
@@ -113,6 +114,7 @@ func NewClient(config *Config) (*Client, error) {
 	c.MaintenanceWindows = &MaintenanceWindowService{c}
 	c.Rulesets = &RulesetService{c}
 	c.EventOrchestrations = &EventOrchestrationService{c}
+	c.EventOrchestrationIntegrations = &EventOrchestrationIntegrationService{c}
 	c.EventOrchestrationPaths = &EventOrchestrationPathService{c}
 	c.Schedules = &ScheduleService{c}
 	c.Services = &ServicesService{c}
