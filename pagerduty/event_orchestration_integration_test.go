@@ -1,6 +1,7 @@
 package pagerduty
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -48,7 +49,7 @@ func TestEventOrchestrationIntegrationList(t *testing.T) {
 		}`))
 	})
 
-	resp, _, err := client.EventOrchestrationIntegrations.List(oId)
+	resp, _, err := client.EventOrchestrationIntegrations.ListContext(context.Background(), oId)
 
 	if err != nil {
 		t.Fatal(err)
@@ -117,7 +118,7 @@ func TestEventOrchestrationIntegrationCreate(t *testing.T) {
 		}`))
 	})
 
-	resp, _, err := client.EventOrchestrationIntegrations.Create(oId, input)
+	resp, _, err := client.EventOrchestrationIntegrations.CreateContext(context.Background(), oId, input)
 
 	if err != nil {
 		t.Fatal(err)
@@ -159,7 +160,7 @@ func TestEventOrchestrationIntegrationGet(t *testing.T) {
 		}`))
 	})
 
-	resp, _, err := client.EventOrchestrationIntegrations.Get(oId, id)
+	resp, _, err := client.EventOrchestrationIntegrations.GetContext(context.Background(), oId, id)
 
 	if err != nil {
 		t.Fatal(err)
@@ -208,7 +209,7 @@ func TestEventOrchestrationIntegrationUpdate(t *testing.T) {
 		}`))
 	})
 
-	resp, _, err := client.EventOrchestrationIntegrations.Update(oId, id, input)
+	resp, _, err := client.EventOrchestrationIntegrations.UpdateContext(context.Background(), oId, id, input)
 
 	if err != nil {
 		t.Fatal(err)
@@ -241,7 +242,7 @@ func TestEventOrchestrationIntegrationDelete(t *testing.T) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	if _, err := client.EventOrchestrationIntegrations.Delete(oId, id); err != nil {
+	if _, err := client.EventOrchestrationIntegrations.DeleteContext(context.Background(), oId, id); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -289,7 +290,7 @@ func TestEventOrchestrationIntegrationMigrate(t *testing.T) {
 		}`))
 	})
 
-	resp, _, err := client.EventOrchestrationIntegrations.MigrateFromOrchestration(doId, soId, id)
+	resp, _, err := client.EventOrchestrationIntegrations.MigrateFromOrchestrationContext(context.Background(), doId, soId, id)
 
 	if err != nil {
 		t.Fatal(err)

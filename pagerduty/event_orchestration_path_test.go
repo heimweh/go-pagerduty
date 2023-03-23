@@ -1,6 +1,7 @@
 package pagerduty
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -48,7 +49,7 @@ func TestEventOrchestrationPathGlobalGet(t *testing.T) {
 				"version": "Abcd.1234"
 			}
 		}`))
-	})	
+	})
 
 	resp, _, err := client.EventOrchestrationPaths.Get("E-ORC-1", PathTypeGlobal)
 
@@ -74,11 +75,11 @@ func TestEventOrchestrationPathGlobalGet(t *testing.T) {
 		Self: "https://api.pagerduty.com/event_orchestrations/E-ORC-1/global",
 		Sets: []*EventOrchestrationPathSet{
 			{
-				ID: "start",
+				ID:    "start",
 				Rules: []*EventOrchestrationPathRule{},
 			},
 		},
-		Type: "global",
+		Type:      "global",
 		UpdatedAt: "2022-12-15T13:57:08Z",
 		UpdatedBy: &EventOrchestrationPathReference{
 			ID:   "P8B9WR8",
@@ -234,7 +235,7 @@ func TestEventOrchestrationPathGetServiceActiveStatus(t *testing.T) {
 		}`))
 	})
 
-	resp, _, err := client.EventOrchestrationPaths.GetServiceActiveStatus("POOPBUG")
+	resp, _, err := client.EventOrchestrationPaths.GetServiceActiveStatusContext(context.Background(), "POOPBUG")
 
 	if err != nil {
 		t.Fatal(err)
@@ -271,7 +272,7 @@ func TestEventOrchestrationPathGlobalUpdate(t *testing.T) {
 								Expression: "event.summary matches part '[TEST]'",
 							},
 						},
-						ID: "240790f7",
+						ID:    "240790f7",
 						Label: "drop test events",
 					},
 					{
@@ -281,22 +282,22 @@ func TestEventOrchestrationPathGlobalUpdate(t *testing.T) {
 									AutoSend: true,
 									Headers: []*EventOrchestrationPathAutomationActionObject{
 										{
-											Key: "x-header-1",
+											Key:   "x-header-1",
 											Value: "h-one",
 										},
 										{
-											Key: "x-header-2",
+											Key:   "x-header-2",
 											Value: "h-two",
 										},
 									},
 									Name: "test webhook",
 									Parameters: []*EventOrchestrationPathAutomationActionObject{
 										{
-											Key: "hostname",
+											Key:   "hostname",
 											Value: "{{variables.hostname}}",
 										},
 										{
-											Key: "info",
+											Key:   "info",
 											Value: "{{event.summary}}",
 										},
 									},
@@ -306,18 +307,18 @@ func TestEventOrchestrationPathGlobalUpdate(t *testing.T) {
 							EventAction: "trigger",
 							Extractions: []*EventOrchestrationPathActionExtractions{
 								{
-									Target: "event.summary",
+									Target:   "event.summary",
 									Template: "{{event.summary}}, hostname: {{variables.hostname}}",
 								},
 							},
 							Priority: "PCMUB6F",
-							RouteTo: "7589a1b9",
+							RouteTo:  "7589a1b9",
 							Severity: "warning",
 							Variables: []*EventOrchestrationPathActionVariables{
 								{
-									Name: "hostname",
-									Path: "event.source",
-									Type: "regex",
+									Name:  "hostname",
+									Path:  "event.source",
+									Type:  "regex",
 									Value: ".*",
 								},
 							},
@@ -327,7 +328,7 @@ func TestEventOrchestrationPathGlobalUpdate(t *testing.T) {
 								Expression: "now in Mon,Tue,Wed,Thu,Fri 08:00:00 to 18:00:00 America/Los_Angeles",
 							},
 						},
-						ID: "4ad2c1be",
+						ID:    "4ad2c1be",
 						Label: "business hours",
 					},
 				},
@@ -344,7 +345,7 @@ func TestEventOrchestrationPathGlobalUpdate(t *testing.T) {
 								Expression: "trigger_count over 5 minute > 10",
 							},
 						},
-						ID: "fed68019",
+						ID:    "fed68019",
 						Label: "too many events",
 					},
 				},
@@ -437,7 +438,7 @@ func TestEventOrchestrationPathGlobalUpdate(t *testing.T) {
 
 	want := &EventOrchestrationPathPayload{
 		OrchestrationPath: &EventOrchestrationPath{
-			CatchAll: input.CatchAll,
+			CatchAll:  input.CatchAll,
 			CreatedAt: "2022-07-13T20:44:58Z",
 			CreatedBy: &EventOrchestrationPathReference{
 				ID:   "P8B9WR7",
@@ -449,9 +450,9 @@ func TestEventOrchestrationPathGlobalUpdate(t *testing.T) {
 				Self: "https://api.pagerduty.com/event_orchestrations/E-ORC-1",
 				Type: "event_orchestration_reference",
 			},
-			Self: "https://api.pagerduty.com/event_orchestrations/E-ORC-1/global",
-			Sets: input.Sets,
-			Type: "global",
+			Self:      "https://api.pagerduty.com/event_orchestrations/E-ORC-1/global",
+			Sets:      input.Sets,
+			Type:      "global",
 			UpdatedAt: "2023-01-26T16:03:55Z",
 			UpdatedBy: &EventOrchestrationPathReference{
 				ID:   "P8B9WR8",
@@ -601,17 +602,17 @@ func TestEventOrchestrationPathUnroutedUpdate(t *testing.T) {
 		},
 		Warnings: []*EventOrchestrationPathWarning{
 			&EventOrchestrationPathWarning{
-				Feature: "variables",
+				Feature:     "variables",
 				FeatureType: "actions",
-				Message: "Message 1",
-				RuleId: "abcd001",
+				Message:     "Message 1",
+				RuleId:      "abcd001",
 				WarningType: "forbidden_feature",
 			},
 			&EventOrchestrationPathWarning{
-				Feature: "extractions",
+				Feature:     "extractions",
 				FeatureType: "actions",
-				Message: "Message 2",
-				RuleId: "abcd002",
+				Message:     "Message 2",
+				RuleId:      "abcd002",
 				WarningType: "forbidden_feature",
 			},
 		},
@@ -710,7 +711,7 @@ func TestEventOrchestrationPathServiceActiveStatusUpdate(t *testing.T) {
 		w.Write([]byte(`{"active":false}`))
 	})
 
-	resp, _, err := client.EventOrchestrationPaths.UpdateServiceActiveStatus("P3ZQXDF", input.Active)
+	resp, _, err := client.EventOrchestrationPaths.UpdateServiceActiveStatusContext(context.Background(), "P3ZQXDF", input.Active)
 	if err != nil {
 		t.Fatal(err)
 	}
