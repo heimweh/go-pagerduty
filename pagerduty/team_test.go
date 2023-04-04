@@ -2,7 +2,6 @@ package pagerduty
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"os"
 	"reflect"
@@ -316,8 +315,7 @@ func TestTeamsCachedGetMembers(t *testing.T) {
 	mux.HandleFunc("/teams/1/members", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "GET")
 		if count > 0 {
-			w.WriteHeader(http.StatusGone)
-			fmt.Fprint(w, `{"error": {"message": "Subsequent calls should be responded from cache", "code": 0}}`)
+			t.Errorf("Subsequent GET calls to /teams/*/members should be responded from cache")
 		}
 		w.Write([]byte(`{"members": [{"user": {"id": "1"}, "role": "manager"}]}`))
 		count++
@@ -364,15 +362,13 @@ func TestTeamsCachedPagedGetMembers(t *testing.T) {
 		testMethod(t, r, "GET")
 		if r.URL.Query().Get("offset") == "1" {
 			if count > 1 {
-				w.WriteHeader(http.StatusGone)
-				fmt.Fprint(w, `{"error": {"message": "Subsequent calls should be responded from cache", "code": 0}}`)
+				t.Errorf("Subsequent GET calls to /teams/*/members should be responded from cache")
 			}
 			w.Write([]byte(`{"members": [{"user": {"id": "2"}, "role": "observer"}], "limit": 1, "offset": 1, "more": false}`))
 			count++
 		} else {
 			if count > 0 {
-				w.WriteHeader(http.StatusGone)
-				fmt.Fprint(w, `{"error": {"message": "Subsequent calls should be responded from cache", "code": 0}}`)
+				t.Errorf("Subsequent GET calls to /teams/*/members should be responded from cache")
 			}
 			w.Write([]byte(`{"members": [{"user": {"id": "1"}, "role": "manager"}], "limit": 1, "offset": 0, "more": true}`))
 			count++
