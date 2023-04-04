@@ -81,3 +81,9 @@ Since some of the APIs implemented into this library doesn't offer a query mecha
 Run all unit tests with `make test`
 
 Run a specific subset of unit test by name using `make test TESTARGS="-v -run TestTeams"` which will run all test functions with "TestTeams" in their name while `-v` enables verbose output.
+
+### Environment Variables to test specific feature sets
+
+| Environment Variable    | Example Value | Feature Set                                             |
+| ----------------------- | ------------- | ------------------------------------------------------- |
+| TF_PAGERDUTY_TEST_CACHE | 1             | Indicates to execute test sets that make use of caching |
