@@ -13,7 +13,8 @@ go get github.com/heimweh/go-pagerduty/pagerduty
 ```
 
 ## Example usage
-1. Create the following in a file at some path like the project root `go-pagerduty/main.go`
+1. Add something like the following to a go project:
+
 ```go
 package main
 
@@ -44,11 +45,9 @@ func main() {
 }
 ```
 
-2. This file may be used to test any recent local changes because
-   `github.com/heimweh/go-pagerduty` is the referenced module in `go.mod`
-3. So, in the project root run:
+2. run:
 ```bash
-$ TF_PAGERDUTY_CACHE=memory PAGERDUTY_TOKEN=<SECRET> go run <PATH/TO>/main.go
+$ PAGERDUTY_TOKEN=<SECRET> go run <PATH/TO/PROJECT/WITH/ABOVE/CODE>/main.go
 ```
 
 ## Caching support
