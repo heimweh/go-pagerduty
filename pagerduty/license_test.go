@@ -1,6 +1,7 @@
 package pagerduty
 
 import (
+	"fmt"
 	"net/http"
 	"reflect"
 	"testing"
@@ -71,14 +72,27 @@ func TestListAllAllocations(t *testing.T) {
 	defer teardown()
 
 	mux.HandleFunc("/license_allocations", func(w http.ResponseWriter, r *http.Request) {
+		params := r.URL.Query()
+		more := true
+		userID := "P1D3Z4B"
+		if _, exists := params["offset"]; exists {
+			more = false
+			userID = "P1D3Z4A"
+		}
+
 		testMethod(t, r, "GET")
-		w.Write([]byte(`{"license_allocations": [
-			{
-				"user": {"id": "P1D3Z4B", "type": "user_reference"},
-				"license": {"id": "P1D3XYZ", "type": "license"},
-				"allocated_at": "2021-06-01T21:30:42Z"
-			}
-		]}`))
+		w.Write([]byte(fmt.Sprintf(`{
+			"license_allocations": [
+				{
+					"user": {"id": "%s", "type": "user_reference"},
+					"license": {"id": "P1D3XYZ", "type": "license"},
+					"allocated_at": "2021-06-01T21:30:42Z"
+				}
+			],
+			"limit": 1,
+			"more": %t,
+			"total": 2
+		}`, userID, more)))
 	})
 
 	resp, err := client.Licenses.ListAllAllocations(&ListLicenseAllocationsOptions{})
@@ -90,6 +104,11 @@ func TestListAllAllocations(t *testing.T) {
 		{
 			License:     &License{ID: "P1D3XYZ", Type: "license"},
 			User:        &UserReference{ID: "P1D3Z4B", Type: "user_reference"},
+			AllocatedAt: "2021-06-01T21:30:42Z",
+		},
+		{
+			License:     &License{ID: "P1D3XYZ", Type: "license"},
+			User:        &UserReference{ID: "P1D3Z4A", Type: "user_reference"},
 			AllocatedAt: "2021-06-01T21:30:42Z",
 		},
 	}

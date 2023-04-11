@@ -2,6 +2,7 @@ package pagerduty
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"reflect"
 	"testing"
@@ -204,17 +205,41 @@ func TestListAllWithLicenses(t *testing.T) {
 	defer teardown()
 
 	mux.HandleFunc("/users", func(w http.ResponseWriter, r *http.Request) {
+		params := r.URL.Query()
+		more := true
+		userID := "P1D3Z4B"
+		if _, exists := params["offset"]; exists {
+			more = false
+			userID = "P1D3Z4A"
+		}
 		testMethod(t, r, "GET")
-		w.Write([]byte(`{"users": [{"id": "P1D3Z4B", "role": "user"}]}`))
+		w.Write([]byte(fmt.Sprintf(`{
+			"users": [{"id": "%s", "role": "user"}],
+			"more": %t,
+			"total": 2,
+			"limit": 1
+		}`, userID, more)))
 	})
 	mux.HandleFunc("/license_allocations", func(w http.ResponseWriter, r *http.Request) {
+		params := r.URL.Query()
+		more := true
+		userID := "P1D3Z4B"
+		if _, exists := params["offset"]; exists {
+			more = false
+			userID = "P1D3Z4A"
+		}
 		testMethod(t, r, "GET")
-		w.Write([]byte(`{"license_allocations": [
-			{
-				"user": {"id": "P1D3Z4B", "type": "user_reference"},
-				"license": {"id": "P1D3XYZ", "type": "license"}
-			}
-		]}`))
+		w.Write([]byte(fmt.Sprintf(`{
+			"license_allocations": [
+				{
+					"user": {"id": "%s", "type": "user_reference"},
+					"license": {"id": "P1D3XYZ", "type": "license"}
+				}
+			],
+			"more": %t,
+			"total": 2,
+			"limit": 1
+		}`, userID, more)))
 	})
 
 	resp, err := client.Users.ListAllWithLicenses(&ListUsersOptions{})
@@ -225,6 +250,11 @@ func TestListAllWithLicenses(t *testing.T) {
 	want := []*User{
 		{
 			ID:      "P1D3Z4B",
+			Role:    "user",
+			License: &LicenseReference{ID: "P1D3XYZ", Type: "license_reference"},
+		},
+		{
+			ID:      "P1D3Z4A",
 			Role:    "user",
 			License: &LicenseReference{ID: "P1D3XYZ", Type: "license_reference"},
 		},
