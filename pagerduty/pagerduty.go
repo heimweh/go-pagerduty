@@ -33,43 +33,43 @@ type Config struct {
 
 // Client manages the communication with the PagerDuty API
 type Client struct {
-	baseURL                      *url.URL
-	client                       *http.Client
-	Config                       *Config
-	Abilities                    *AbilityService
-	Addons                       *AddonService
-	EscalationPolicies           *EscalationPolicyService
-	Extensions                   *ExtensionService
-	MaintenanceWindows           *MaintenanceWindowService
-	Rulesets                     *RulesetService
-	EventOrchestrations          *EventOrchestrationService
-	EventOrchestrationPaths      *EventOrchestrationPathService
+	baseURL                        *url.URL
+	client                         *http.Client
+	Config                         *Config
+	Abilities                      *AbilityService
+	Addons                         *AddonService
+	EscalationPolicies             *EscalationPolicyService
+	Extensions                     *ExtensionService
+	MaintenanceWindows             *MaintenanceWindowService
+	Rulesets                       *RulesetService
+	EventOrchestrations            *EventOrchestrationService
+	EventOrchestrationPaths        *EventOrchestrationPathService
 	EventOrchestrationIntegrations *EventOrchestrationIntegrationService
-	Schedules                    *ScheduleService
-	Services                     *ServicesService
-	Teams                        *TeamService
-	ExtensionSchemas             *ExtensionSchemaService
-	Users                        *UserService
-	Licenses                     *LicenseService
-	Vendors                      *VendorService
-	EventRules                   *EventRuleService
-	BusinessServices             *BusinessServiceService
-	ServiceDependencies          *ServiceDependencyService
-	Priorities                   *PriorityService
-	ResponsePlays                *ResponsePlayService
-	SlackConnections             *SlackConnectionService
-	Tags                         *TagService
-	WebhookSubscriptions         *WebhookSubscriptionService
-	BusinessServiceSubscribers   *BusinessServiceSubscriberService
-	OnCall                       *OnCallService
-	AutomationActionsRunner      *AutomationActionsRunnerService
-	AutomationActionsAction      *AutomationActionsActionService
-	Incidents                    *IncidentService
-	IncidentWorkflows            *IncidentWorkflowService
-	IncidentWorkflowTriggers     *IncidentWorkflowTriggerService
-	CustomFields                 *CustomFieldService
-	CustomFieldSchemas           *CustomFieldSchemaService
-	CustomFieldSchemaAssignments *CustomFieldSchemaAssignmentService
+	Schedules                      *ScheduleService
+	Services                       *ServicesService
+	Teams                          *TeamService
+	ExtensionSchemas               *ExtensionSchemaService
+	Users                          *UserService
+	Licenses                       *LicenseService
+	Vendors                        *VendorService
+	EventRules                     *EventRuleService
+	BusinessServices               *BusinessServiceService
+	ServiceDependencies            *ServiceDependencyService
+	Priorities                     *PriorityService
+	ResponsePlays                  *ResponsePlayService
+	SlackConnections               *SlackConnectionService
+	Tags                           *TagService
+	WebhookSubscriptions           *WebhookSubscriptionService
+	BusinessServiceSubscribers     *BusinessServiceSubscriberService
+	OnCall                         *OnCallService
+	AutomationActionsRunner        *AutomationActionsRunnerService
+	AutomationActionsAction        *AutomationActionsActionService
+	Incidents                      *IncidentService
+	IncidentWorkflows              *IncidentWorkflowService
+	IncidentWorkflowTriggers       *IncidentWorkflowTriggerService
+	CustomFields                   *CustomFieldService
+	CustomFieldSchemas             *CustomFieldSchemaService
+	CustomFieldSchemaAssignments   *CustomFieldSchemaAssignmentService
 }
 
 // Response is a wrapper around http.Response
