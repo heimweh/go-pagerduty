@@ -49,6 +49,7 @@ type Client struct {
 	Teams                        *TeamService
 	ExtensionSchemas             *ExtensionSchemaService
 	Users                        *UserService
+	Licenses                     *LicenseService
 	Vendors                      *VendorService
 	EventRules                   *EventRuleService
 	BusinessServices             *BusinessServiceService
@@ -117,6 +118,7 @@ func NewClient(config *Config) (*Client, error) {
 	c.Services = &ServicesService{c}
 	c.Teams = &TeamService{c}
 	c.Users = &UserService{c}
+	c.Licenses = &LicenseService{c}
 	c.Vendors = &VendorService{c}
 	c.Extensions = &ExtensionService{c}
 	c.ExtensionSchemas = &ExtensionSchemaService{c}

@@ -2,6 +2,7 @@ package pagerduty
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"reflect"
 	"testing"
@@ -143,6 +144,120 @@ func TestUsersGet(t *testing.T) {
 
 	want := &User{
 		ID: "1",
+	}
+
+	if !reflect.DeepEqual(resp, want) {
+		t.Errorf("returned %#v; want %#v", resp, want)
+	}
+}
+
+func TestUsersGetLicense(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/users/1/license", func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "GET")
+		w.Write([]byte(`{"license": {"id": "1", "type": "license"}}`))
+	})
+
+	resp, _, err := client.Users.GetLicense("1")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	want := &License{ID: "1", Type: "license"}
+
+	if !reflect.DeepEqual(resp, want) {
+		t.Errorf("returned %#v; want %#v", resp, want)
+	}
+}
+
+func TestUsersGetWithLicense(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/users/1", func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "GET")
+		w.Write([]byte(`{"user": {"id": "1"}}`))
+	})
+	mux.HandleFunc("/users/1/license", func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "GET")
+		w.Write([]byte(`{"license": {"id": "1", "type": "license"}}`))
+	})
+
+	resp, err := client.Users.GetWithLicense("1", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	want := &User{
+		ID:      "1",
+		License: &LicenseReference{ID: "1", Type: "license_reference"},
+	}
+
+	if !reflect.DeepEqual(resp, want) {
+		t.Errorf("returned %#v; want %#v", resp, want)
+	}
+}
+
+func TestListAllWithLicenses(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/users", func(w http.ResponseWriter, r *http.Request) {
+		params := r.URL.Query()
+		more := true
+		userID := "P1D3Z4B"
+		if _, exists := params["offset"]; exists {
+			more = false
+			userID = "P1D3Z4A"
+		}
+		testMethod(t, r, "GET")
+		w.Write([]byte(fmt.Sprintf(`{
+			"users": [{"id": "%s", "role": "user"}],
+			"more": %t,
+			"total": 2,
+			"limit": 1
+		}`, userID, more)))
+	})
+	mux.HandleFunc("/license_allocations", func(w http.ResponseWriter, r *http.Request) {
+		params := r.URL.Query()
+		more := true
+		userID := "P1D3Z4B"
+		if _, exists := params["offset"]; exists {
+			more = false
+			userID = "P1D3Z4A"
+		}
+		testMethod(t, r, "GET")
+		w.Write([]byte(fmt.Sprintf(`{
+			"license_allocations": [
+				{
+					"user": {"id": "%s", "type": "user_reference"},
+					"license": {"id": "P1D3XYZ", "type": "license"}
+				}
+			],
+			"more": %t,
+			"total": 2,
+			"limit": 1
+		}`, userID, more)))
+	})
+
+	resp, err := client.Users.ListAllWithLicenses(&ListUsersOptions{})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	want := []*User{
+		{
+			ID:      "P1D3Z4B",
+			Role:    "user",
+			License: &LicenseReference{ID: "P1D3XYZ", Type: "license_reference"},
+		},
+		{
+			ID:      "P1D3Z4A",
+			Role:    "user",
+			License: &LicenseReference{ID: "P1D3XYZ", Type: "license_reference"},
+		},
 	}
 
 	if !reflect.DeepEqual(resp, want) {

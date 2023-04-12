@@ -13,6 +13,8 @@ go get github.com/heimweh/go-pagerduty/pagerduty
 ```
 
 ## Example usage
+1. Add something like the following to a go project:
+
 ```go
 package main
 
@@ -41,6 +43,11 @@ func main() {
 	// All calls returns the raw *http.Response for further inspection.
 	fmt.Println(raw.Response.StatusCode)
 }
+```
+
+2. run:
+```bash
+$ PAGERDUTY_TOKEN=<SECRET> go run <PATH/TO/PROJECT/WITH/ABOVE/CODE>/main.go
 ```
 
 ## Caching support
