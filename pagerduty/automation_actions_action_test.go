@@ -96,7 +96,7 @@ func TestAutomationActionsActionTypeProcessAutomationCreate(t *testing.T) {
 	adf := AutomationActionsActionDataReference{
 		ProcessAutomationJobId:        &job_id,
 		ProcessAutomationJobArguments: &adf_arg,
-		ProcessAutomationNodeFilter: &adf_node_filter,
+		ProcessAutomationNodeFilter:   &adf_node_filter,
 	}
 	input := &AutomationActionsAction{
 		Name:                "Action created by TF",
