@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
@@ -240,11 +239,17 @@ func (c *Client) newRequestDoOptionsContext(ctx context.Context, method, url str
 }
 
 func (c *Client) do(req *http.Request, v interface{}) (*Response, error) {
+	sLogger := newSecureLogger()
+	sLogger.LogReq(req)
+
 	resp, err := c.client.Do(req)
 	if err != nil {
 		return nil, err
 	}
-	bodyBytes, err := ioutil.ReadAll(resp.Body)
+
+	sLogger.LogRes(resp)
+
+	bodyBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
 	}
