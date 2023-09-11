@@ -331,6 +331,19 @@ func TestEventOrchestrationPathGlobalUpdate(t *testing.T) {
 						ID:    "4ad2c1be",
 						Label: "business hours",
 					},
+					{
+						Actions: &EventOrchestrationPathRuleActions{
+							IncidentCustomFieldActions: []*EventOrchestrationPathIncidentCustomFieldAction{
+								{
+									ID:    "PN1C4A2",
+									Value: "{{event.timestamp}}",
+								},
+							},
+						},
+						Label: "Set Impact Start custom field from event",
+						ID:   "yu3bv02m",
+						Conditions: []*EventOrchestrationPathRuleCondition{},
+					},
 				},
 			},
 			{
@@ -408,6 +421,19 @@ func TestEventOrchestrationPathGlobalUpdate(t *testing.T) {
 								"conditions": [{"expression": "now in Mon,Tue,Wed,Thu,Fri 08:00:00 to 18:00:00 America/Los_Angeles"}],
 								"id": "4ad2c1be",
 								"label": "business hours"
+							},
+							{
+								"label": "Set Impact Start custom field from event",
+								"id": "yu3bv02m",
+								"conditions": [],
+								"actions": {
+								"incident_custom_field_updates": [
+									{
+									"id": "PN1C4A2",
+									"value": "{{event.timestamp}}"
+									}
+								]
+								}
 							}
 						]
 					},
@@ -601,14 +627,14 @@ func TestEventOrchestrationPathUnroutedUpdate(t *testing.T) {
 			},
 		},
 		Warnings: []*EventOrchestrationPathWarning{
-			&EventOrchestrationPathWarning{
+			{
 				Feature:     "variables",
 				FeatureType: "actions",
 				Message:     "Message 1",
 				RuleId:      "abcd001",
 				WarningType: "forbidden_feature",
 			},
-			&EventOrchestrationPathWarning{
+			{
 				Feature:     "extractions",
 				FeatureType: "actions",
 				Message:     "Message 2",
