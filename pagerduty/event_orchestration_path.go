@@ -57,13 +57,13 @@ type EventOrchestrationPathRuleActions struct {
 	Suspend                    *int                                               `json:"suspend"`
 	Priority                   string                                             `json:"priority"`
 	Annotate                   string                                             `json:"annotate"`
-	PagerdutyAutomationActions []*EventOrchestrationPathPagerdutyAutomationAction `json:"pagerduty_automation_actions,omitempty"`
-	AutomationActions          []*EventOrchestrationPathAutomationAction          `json:"automation_actions,omitempty"`
-	IncidentCustomFieldActions []*EventOrchestrationPathIncidentCustomFieldAction `json:"incident_custom_field_updates,omitempty"`
+	PagerdutyAutomationActions []*EventOrchestrationPathPagerdutyAutomationAction `json:"pagerduty_automation_actions"`
+	AutomationActions          []*EventOrchestrationPathAutomationAction          `json:"automation_actions"`
+	IncidentCustomFieldActions []*EventOrchestrationPathIncidentCustomFieldAction `json:"incident_custom_field_updates"`
 	Severity                   string                                             `json:"severity"`
 	EventAction                string                                             `json:"event_action"`
-	Variables                  []*EventOrchestrationPathActionVariables           `json:"variables,omitempty"`
-	Extractions                []*EventOrchestrationPathActionExtractions         `json:"extractions,omitempty"`
+	Variables                  []*EventOrchestrationPathActionVariables           `json:"variables"`
+	Extractions                []*EventOrchestrationPathActionExtractions         `json:"extractions"`
 }
 
 type EventOrchestrationPathIncidentCustomFieldAction struct {
