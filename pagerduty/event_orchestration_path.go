@@ -176,6 +176,7 @@ func (s *EventOrchestrationPathService) Update(id string, pathType string, orche
 func (s *EventOrchestrationPathService) UpdateContext(ctx context.Context, id string, pathType string, orchestrationPath *EventOrchestrationPath) (*EventOrchestrationPathPayload, *Response, error) {
 	u := orchestrationPathUrlBuilder(id, pathType)
 	v := new(EventOrchestrationPathPayload)
+	sanitizeOrchestrationPath(orchestrationPath)
 	p := EventOrchestrationPathPayload{OrchestrationPath: orchestrationPath}
 
 	resp, err := s.client.newRequestDoContext(ctx, "PUT", u, nil, p, &v)
@@ -184,6 +185,38 @@ func (s *EventOrchestrationPathService) UpdateContext(ctx context.Context, id st
 	}
 
 	return v, resp, nil
+}
+
+// Sanitize the conditions and actions to ensure that the arrays are not null
+func sanitizeOrchestrationPath(servicePath *EventOrchestrationPath)  {
+	for _, set := range servicePath.Sets {
+		for _, rule := range set.Rules {
+			if rule.Conditions == nil {
+				rule.Conditions = []*EventOrchestrationPathRuleCondition{}
+			}
+			sanitizeActions(rule.Actions)
+		}
+	}
+	sanitizeActions(servicePath.CatchAll.Actions)
+}
+
+// Sanitize the actions to ensure that the arrays are not null
+func sanitizeActions(actions *EventOrchestrationPathRuleActions) {
+	if actions.IncidentCustomFieldActions == nil {
+		actions.IncidentCustomFieldActions = []*EventOrchestrationPathIncidentCustomFieldAction{}
+	}
+	if actions.AutomationActions == nil {
+		actions.AutomationActions = []*EventOrchestrationPathAutomationAction{}
+	}
+	if actions.PagerdutyAutomationActions == nil {
+		actions.PagerdutyAutomationActions = []*EventOrchestrationPathPagerdutyAutomationAction{}
+	}
+	if actions.Variables == nil {
+		actions.Variables = []*EventOrchestrationPathActionVariables{}
+	}
+	if actions.Extractions == nil {
+		actions.Extractions = []*EventOrchestrationPathActionExtractions{}
+	}
 }
 
 // UpdateServiceActiveStatus for EventOrchestrationPath
