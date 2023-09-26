@@ -424,6 +424,10 @@ func TestEventOrchestrationPathGlobalUpdate(t *testing.T) {
 		if !reflect.DeepEqual(v.OrchestrationPath, input) {
 			t.Errorf("Request body = %+v, want %+v", v, input)
 		}
+		actionJson, _ := json.Marshal(input.Sets[0].Rules[0].Actions.IncidentCustomFieldActions)
+		if !reflect.DeepEqual(string(actionJson), "[]") {
+			t.Errorf("empty action array should be []")
+		}
 		w.Write([]byte(`{
 			"orchestration_path": {
 				"catch_all": {"actions": {"suppress": true}},
