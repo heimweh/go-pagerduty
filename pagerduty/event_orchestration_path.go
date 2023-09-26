@@ -194,10 +194,14 @@ func sanitizeOrchestrationPath(servicePath *EventOrchestrationPath)  {
 			if rule.Conditions == nil {
 				rule.Conditions = []*EventOrchestrationPathRuleCondition{}
 			}
-			sanitizeActions(rule.Actions)
+			if rule.Actions != nil {
+				sanitizeActions(rule.Actions)
+			}
 		}
 	}
-	sanitizeActions(servicePath.CatchAll.Actions)
+	if (servicePath.CatchAll != nil) {
+		sanitizeActions(servicePath.CatchAll.Actions)
+	}
 }
 
 // Sanitize the actions to ensure that the arrays are not null
