@@ -382,7 +382,7 @@ func TestEventOrchestrationPathGlobalUpdate(t *testing.T) {
 					},
 					{
 						Actions: &EventOrchestrationPathRuleActions{
-							IncidentCustomFieldActions: []*EventOrchestrationPathIncidentCustomFieldAction{
+							IncidentCustomFieldUpdates: []*EventOrchestrationPathIncidentCustomFieldUpdate{
 								{
 									ID:    "PN1C4A2",
 									Value: "{{event.timestamp}}",
@@ -424,7 +424,7 @@ func TestEventOrchestrationPathGlobalUpdate(t *testing.T) {
 		if !reflect.DeepEqual(v.OrchestrationPath, input) {
 			t.Errorf("Request body = %+v, want %+v", v, input)
 		}
-		actionJson, _ := json.Marshal(input.Sets[0].Rules[0].Actions.IncidentCustomFieldActions)
+		actionJson, _ := json.Marshal(input.Sets[0].Rules[0].Actions.IncidentCustomFieldUpdates)
 		if !reflect.DeepEqual(string(actionJson), "[]") {
 			t.Errorf("empty action array should be []")
 		}
