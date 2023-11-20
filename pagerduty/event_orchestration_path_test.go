@@ -250,55 +250,6 @@ func TestEventOrchestrationPathGetServiceActiveStatus(t *testing.T) {
 	}
 }
 
-func TestEventOrchestationSanitization(t *testing.T) {
-	setup()
-	defer teardown()
-
-	input := &EventOrchestrationPath{
-		Sets: []*EventOrchestrationPathSet{
-			{
-				ID: "start",
-				Rules: []*EventOrchestrationPathRule{
-					{
-						Actions: &EventOrchestrationPathRuleActions{},
-					},
-				},
-			},
-		},
-	}
-
-	var url = fmt.Sprintf("%s/E-ORC-1/global", eventOrchestrationBaseUrl)
-
-	mux.HandleFunc(url, func(w http.ResponseWriter, r *http.Request) {
-		testMethod(t, r, "PUT")
-		v := new(EventOrchestrationPathPayload)
-		json.NewDecoder(r.Body).Decode(v)
-		if !reflect.DeepEqual(v.OrchestrationPath, input) {
-			t.Errorf("Request body = %+v, want %+v", v, input)
-		}
-		w.Write([]byte(`{}`))
-	})
-
-	// empty arrays are null by default
-	actionJson, _ := json.Marshal(input.Sets[0].Rules[0].Actions.PagerdutyAutomationActions)
-	want := "null"
-	if !reflect.DeepEqual(string(actionJson), want) {
-		t.Errorf("returned \n\n%#v want \n\n%#v", string(actionJson), want)
-	}
-	reflect.DeepEqual(actionJson, nil)
-	_, _, err := client.EventOrchestrationPaths.Update("E-ORC-1", PathTypeGlobal, input)
-	if err != nil {
-		t.Fatal(err)
-	}
-	// after sanitize, empty arrays are no longer null
-	actionJson, _ = json.Marshal(input.Sets[0].Rules[0].Actions.PagerdutyAutomationActions)
-	want = "[]"
-	if !reflect.DeepEqual(string(actionJson), want) {
-		t.Errorf("returned \n\n%#v want \n\n%#v", string(actionJson), want)
-	}
-
-}
-
 func TestEventOrchestrationPathGlobalUpdate(t *testing.T) {
 	setup()
 	defer teardown()
@@ -424,10 +375,6 @@ func TestEventOrchestrationPathGlobalUpdate(t *testing.T) {
 		if !reflect.DeepEqual(v.OrchestrationPath, input) {
 			t.Errorf("Request body = %+v, want %+v", v, input)
 		}
-		actionJson, _ := json.Marshal(input.Sets[0].Rules[0].Actions.IncidentCustomFieldUpdates)
-		if !reflect.DeepEqual(string(actionJson), "[]") {
-			t.Errorf("empty action array should be []")
-		}
 		w.Write([]byte(`{
 			"orchestration_path": {
 				"catch_all": {"actions": {"suppress": true}},
@@ -541,9 +488,6 @@ func TestEventOrchestrationPathGlobalUpdate(t *testing.T) {
 			Version: "AbCdE.5",
 		},
 	}
-
-	// Before comparison, we sanitize the response to make it match the already sanitized request
-	sanitizeOrchestrationPath(resp.OrchestrationPath)
 
 	if !reflect.DeepEqual(resp, want) {
 		t.Errorf("returned \n\n%#v want \n\n%#v", resp, want)
