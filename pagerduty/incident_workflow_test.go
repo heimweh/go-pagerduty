@@ -239,6 +239,27 @@ func TestIncidentWorkflowGet(t *testing.T) {
                     "value": "{{ example-value }}"
                 }
             ],
+            "inline_steps_inputs": [
+                {
+                    "name": "Example inline_steps_input",
+                    "value": {
+                        "steps": [
+                            {
+                                "name": "Inline Step 1",
+                                "action_configuration": {
+                                    "action_id": "example/action/v1",
+                                    "inputs": [
+                                        {
+                                            "name": "Example input",
+                                            "value": "B"
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                }
+            ],
             "outputs": [
                 {
                     "name": "Example output",
@@ -305,6 +326,27 @@ func TestIncidentWorkflowGet(t *testing.T) {
 							Value: "{{ example-value }}",
 						},
 					},
+					InlineStepsInputs: []*IncidentWorkflowActionInlineStepsInput{
+						{
+							Name:  "Example inline_steps_input",
+							Value: &IncidentWorkflowActionInlineStepsInputValue{
+								Steps: []*IncidentWorkflowActionInlineStep{
+									{
+										Name:        "Inline Step 1",
+										Configuration: &IncidentWorkflowActionConfiguration{
+											ActionID:    "example/action/v1",
+											Inputs: []*IncidentWorkflowActionInput{
+												{
+													Name:  "Example input",
+													Value: "B",
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
 				},
 			},
 		},
@@ -321,7 +363,7 @@ func TestIncidentWorkflowCreate(t *testing.T) {
 
 	mux.HandleFunc("/incident_workflows", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "POST")
-		testBody(t, r, `{"incident_workflow":{"name":"Example Workflow","description":"This workflow serves as an example","steps":[{"name":"Example Step","description":"An example workflow step","action_configuration":{"action_id":"example/action/v1","inputs":[{"name":"Example input","value":"{{ example-value }}"}]}},{"name":"Subsequent Step","description":"A subsequent step in this workflow","action_configuration":{"action_id":"example/action/v1","inputs":[{"name":"Example input","value":"{{ example-value }}"}]}}]}}`)
+		testBody(t, r, `{"incident_workflow":{"name":"Example Workflow","description":"This workflow serves as an example","steps":[{"name":"Example Step","description":"An example workflow step","action_configuration":{"action_id":"example/action/v1","inputs":[{"name":"Example input","value":"{{ example-value }}"}]}},{"name":"Subsequent Step","description":"A subsequent step in this workflow","action_configuration":{"action_id":"example/action/v1","inputs":[{"name":"Example input","value":"{{ example-value }}"}],"inline_steps_inputs":[{"name":"Example inline_steps_input","value":{"steps":[{"name":"Inline Step 1","action_configuration":{"action_id":"example/action/v1","inputs":[{"name":"Example input","value":"B"}]}}]}}]}}]}}`)
 
 		w.Write([]byte(`
 {
@@ -374,6 +416,27 @@ func TestIncidentWorkflowCreate(t *testing.T) {
                     "value": "{{ example-value }}"
                 }
             ],
+            "inline_steps_inputs": [
+                {
+                    "name": "Example inline_steps_input",
+                    "value": {
+                        "steps": [
+                            {
+                                "name": "Inline Step 1",
+                                "action_configuration": {
+                                    "action_id": "example/action/v1",
+                                    "inputs": [
+                                        {
+                                            "name": "Example input",
+                                            "value": "B"
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                }
+            ],
             "outputs": [
                 {
                     "name": "Example output",
@@ -422,6 +485,27 @@ func TestIncidentWorkflowCreate(t *testing.T) {
 							Value: "{{ example-value }}",
 						},
 					},
+					InlineStepsInputs: []*IncidentWorkflowActionInlineStepsInput{
+						{
+							Name:  "Example inline_steps_input",
+							Value: &IncidentWorkflowActionInlineStepsInputValue{
+								Steps: []*IncidentWorkflowActionInlineStep{
+									{
+										Name:        "Inline Step 1",
+										Configuration: &IncidentWorkflowActionConfiguration{
+											ActionID:    "example/action/v1",
+											Inputs: []*IncidentWorkflowActionInput{
+												{
+													Name:  "Example input",
+													Value: "B",
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
 				},
 			},
 		},
@@ -466,6 +550,27 @@ func TestIncidentWorkflowCreate(t *testing.T) {
 							Value: "{{ example-value }}",
 						},
 					},
+					InlineStepsInputs: []*IncidentWorkflowActionInlineStepsInput{
+						{
+							Name:  "Example inline_steps_input",
+							Value: &IncidentWorkflowActionInlineStepsInputValue{
+								Steps: []*IncidentWorkflowActionInlineStep{
+									{
+										Name:        "Inline Step 1",
+										Configuration: &IncidentWorkflowActionConfiguration{
+											ActionID:    "example/action/v1",
+											Inputs: []*IncidentWorkflowActionInput{
+												{
+													Name:  "Example input",
+													Value: "B",
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
 				},
 			},
 		},
@@ -501,7 +606,7 @@ func TestIncidentWorkflowUpdate(t *testing.T) {
 
 	mux.HandleFunc("/incident_workflows/IW1", func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "PUT")
-		testBody(t, r, `{"incident_workflow":{"description":"Updated description","steps":[{"id":"32OIHWEJ"},{"id":"D3IT0D3","name":"Subsequent Step Updated Name"}]}}`)
+		testBody(t, r, `{"incident_workflow":{"description":"Updated description","steps":[{"id":"32OIHWEJ"},{"id":"D3IT0D3","name":"Subsequent Step Updated Name","action_configuration":{"action_id":"example/action/v1","inputs":[{"name":"Example input","value":"{{ example-value }}"}],"inline_steps_inputs":[{"name":"Example inline_steps_input","value":{"steps":[{"name":"Inline Step 1 Updated Name","action_configuration":{"action_id":"example/action/v1","inputs":[{"name":"Example input","value":"B"}]}}]}}]}}]}}`)
 
 		w.Write([]byte(`
 {
@@ -554,6 +659,27 @@ func TestIncidentWorkflowUpdate(t *testing.T) {
                     "value": "{{ example-value }}"
                 }
             ],
+            "inline_steps_inputs": [
+                {
+                    "name": "Example inline_steps_input",
+                    "value": {
+                        "steps": [
+                            {
+                                "name": "Inline Step 1 Updated Name",
+                                "action_configuration": {
+                                    "action_id": "example/action/v1",
+                                    "inputs": [
+                                        {
+                                            "name": "Example input",
+                                            "value": "B"
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                }
+            ],
             "outputs": [
                 {
                     "name": "Example output",
@@ -584,6 +710,36 @@ func TestIncidentWorkflowUpdate(t *testing.T) {
 			{
 				ID:   "D3IT0D3",
 				Name: "Subsequent Step Updated Name",
+				Configuration: &IncidentWorkflowActionConfiguration{
+					ActionID: "example/action/v1",
+					Inputs: []*IncidentWorkflowActionInput{
+						{
+							Name:  "Example input",
+							Value: "{{ example-value }}",
+						},
+					},
+					InlineStepsInputs: []*IncidentWorkflowActionInlineStepsInput{
+						{
+							Name:  "Example inline_steps_input",
+							Value: &IncidentWorkflowActionInlineStepsInputValue{
+								Steps: []*IncidentWorkflowActionInlineStep{
+									{
+										Name:        "Inline Step 1 Updated Name",
+										Configuration: &IncidentWorkflowActionConfiguration{
+											ActionID:    "example/action/v1",
+											Inputs: []*IncidentWorkflowActionInput{
+												{
+													Name:  "Example input",
+													Value: "B",
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
 			},
 		},
 	})
@@ -625,6 +781,27 @@ func TestIncidentWorkflowUpdate(t *testing.T) {
 						{
 							Name:  "Example input",
 							Value: "{{ example-value }}",
+						},
+					},
+					InlineStepsInputs: []*IncidentWorkflowActionInlineStepsInput{
+						{
+							Name:  "Example inline_steps_input",
+							Value: &IncidentWorkflowActionInlineStepsInputValue{
+								Steps: []*IncidentWorkflowActionInlineStep{
+									{
+										Name:        "Inline Step 1 Updated Name",
+										Configuration: &IncidentWorkflowActionConfiguration{
+											ActionID:    "example/action/v1",
+											Inputs: []*IncidentWorkflowActionInput{
+												{
+													Name:  "Example input",
+													Value: "B",
+												},
+											},
+										},
+									},
+								},
+							},
 						},
 					},
 				},
