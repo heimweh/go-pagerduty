@@ -336,7 +336,7 @@ func (c *Client) newRequestDoContext(ctx context.Context, method, url string, qr
 	resp, err := c.do(req, v)
 	if err != nil {
 		if respErr, ok := err.(*Error); ok && respErr.needToRetry {
-			return c.newRequestDoContext(ctx, method, url, qryOptions, body, v)
+			return c.newRequestDoContext(ctx, method, url, nil, body, v)
 		}
 
 		return nil, err
@@ -368,7 +368,7 @@ func (c *Client) newRequestDoOptionsContext(ctx context.Context, method, url str
 	resp, err := c.do(req, v)
 	if err != nil {
 		if respErr, ok := err.(*Error); ok && respErr.needToRetry {
-			return c.newRequestDoOptionsContext(ctx, method, url, qryOptions, body, v)
+			return c.newRequestDoOptionsContext(ctx, method, url, nil, body, v)
 		}
 
 		return nil, err

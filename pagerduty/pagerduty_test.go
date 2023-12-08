@@ -2,6 +2,7 @@ package pagerduty
 
 import (
 	"bytes"
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -98,5 +99,48 @@ func TestClientUserAgentOverwritten(t *testing.T) {
 
 	if client.Config.UserAgent != newUserAgent {
 		t.Errorf("got %q, want %q", client.Config.UserAgent, newUserAgent)
+	}
+}
+
+func TestRetryURL(t *testing.T) {
+
+	setup()
+	defer teardown()
+
+	timesCalled := 0
+	expectedURL := "/members?offset=100"
+
+	options := GetMembersOptions{
+		Offset: 100,
+	}
+
+	mux.HandleFunc("/members", func(w http.ResponseWriter, r *http.Request) {
+		timesCalled++
+		testMethod(t, r, "GET")
+		url := r.URL.String()
+		if url != expectedURL {
+			t.Fatalf("Request url: %v, want %v", url, expectedURL)
+		}
+
+		if timesCalled > 1 {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		w.Header().Set("Ratelimit-Reset", "1")
+		w.WriteHeader(http.StatusTooManyRequests)
+		w.Write([]byte(`{"error":{"code":"2020", "message":"Rate Limit Exceeded"}}`))
+
+	})
+
+	_, err := client.newRequestDoOptionsContext(context.Background(), http.MethodGet, "/members", options, nil, nil)
+	if err != nil {
+		t.Fatalf(err.Error())
+	}
+
+	timesCalled = 0
+	_, err = client.newRequestDoContext(context.Background(), http.MethodGet, "/members", options, nil, nil)
+	if err != nil {
+		t.Fatalf(err.Error())
 	}
 }
