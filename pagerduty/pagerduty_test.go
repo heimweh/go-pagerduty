@@ -5,6 +5,7 @@ import (
 	"context"
 	"net/http"
 	"net/http/httptest"
+	"reflect"
 	"strings"
 	"testing"
 )
@@ -143,4 +144,91 @@ func TestRetryURL(t *testing.T) {
 	if err != nil {
 		t.Fatalf(err.Error())
 	}
+}
+
+func TestHandleRatelimitErrorWithRatelimitHeaders(t *testing.T) {
+	setup()
+	defer teardown()
+
+	count := 0
+	mux.HandleFunc("/teams", func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "GET")
+
+		if count > 0 {
+			w.Write([]byte(`{"teams": [{"id": "1"}]}`))
+			return
+		}
+
+		// Expected response ref. https://developer.pagerduty.com/docs/72d3b724589e3-rest-api-rate-limits#reaching-the-limit
+		w.Header().Add("Content-Type", "application/json")
+		w.Header().Add("ratelimit-limit", "960")
+		w.Header().Add("ratelimit-remaining", "0")
+		w.Header().Add("ratelimit-reset", "1")
+		w.WriteHeader(http.StatusTooManyRequests)
+		w.Write([]byte(`{"error":{"message":"Rate Limit Exceeded","code":2020}}`))
+		count++
+	})
+
+	resp, _, err := client.Teams.List(&ListTeamsOptions{})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	want := &ListTeamsResponse{
+		Teams: []*Team{
+			{
+				ID: "1",
+			},
+		},
+	}
+
+	if !reflect.DeepEqual(resp, want) {
+		t.Errorf("returned \n\n%#v want \n\n%#v", resp, want)
+	}
+
+}
+
+func TestHandleRatelimitErrorNoRatelimitHeaders(t *testing.T) {
+	setup()
+	defer teardown()
+
+	count := 0
+	mux.HandleFunc("/teams", func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "GET")
+
+		if count > 0 {
+			w.Write([]byte(`{"teams": [{"id": "1"}]}`))
+			return
+		}
+
+		w.Header().Add("Content-Type", "text/html")
+		w.WriteHeader(http.StatusTooManyRequests)
+		w.Write([]byte(`
+      <html>
+      <head><title>429 Too Many Requests</title></head>
+      <body>
+      <center><h1>429 Too Many Requests</h1></center>
+      <hr><center>nginx</center>
+      </body>
+      </html>`))
+		count++
+	})
+
+	resp, _, err := client.Teams.List(&ListTeamsOptions{})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	want := &ListTeamsResponse{
+		Teams: []*Team{
+			{
+				ID: "1",
+			},
+		},
+	}
+
+	if !reflect.DeepEqual(resp, want) {
+		t.Errorf("returned \n\n%#v want \n\n%#v", resp, want)
+	}
+
 }
