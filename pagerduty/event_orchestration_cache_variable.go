@@ -32,8 +32,8 @@ type EventOrchestrationCacheVariableReference struct {
 type EventOrchestrationCacheVariable struct {
 	ID            string                                   			`json:"id,omitempty"`
 	Name          string                                    		`json:"name,omitempty"`
-	Disabled      bool 																          `json:"disabled,omitempty"`
-	Conditions    []*EventOrchestrationCacheVariableCondition   `json:"conditions,omitempty"`
+	Disabled      bool 																          `json:"disabled"`
+	Conditions    []*EventOrchestrationCacheVariableCondition   `json:"conditions"`
 	Configuration *EventOrchestrationCacheVariableConfiguration `json:"configuration,omitempty"`
 	CreatedAt     string                           							`json:"created_at,omitempty"`
 	CreatedBy     *EventOrchestrationCacheVariableReference 		`json:"created_by,omitempty"`

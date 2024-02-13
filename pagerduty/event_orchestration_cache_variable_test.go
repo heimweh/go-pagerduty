@@ -264,7 +264,7 @@ func TestGlobalOrchestrationCacheVariableGet(t *testing.T) {
 	}
 }
 
-func TestGlobalOrchestrationICacheVariableUpdate(t *testing.T) {
+func TestGlobalOrchestrationCacheVariableUpdate(t *testing.T) {
 	setup()
 	defer teardown()
 	oId := "31112383-c14b-4464-b8fc-660f2508f43b"
@@ -340,7 +340,7 @@ func TestGlobalOrchestrationICacheVariableUpdate(t *testing.T) {
 	}
 }
 
-func TestGlobalOrchestrationIntegrationDelete(t *testing.T) {
+func TestGlobalOrchestrationCacheVariableDelete(t *testing.T) {
 	setup()
 	defer teardown()
 
@@ -363,7 +363,7 @@ func TestServiceEventOrchestrationCacheVariableList(t *testing.T) {
 	setup()
 	defer teardown()
 
-	oId   := "a64f9c87-6adc-4f89-a64c-2fdd8cba4639"
+	oId   := "P3ZQXDF"
 	oType := "service"
 	url   := fmt.Sprintf("%s/services/%s/cache_variables/", eventOrchestrationBaseUrl, oId)
 
@@ -486,7 +486,7 @@ func TestServiceEventOrchestrationCacheVariableList(t *testing.T) {
 func TestServiceOrchestrationCacheVariableCreate(t *testing.T) {
 	setup()
 	defer teardown()
-	oId := "9ad1fdb7-5f69-4e36-9a5e-0da1f3290dda"
+	oId := "P3ZQXDF"
 	oType := "service"
 	input := &EventOrchestrationCacheVariable{
 		Name: "create_example",
@@ -543,7 +543,7 @@ func TestServiceOrchestrationCacheVariableGet(t *testing.T) {
 	setup()
 	defer teardown()
 
-	oId := "d054a57d-5933-44ce-8173-8be0bbacdfff"
+	oId := "P3ZQXDF"
 	oType := "service"
 	id := "9aa13ae3-81f3-4456-9abc-79233555fc3f"
 	url := fmt.Sprintf("%s/services/%s/cache_variables/%s", eventOrchestrationBaseUrl, oId, id)
@@ -614,10 +614,10 @@ func TestServiceOrchestrationCacheVariableGet(t *testing.T) {
 	}
 }
 
-func TestServiceOrchestrationICacheVariableUpdate(t *testing.T) {
+func TestServiceOrchestrationCacheVariableUpdate(t *testing.T) {
 	setup()
 	defer teardown()
-	oId := "31112383-c14b-4464-b8fc-660f2508f43b"
+	oId := "P3ZQXDF"
 	oType := "service"
 	id := "460d9629-269a-4d26-8b6b-b96d61102436"
 	input := &EventOrchestrationCacheVariable{
@@ -690,11 +690,11 @@ func TestServiceOrchestrationICacheVariableUpdate(t *testing.T) {
 	}
 }
 
-func TestServiceOrchestrationIntegrationDelete(t *testing.T) {
+func TestServiceOrchestrationCacheVariableDelete(t *testing.T) {
 	setup()
 	defer teardown()
 
-	oId := "1e51d2d3-1384-46f1-a7bb-920b8b114f80"
+	oId := "P3ZQXDF"
 	oType := "service"
 	id := "58cab484-ed93-4c46-8188-8f02b0cf3d9f"
 	url := fmt.Sprintf("%s/services/%s/cache_variables/%s", eventOrchestrationBaseUrl, oId, id)
