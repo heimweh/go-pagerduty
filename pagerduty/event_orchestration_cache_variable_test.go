@@ -69,7 +69,7 @@ func TestGlobalEventOrchestrationCacheVariableList(t *testing.T) {
 		}`))
 	})
 
-	resp, _, err := client.EventOrchestrationCacheVariables.ListContext(context.Background(), oType, oId)
+	resp, _, err := client.EventOrchestrationCacheVariables.List(context.Background(), oType, oId)
 
 	if err != nil {
 		t.Fatal(err)
@@ -86,13 +86,13 @@ func TestGlobalEventOrchestrationCacheVariableList(t *testing.T) {
 					TTLSeconds: 30,
 				},
 				CreatedAt: "2024-02-12T14:44:58Z",
-				CreatedBy: &EventOrchestrationCacheVariableReference{
+				CreatedBy: &UserReference{
 					ID:   "P8B9WR7",
 					Self: "https://api.pagerduty.com/users/P8B9WR7",
 					Type: "user_reference",
 				},
 				UpdatedAt: "2024-02-13T12:41:43Z",
-				UpdatedBy: &EventOrchestrationCacheVariableReference{
+				UpdatedBy: &UserReference{
 					ID:   "P8B9WR8",
 					Self: "https://api.pagerduty.com/users/P8B9WR8",
 					Type: "user_reference",
@@ -112,13 +112,13 @@ func TestGlobalEventOrchestrationCacheVariableList(t *testing.T) {
 					Regex:  ".*",
 				},
 				CreatedAt: "2024-02-12T14:44:58Z",
-				CreatedBy: &EventOrchestrationCacheVariableReference{
+				CreatedBy: &UserReference{
 					ID:   "P8B9WR7",
 					Self: "https://api.pagerduty.com/users/P8B9WR7",
 					Type: "user_reference",
 				},
 				UpdatedAt: "2024-02-13T12:41:43Z",
-				UpdatedBy: &EventOrchestrationCacheVariableReference{
+				UpdatedBy: &UserReference{
 					ID:   "P8B9WR8",
 					Self: "https://api.pagerduty.com/users/P8B9WR8",
 					Type: "user_reference",
@@ -168,7 +168,7 @@ func TestGlobalOrchestrationCacheVariableCreate(t *testing.T) {
 		}`))
 	})
 
-	resp, _, err := client.EventOrchestrationCacheVariables.CreateContext(context.Background(), oType, oId, input)
+	resp, _, err := client.EventOrchestrationCacheVariables.Create(context.Background(), oType, oId, input)
 
 	if err != nil {
 		t.Fatal(err)
@@ -227,7 +227,7 @@ func TestGlobalOrchestrationCacheVariableGet(t *testing.T) {
 		}`))
 	})
 
-	resp, _, err := client.EventOrchestrationCacheVariables.GetContext(context.Background(), oType, oId, id)
+	resp, _, err := client.EventOrchestrationCacheVariables.Get(context.Background(), oType, oId, id)
 
 	if err != nil {
 		t.Fatal(err)
@@ -246,13 +246,13 @@ func TestGlobalOrchestrationCacheVariableGet(t *testing.T) {
 			TTLSeconds: 70,
 		},
 		CreatedAt: "2024-02-12T14:44:58Z",
-		CreatedBy: &EventOrchestrationCacheVariableReference{
+		CreatedBy: &UserReference{
 			ID:   "P8B9WR7",
 			Self: "https://api.pagerduty.com/users/P8B9WR7",
 			Type: "user_reference",
 		},
 		UpdatedAt: "2024-02-13T12:41:43Z",
-		UpdatedBy: &EventOrchestrationCacheVariableReference{
+		UpdatedBy: &UserReference{
 			ID:   "P8B9WR8",
 			Self: "https://api.pagerduty.com/users/P8B9WR8",
 			Type: "user_reference",
@@ -307,7 +307,7 @@ func TestGlobalOrchestrationCacheVariableUpdate(t *testing.T) {
 		}`))
 	})
 
-	resp, _, err := client.EventOrchestrationCacheVariables.UpdateContext(context.Background(), oType, oId, id, input)
+	resp, _, err := client.EventOrchestrationCacheVariables.Update(context.Background(), oType, oId, id, input)
 
 	if err != nil {
 		t.Fatal(err)
@@ -322,13 +322,13 @@ func TestGlobalOrchestrationCacheVariableUpdate(t *testing.T) {
 		},
 		Disabled: true,
 		CreatedAt: "2024-02-12T14:44:58Z",
-		CreatedBy: &EventOrchestrationCacheVariableReference{
+		CreatedBy: &UserReference{
 			ID:   "P8B9WR7",
 			Self: "https://api.pagerduty.com/users/P8B9WR7",
 			Type: "user_reference",
 		},
 		UpdatedAt: "2024-02-13T12:41:43Z",
-		UpdatedBy: &EventOrchestrationCacheVariableReference{
+		UpdatedBy: &UserReference{
 			ID:   "P8B9WR8",
 			Self: "https://api.pagerduty.com/users/P8B9WR8",
 			Type: "user_reference",
@@ -354,7 +354,7 @@ func TestGlobalOrchestrationCacheVariableDelete(t *testing.T) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	if _, err := client.EventOrchestrationCacheVariables.DeleteContext(context.Background(), oType, oId, id); err != nil {
+	if _, err := client.EventOrchestrationCacheVariables.Delete(context.Background(), oType, oId, id); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -419,7 +419,7 @@ func TestServiceEventOrchestrationCacheVariableList(t *testing.T) {
 		}`))
 	})
 
-	resp, _, err := client.EventOrchestrationCacheVariables.ListContext(context.Background(), oType, oId)
+	resp, _, err := client.EventOrchestrationCacheVariables.List(context.Background(), oType, oId)
 
 	if err != nil {
 		t.Fatal(err)
@@ -436,13 +436,13 @@ func TestServiceEventOrchestrationCacheVariableList(t *testing.T) {
 					TTLSeconds: 30,
 				},
 				CreatedAt: "2024-02-12T14:44:58Z",
-				CreatedBy: &EventOrchestrationCacheVariableReference{
+				CreatedBy: &UserReference{
 					ID:   "P8B9WR7",
 					Self: "https://api.pagerduty.com/users/P8B9WR7",
 					Type: "user_reference",
 				},
 				UpdatedAt: "2024-02-13T12:41:43Z",
-				UpdatedBy: &EventOrchestrationCacheVariableReference{
+				UpdatedBy: &UserReference{
 					ID:   "P8B9WR8",
 					Self: "https://api.pagerduty.com/users/P8B9WR8",
 					Type: "user_reference",
@@ -462,13 +462,13 @@ func TestServiceEventOrchestrationCacheVariableList(t *testing.T) {
 					Regex:  ".*",
 				},
 				CreatedAt: "2024-02-12T14:44:58Z",
-				CreatedBy: &EventOrchestrationCacheVariableReference{
+				CreatedBy: &UserReference{
 					ID:   "P8B9WR7",
 					Self: "https://api.pagerduty.com/users/P8B9WR7",
 					Type: "user_reference",
 				},
 				UpdatedAt: "2024-02-13T12:41:43Z",
-				UpdatedBy: &EventOrchestrationCacheVariableReference{
+				UpdatedBy: &UserReference{
 					ID:   "P8B9WR8",
 					Self: "https://api.pagerduty.com/users/P8B9WR8",
 					Type: "user_reference",
@@ -518,7 +518,7 @@ func TestServiceOrchestrationCacheVariableCreate(t *testing.T) {
 		}`))
 	})
 
-	resp, _, err := client.EventOrchestrationCacheVariables.CreateContext(context.Background(), oType, oId, input)
+	resp, _, err := client.EventOrchestrationCacheVariables.Create(context.Background(), oType, oId, input)
 
 	if err != nil {
 		t.Fatal(err)
@@ -577,7 +577,7 @@ func TestServiceOrchestrationCacheVariableGet(t *testing.T) {
 		}`))
 	})
 
-	resp, _, err := client.EventOrchestrationCacheVariables.GetContext(context.Background(), oType, oId, id)
+	resp, _, err := client.EventOrchestrationCacheVariables.Get(context.Background(), oType, oId, id)
 
 	if err != nil {
 		t.Fatal(err)
@@ -596,13 +596,13 @@ func TestServiceOrchestrationCacheVariableGet(t *testing.T) {
 			TTLSeconds: 70,
 		},
 		CreatedAt: "2024-02-12T14:44:58Z",
-		CreatedBy: &EventOrchestrationCacheVariableReference{
+		CreatedBy: &UserReference{
 			ID:   "P8B9WR7",
 			Self: "https://api.pagerduty.com/users/P8B9WR7",
 			Type: "user_reference",
 		},
 		UpdatedAt: "2024-02-13T12:41:43Z",
-		UpdatedBy: &EventOrchestrationCacheVariableReference{
+		UpdatedBy: &UserReference{
 			ID:   "P8B9WR8",
 			Self: "https://api.pagerduty.com/users/P8B9WR8",
 			Type: "user_reference",
@@ -657,7 +657,7 @@ func TestServiceOrchestrationCacheVariableUpdate(t *testing.T) {
 		}`))
 	})
 
-	resp, _, err := client.EventOrchestrationCacheVariables.UpdateContext(context.Background(), oType, oId, id, input)
+	resp, _, err := client.EventOrchestrationCacheVariables.Update(context.Background(), oType, oId, id, input)
 
 	if err != nil {
 		t.Fatal(err)
@@ -672,13 +672,13 @@ func TestServiceOrchestrationCacheVariableUpdate(t *testing.T) {
 		},
 		Disabled: true,
 		CreatedAt: "2024-02-12T14:44:58Z",
-		CreatedBy: &EventOrchestrationCacheVariableReference{
+		CreatedBy: &UserReference{
 			ID:   "P8B9WR7",
 			Self: "https://api.pagerduty.com/users/P8B9WR7",
 			Type: "user_reference",
 		},
 		UpdatedAt: "2024-02-13T12:41:43Z",
-		UpdatedBy: &EventOrchestrationCacheVariableReference{
+		UpdatedBy: &UserReference{
 			ID:   "P8B9WR8",
 			Self: "https://api.pagerduty.com/users/P8B9WR8",
 			Type: "user_reference",
@@ -704,7 +704,7 @@ func TestServiceOrchestrationCacheVariableDelete(t *testing.T) {
 		w.WriteHeader(http.StatusNoContent)
 	})
 
-	if _, err := client.EventOrchestrationCacheVariables.DeleteContext(context.Background(), oType, oId, id); err != nil {
+	if _, err := client.EventOrchestrationCacheVariables.Delete(context.Background(), oType, oId, id); err != nil {
 		t.Fatal(err)
 	}
 }
