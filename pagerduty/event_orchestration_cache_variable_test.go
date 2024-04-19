@@ -13,9 +13,9 @@ func TestGlobalEventOrchestrationCacheVariableList(t *testing.T) {
 	setup()
 	defer teardown()
 
-	oId   := "a64f9c87-6adc-4f89-a64c-2fdd8cba4639"
+	oId := "a64f9c87-6adc-4f89-a64c-2fdd8cba4639"
 	oType := "global"
-	url   := fmt.Sprintf("%s/%s/cache_variables/", eventOrchestrationBaseUrl, oId)
+	url := fmt.Sprintf("%s/%s/cache_variables/", eventOrchestrationBaseUrl, oId)
 
 	mux.HandleFunc(url, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "GET")
@@ -78,8 +78,8 @@ func TestGlobalEventOrchestrationCacheVariableList(t *testing.T) {
 	want := &ListEventOrchestrationCacheVariablesResponse{
 		CacheVariables: []*EventOrchestrationCacheVariable{
 			{
-				ID:   "45be0a94-55b2-4691-b285-7a14478f4fe2",
-				Name: "example_1",
+				ID:         "45be0a94-55b2-4691-b285-7a14478f4fe2",
+				Name:       "example_1",
 				Conditions: []*EventOrchestrationCacheVariableCondition{},
 				Configuration: &EventOrchestrationCacheVariableConfiguration{
 					Type:       "trigger_event_count",
@@ -234,8 +234,8 @@ func TestGlobalOrchestrationCacheVariableGet(t *testing.T) {
 	}
 
 	want := &EventOrchestrationCacheVariable{
-		ID:    "9aa13ae3-81f3-4456-9abc-79233555fc3f",
-		Name:  "get_example",
+		ID:   "9aa13ae3-81f3-4456-9abc-79233555fc3f",
+		Name: "get_example",
 		Conditions: []*EventOrchestrationCacheVariableCondition{
 			{
 				Expression: "event.source matches part 'test'",
@@ -320,7 +320,7 @@ func TestGlobalOrchestrationCacheVariableUpdate(t *testing.T) {
 			Type:       "trigger_event_count",
 			TTLSeconds: 10,
 		},
-		Disabled: true,
+		Disabled:  true,
 		CreatedAt: "2024-02-12T14:44:58Z",
 		CreatedBy: &UserReference{
 			ID:   "P8B9WR7",
@@ -363,9 +363,9 @@ func TestServiceEventOrchestrationCacheVariableList(t *testing.T) {
 	setup()
 	defer teardown()
 
-	oId   := "P3ZQXDF"
+	oId := "P3ZQXDF"
 	oType := "service"
-	url   := fmt.Sprintf("%s/services/%s/cache_variables/", eventOrchestrationBaseUrl, oId)
+	url := fmt.Sprintf("%s/services/%s/cache_variables/", eventOrchestrationBaseUrl, oId)
 
 	mux.HandleFunc(url, func(w http.ResponseWriter, r *http.Request) {
 		testMethod(t, r, "GET")
@@ -428,8 +428,8 @@ func TestServiceEventOrchestrationCacheVariableList(t *testing.T) {
 	want := &ListEventOrchestrationCacheVariablesResponse{
 		CacheVariables: []*EventOrchestrationCacheVariable{
 			{
-				ID:   "45be0a94-55b2-4691-b285-7a14478f4fe2",
-				Name: "example_1",
+				ID:         "45be0a94-55b2-4691-b285-7a14478f4fe2",
+				Name:       "example_1",
 				Conditions: []*EventOrchestrationCacheVariableCondition{},
 				Configuration: &EventOrchestrationCacheVariableConfiguration{
 					Type:       "trigger_event_count",
@@ -584,8 +584,8 @@ func TestServiceOrchestrationCacheVariableGet(t *testing.T) {
 	}
 
 	want := &EventOrchestrationCacheVariable{
-		ID:    "9aa13ae3-81f3-4456-9abc-79233555fc3f",
-		Name:  "get_example",
+		ID:   "9aa13ae3-81f3-4456-9abc-79233555fc3f",
+		Name: "get_example",
 		Conditions: []*EventOrchestrationCacheVariableCondition{
 			{
 				Expression: "event.source matches part 'test'",
@@ -670,7 +670,7 @@ func TestServiceOrchestrationCacheVariableUpdate(t *testing.T) {
 			Type:       "trigger_event_count",
 			TTLSeconds: 10,
 		},
-		Disabled: true,
+		Disabled:  true,
 		CreatedAt: "2024-02-12T14:44:58Z",
 		CreatedBy: &UserReference{
 			ID:   "P8B9WR7",
@@ -708,4 +708,3 @@ func TestServiceOrchestrationCacheVariableDelete(t *testing.T) {
 		t.Fatal(err)
 	}
 }
-

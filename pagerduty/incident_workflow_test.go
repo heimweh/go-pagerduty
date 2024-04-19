@@ -328,13 +328,13 @@ func TestIncidentWorkflowGet(t *testing.T) {
 					},
 					InlineStepsInputs: []*IncidentWorkflowActionInlineStepsInput{
 						{
-							Name:  "Example inline_steps_input",
+							Name: "Example inline_steps_input",
 							Value: &IncidentWorkflowActionInlineStepsInputValue{
 								Steps: []*IncidentWorkflowActionInlineStep{
 									{
-										Name:        "Inline Step 1",
+										Name: "Inline Step 1",
 										Configuration: &IncidentWorkflowActionConfiguration{
-											ActionID:    "example/action/v1",
+											ActionID: "example/action/v1",
 											Inputs: []*IncidentWorkflowActionInput{
 												{
 													Name:  "Example input",
@@ -487,13 +487,13 @@ func TestIncidentWorkflowCreate(t *testing.T) {
 					},
 					InlineStepsInputs: []*IncidentWorkflowActionInlineStepsInput{
 						{
-							Name:  "Example inline_steps_input",
+							Name: "Example inline_steps_input",
 							Value: &IncidentWorkflowActionInlineStepsInputValue{
 								Steps: []*IncidentWorkflowActionInlineStep{
 									{
-										Name:        "Inline Step 1",
+										Name: "Inline Step 1",
 										Configuration: &IncidentWorkflowActionConfiguration{
-											ActionID:    "example/action/v1",
+											ActionID: "example/action/v1",
 											Inputs: []*IncidentWorkflowActionInput{
 												{
 													Name:  "Example input",
@@ -552,13 +552,13 @@ func TestIncidentWorkflowCreate(t *testing.T) {
 					},
 					InlineStepsInputs: []*IncidentWorkflowActionInlineStepsInput{
 						{
-							Name:  "Example inline_steps_input",
+							Name: "Example inline_steps_input",
 							Value: &IncidentWorkflowActionInlineStepsInputValue{
 								Steps: []*IncidentWorkflowActionInlineStep{
 									{
-										Name:        "Inline Step 1",
+										Name: "Inline Step 1",
 										Configuration: &IncidentWorkflowActionConfiguration{
-											ActionID:    "example/action/v1",
+											ActionID: "example/action/v1",
 											Inputs: []*IncidentWorkflowActionInput{
 												{
 													Name:  "Example input",
@@ -720,13 +720,13 @@ func TestIncidentWorkflowUpdate(t *testing.T) {
 					},
 					InlineStepsInputs: []*IncidentWorkflowActionInlineStepsInput{
 						{
-							Name:  "Example inline_steps_input",
+							Name: "Example inline_steps_input",
 							Value: &IncidentWorkflowActionInlineStepsInputValue{
 								Steps: []*IncidentWorkflowActionInlineStep{
 									{
-										Name:        "Inline Step 1 Updated Name",
+										Name: "Inline Step 1 Updated Name",
 										Configuration: &IncidentWorkflowActionConfiguration{
-											ActionID:    "example/action/v1",
+											ActionID: "example/action/v1",
 											Inputs: []*IncidentWorkflowActionInput{
 												{
 													Name:  "Example input",
@@ -785,13 +785,13 @@ func TestIncidentWorkflowUpdate(t *testing.T) {
 					},
 					InlineStepsInputs: []*IncidentWorkflowActionInlineStepsInput{
 						{
-							Name:  "Example inline_steps_input",
+							Name: "Example inline_steps_input",
 							Value: &IncidentWorkflowActionInlineStepsInputValue{
 								Steps: []*IncidentWorkflowActionInlineStep{
 									{
-										Name:        "Inline Step 1 Updated Name",
+										Name: "Inline Step 1 Updated Name",
 										Configuration: &IncidentWorkflowActionConfiguration{
-											ActionID:    "example/action/v1",
+											ActionID: "example/action/v1",
 											Inputs: []*IncidentWorkflowActionInput{
 												{
 													Name:  "Example input",
