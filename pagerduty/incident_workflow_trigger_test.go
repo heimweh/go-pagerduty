@@ -245,6 +245,10 @@ func TestIncidentWorkflowTriggerGet(t *testing.T) {
 			},
 		},
 		Condition: &cond,
+		Permissions: &IncidentWorkflowTriggerPermissions{
+			Restricted: true,
+			TeamID:     "PDEJ7MP",
+		},
 	}
 
 	if !reflect.DeepEqual(resp, want) {
