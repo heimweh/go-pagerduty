@@ -57,7 +57,7 @@ type cacheLastRefreshRecord struct {
 func InitCache(c *Client) {
 	pdClient = c
 	cacheMongoURL = os.Getenv("TF_PAGERDUTY_CACHE")
-	re := regexp.MustCompile("^mongodb+(\\+srv)?://")
+	re := regexp.MustCompile(`^mongodb+(\\+srv)?://`)
 	isMongodbURL := re.Match([]byte(cacheMongoURL))
 	if isMongodbURL {
 		log.Printf("===== Enabling PagerDuty Mongo cache at %v", cacheMongoURL)
