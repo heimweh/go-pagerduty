@@ -50,7 +50,6 @@ type EventOrchestrationPathRuleCondition struct {
 // Router: https://developer.pagerduty.com/api-reference/f0fae270c70b3-get-the-router-for-a-global-event-orchestration
 // Service: https://developer.pagerduty.com/api-reference/179537b835e2d-get-the-service-orchestration-for-a-service
 // Unrouted: https://developer.pagerduty.com/api-reference/70aa1139e1013-get-the-unrouted-orchestration-for-a-global-event-orchestration
-
 type EventOrchestrationPathRuleActions struct {
 	DropEvent                  bool                                               `json:"drop_event"`
 	RouteTo                    string                                             `json:"route_to"`
