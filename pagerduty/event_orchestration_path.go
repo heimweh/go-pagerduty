@@ -65,7 +65,7 @@ type EventOrchestrationPathRuleActions struct {
 	EventAction                string                                             `json:"event_action"`
 	Variables                  []*EventOrchestrationPathActionVariables           `json:"variables"`
 	Extractions                []*EventOrchestrationPathActionExtractions         `json:"extractions"`
-	EscalationPolicy           *EventOrchestrationPathEscalationPolicy            `json:"escalation_policy"`
+	EscalationPolicy           string                                             `json:"escalation_policy,omitempty"`
 }
 
 type EventOrchestrationPathDynamicRouteTo struct {
@@ -77,10 +77,6 @@ type EventOrchestrationPathDynamicRouteTo struct {
 type EventOrchestrationPathIncidentCustomFieldUpdate struct {
 	ID    string `json:"id,omitempty"`
 	Value string `json:"value,omitempty"`
-}
-
-type EventOrchestrationPathEscalationPolicy struct {
-	EscalationPolicy string `json:"escalation_policy,omitempty"`
 }
 
 type EventOrchestrationPathPagerdutyAutomationAction struct {
