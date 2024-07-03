@@ -498,7 +498,7 @@ func TestEventOrchestrationPathEscalationPolicyUpdate(t *testing.T) {
 	setup()
 	defer teardown()
 	input := &EventOrchestrationPath{
-		Type: "router",
+		Type: "global",
 		Parent: &EventOrchestrationPathReference{
 			ID:   "E-ORC-1",
 			Self: "https://api.pagerduty.com/event_orchestrations/E-ORC-1",
