@@ -522,6 +522,7 @@ func TestEventOrchestrationPathEscalationPolicyUpdate(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	policy := "POLICY"
 	want := &EventOrchestrationPathPayload{
 		OrchestrationPath: &EventOrchestrationPath{
 			Type: "global",
@@ -536,7 +537,7 @@ func TestEventOrchestrationPathEscalationPolicyUpdate(t *testing.T) {
 					Rules: []*EventOrchestrationPathRule{
 						{
 							Actions: &EventOrchestrationPathRuleActions{
-								EscalationPolicy: "POLICY",
+								EscalationPolicy: &policy,
 							},
 							ID: "E-ORC-EP-RULE",
 						},
