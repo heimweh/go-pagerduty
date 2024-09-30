@@ -68,6 +68,41 @@ func TestWebhookSubscriptionCreate(t *testing.T) {
 	}
 }
 
+func TestWebhookSubscriptionCreateNonActive(t *testing.T) {
+	setup()
+	defer teardown()
+
+	input := &WebhookSubscription{Active: false}
+
+	mux.HandleFunc("/webhook_subscriptions", func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "POST")
+		v := new(WebhookSubscriptionPayload)
+		json.NewDecoder(r.Body).Decode(v)
+		encoded, _ := json.Marshal(v)
+		expectedMarshalValue := `{"webhook_subscription":{"active":false,"delivery_method":{"custom_headers":null},"filter":{}}}`
+		if string(encoded) != expectedMarshalValue {
+			t.Errorf("Marshalled body = %s, want %s", string(encoded), expectedMarshalValue)
+		}
+		if !reflect.DeepEqual(v.WebhookSubscription, input) {
+			t.Errorf("Request body = %+v, want %+v", v, input)
+		}
+		w.Write([]byte(`{"webhook_subscription":{"id": "1"}}`))
+	})
+
+	resp, _, err := client.WebhookSubscriptions.Create(input)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	want := &WebhookSubscription{
+		ID: "1",
+	}
+
+	if !reflect.DeepEqual(resp, want) {
+		t.Errorf("returned \n\n%#v want \n\n%#v", resp, want)
+	}
+}
+
 func TestWebhookSubscriptionGet(t *testing.T) {
 	setup()
 	defer teardown()
