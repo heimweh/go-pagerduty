@@ -21,7 +21,7 @@ type AutomationActionsAction struct {
 	RunnerType                         *string                              `json:"runner_type,omitempty"`
 	CreationTime                       *string                              `json:"creation_time,omitempty"`
 	ModifyTime                         *string                              `json:"modify_time,omitempty"`
-	OnlyInvocableOnUnresolvedIncidents bool                                 `json:"only_invocable_on_unresolved_incidents"`
+	OnlyInvocableOnUnresolvedIncidents *bool                                `json:"only_invocable_on_unresolved_incidents,omitempty"`
 }
 
 type AutomationActionsActionDataReference struct {

@@ -105,7 +105,7 @@ func TestAutomationActionsActionTypeProcessAutomationCreate(t *testing.T) {
 		ActionType:                         "process_automation",
 		RunnerID:                           &runner_id,
 		ActionDataReference:                adf,
-		OnlyInvocableOnUnresolvedIncidents: only_invocable_on_unresolved_incidents,
+		OnlyInvocableOnUnresolvedIncidents: &only_invocable_on_unresolved_incidents,
 	}
 
 	mux.HandleFunc("/automation_actions/actions", func(w http.ResponseWriter, r *http.Request) {
@@ -153,8 +153,8 @@ func TestAutomationActionsActionTypeProcessAutomationCreate(t *testing.T) {
 		Privileges: &AutomationActionsPrivileges{
 			Permissions: []*string{&permissions_read},
 		},
-		ModifyTime: &modify_time,
-		OnlyInvocableOnUnresolvedIncidents: only_invocable_on_unresolved_incidents,
+		ModifyTime:                         &modify_time,
+		OnlyInvocableOnUnresolvedIncidents: &only_invocable_on_unresolved_incidents,
 	}
 
 	if !reflect.DeepEqual(resp, want) {
@@ -183,7 +183,7 @@ func TestAutomationActionsActionUpdate(t *testing.T) {
 		ActionType:                         "process_automation",
 		RunnerID:                           &runner_id,
 		ActionDataReference:                adf,
-		OnlyInvocableOnUnresolvedIncidents: only_invocable_on_unresolved_incidents,
+		OnlyInvocableOnUnresolvedIncidents: &only_invocable_on_unresolved_incidents,
 	}
 
 	var id = "01DF4OBNYKW84FS9CCYVYS1MOS"
@@ -234,8 +234,8 @@ func TestAutomationActionsActionUpdate(t *testing.T) {
 		Privileges: &AutomationActionsPrivileges{
 			Permissions: []*string{&permissions_read},
 		},
-		ModifyTime: &modify_time,
-		OnlyInvocableOnUnresolvedIncidents: only_invocable_on_unresolved_incidents,
+		ModifyTime:                         &modify_time,
+		OnlyInvocableOnUnresolvedIncidents: &only_invocable_on_unresolved_incidents,
 	}
 
 	if !reflect.DeepEqual(resp, want) {
@@ -276,7 +276,7 @@ func TestAutomationActionsActionTypeScriptCreate(t *testing.T) {
 		ActionType:                         "script",
 		RunnerID:                           &runner_id,
 		ActionDataReference:                adf,
-		OnlyInvocableOnUnresolvedIncidents: only_invocable_on_unresolved_incidents,
+		OnlyInvocableOnUnresolvedIncidents: &only_invocable_on_unresolved_incidents,
 	}
 
 	mux.HandleFunc("/automation_actions/actions", func(w http.ResponseWriter, r *http.Request) {
