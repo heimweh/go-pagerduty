@@ -146,14 +146,16 @@ var (
 	defaultAutoResolveTimeout                = 14400
 	defaultPosition                          = 0
 
-	ag                        = "intelligent"
+	ag    = "intelligent"
+	agPtr = &ag
+
 	validListServicesResponse = &ListServicesResponse{
 		Services: []*Service{
-			&Service{
+			{
 				AcknowledgementTimeout: &defaultTestServiceAcknowledgementTimeout,
 				Addons:                 nil,
 				AlertCreation:          "create_alerts_and_incidents",
-				AlertGrouping:          &ag,
+				AlertGrouping:          &agPtr,
 				AlertGroupingTimeout:   nil,
 				AutoResolveTimeout:     &defaultAutoResolveTimeout,
 				CreatedAt:              "2015-11-06T11:12:51-05:00",
