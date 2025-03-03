@@ -63,9 +63,31 @@ func TestGlobalEventOrchestrationCacheVariableList(t *testing.T) {
 						"self": "https://api.pagerduty.com/users/P8B9WR8",
 						"type": "user_reference"
 					}
+				},
+				{
+					"id": "fffd20a2-8240-4df3-b996-964968464a3f",
+					"name": "example_3",
+					"configuration": {
+						"type": "external_data",
+						"data_type": "boolean",
+						"ttl_seconds": 1200
+					},
+					"created_at": "2025-02-07T18:50:58Z",
+					"created_by": {
+						"id": "P24PCRC",
+						"self": "https://api.pagerduty.com/users/P24PCRC",
+						"type": "user_reference"
+					},
+					"data_endpoint": "https://api.pagerduty.com/event_orchestrations/a64f9c87-6adc-4f89-a64c-2fdd8cba4639/cache_variables/fffd20a2-8240-4df3-b996-964968464a3f/data",
+					"updated_at": "2025-02-07T20:00:43Z",
+					"updated_by": {
+						"id": "P23PCRC",
+						"self": "https://api.pagerduty.com/users/P23PCRC",
+						"type": "user_reference"
+					}
 				}
 			],
-			"total": 2
+			"total": 3
 		}`))
 	})
 
@@ -124,8 +146,30 @@ func TestGlobalEventOrchestrationCacheVariableList(t *testing.T) {
 					Type: "user_reference",
 				},
 			},
+			{
+				ID:   "fffd20a2-8240-4df3-b996-964968464a3f",
+				Name: "example_3",
+				Configuration: &EventOrchestrationCacheVariableConfiguration{
+					Type:   "external_data",
+					DataType: "boolean",
+					TTLSeconds:  1200,
+				},
+				CreatedAt: "2025-02-07T18:50:58Z",
+				CreatedBy: &UserReference{
+					ID:   "P24PCRC",
+					Self: "https://api.pagerduty.com/users/P24PCRC",
+					Type: "user_reference",
+				},
+				DataEndpoint: "https://api.pagerduty.com/event_orchestrations/a64f9c87-6adc-4f89-a64c-2fdd8cba4639/cache_variables/fffd20a2-8240-4df3-b996-964968464a3f/data",
+				UpdatedAt: "2025-02-07T20:00:43Z",
+				UpdatedBy: &UserReference{
+					ID:   "P23PCRC",
+					Self: "https://api.pagerduty.com/users/P23PCRC",
+					Type: "user_reference",
+				},
+			},
 		},
-		Total: 2,
+		Total: 3,
 	}
 
 	if !reflect.DeepEqual(resp, want) {
@@ -413,9 +457,31 @@ func TestServiceEventOrchestrationCacheVariableList(t *testing.T) {
 						"self": "https://api.pagerduty.com/users/P8B9WR8",
 						"type": "user_reference"
 					}
+				},
+				{
+					"id": "fffd20a2-8240-4df3-b996-964968464a3f",
+					"name": "example_3",
+					"configuration": {
+						"type": "external_data",
+						"data_type": "boolean",
+						"ttl_seconds": 1200
+					},
+					"created_at": "2025-02-07T18:50:58Z",
+					"created_by": {
+						"id": "P24PCRC",
+						"self": "https://api.pagerduty.com/users/P24PCRC",
+						"type": "user_reference"
+					},
+					"data_endpoint": "https://api.pagerduty.com/event_orchestrations/a64f9c87-6adc-4f89-a64c-2fdd8cba4639/cache_variables/fffd20a2-8240-4df3-b996-964968464a3f/data",
+					"updated_at": "2025-02-07T20:00:43Z",
+					"updated_by": {
+						"id": "P23PCRC",
+						"self": "https://api.pagerduty.com/users/P23PCRC",
+						"type": "user_reference"
+					}
 				}
 			],
-			"total": 2
+			"total": 3
 		}`))
 	})
 
@@ -474,8 +540,30 @@ func TestServiceEventOrchestrationCacheVariableList(t *testing.T) {
 					Type: "user_reference",
 				},
 			},
+			{
+				ID:   "fffd20a2-8240-4df3-b996-964968464a3f",
+				Name: "example_3",
+				Configuration: &EventOrchestrationCacheVariableConfiguration{
+					Type:   "external_data",
+					DataType: "boolean",
+					TTLSeconds:  1200,
+				},
+				CreatedAt: "2025-02-07T18:50:58Z",
+				CreatedBy: &UserReference{
+					ID:   "P24PCRC",
+					Self: "https://api.pagerduty.com/users/P24PCRC",
+					Type: "user_reference",
+				},
+				DataEndpoint: "https://api.pagerduty.com/event_orchestrations/a64f9c87-6adc-4f89-a64c-2fdd8cba4639/cache_variables/fffd20a2-8240-4df3-b996-964968464a3f/data",
+				UpdatedAt: "2025-02-07T20:00:43Z",
+				UpdatedBy: &UserReference{
+					ID:   "P23PCRC",
+					Self: "https://api.pagerduty.com/users/P23PCRC",
+					Type: "user_reference",
+				},
+			},
 		},
-		Total: 2,
+		Total: 3,
 	}
 
 	if !reflect.DeepEqual(resp, want) {
@@ -491,9 +579,9 @@ func TestServiceOrchestrationCacheVariableCreate(t *testing.T) {
 	input := &EventOrchestrationCacheVariable{
 		Name: "create_example",
 		Configuration: &EventOrchestrationCacheVariableConfiguration{
-			Type:   "recent_value",
-			Source: "event.custom_details.error",
-			Regex:  "[0-9]+",
+			Type: "external_data",
+			DataType: "string",
+			TTLSeconds: 900,
 		},
 	}
 	url := fmt.Sprintf("%s/services/%s/cache_variables/", eventOrchestrationBaseUrl, oId)
@@ -510,9 +598,9 @@ func TestServiceOrchestrationCacheVariableCreate(t *testing.T) {
 				"id": "43f061e0-e92b-49f0-91a0-be79404319fc",
 				"name": "create_example",
 				"configuration": {
-					"type": "recent_value",
-					"source": "event.custom_details.error",
-					"regex": "[0-9]+"
+					"type": "external_data",
+					"data_type": "string",
+					"ttl_seconds": 900
 				}
 			}
 		}`))
@@ -528,9 +616,9 @@ func TestServiceOrchestrationCacheVariableCreate(t *testing.T) {
 		ID:   "43f061e0-e92b-49f0-91a0-be79404319fc",
 		Name: "create_example",
 		Configuration: &EventOrchestrationCacheVariableConfiguration{
-			Type:   "recent_value",
-			Source: "event.custom_details.error",
-			Regex:  "[0-9]+",
+			Type: "external_data",
+			DataType: "string",
+			TTLSeconds: 900,
 		},
 	}
 
