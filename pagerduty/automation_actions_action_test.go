@@ -94,18 +94,24 @@ func TestAutomationActionsActionTypeProcessAutomationCreate(t *testing.T) {
 	adf_node_filter := "tags: production"
 	job_id := "1519578e-a22a-4340-b58f-08194691e10b"
 	only_invocable_on_unresolved_incidents := true
+	allow_invocation_manually := true
+	allow_invocation_from_event_orchestration := true
+	map_to_all_services := true
 	adf := AutomationActionsActionDataReference{
 		ProcessAutomationJobId:        &job_id,
 		ProcessAutomationJobArguments: &adf_arg,
 		ProcessAutomationNodeFilter:   &adf_node_filter,
 	}
 	input := &AutomationActionsAction{
-		Name:                               "Action created by TF",
-		Description:                        &description,
-		ActionType:                         "process_automation",
-		RunnerID:                           &runner_id,
-		ActionDataReference:                adf,
-		OnlyInvocableOnUnresolvedIncidents: &only_invocable_on_unresolved_incidents,
+		Name:                                  "Action created by TF",
+		Description:                           &description,
+		ActionType:                            "process_automation",
+		RunnerID:                              &runner_id,
+		ActionDataReference:                   adf,
+		OnlyInvocableOnUnresolvedIncidents:    &only_invocable_on_unresolved_incidents,
+		AllowInvocationManually:               &allow_invocation_manually,
+		AllowInvocationFromEventOrchestration: &allow_invocation_from_event_orchestration,
+		MapToAllServices:                      &map_to_all_services,
 	}
 
 	mux.HandleFunc("/automation_actions/actions", func(w http.ResponseWriter, r *http.Request) {
@@ -115,7 +121,7 @@ func TestAutomationActionsActionTypeProcessAutomationCreate(t *testing.T) {
 		if !reflect.DeepEqual(v.Action, input) {
 			t.Errorf("Request body = %+v, want %+v", v.Action, input)
 		}
-		w.Write([]byte(`{"action":{"only_invocable_on_unresolved_incidents":true,"action_data_reference":{"process_automation_job_id":"1519578e-a22a-4340-b58f-08194691e10b","process_automation_job_arguments":"-arg 123", "process_automation_node_filter":"tags: production"},"action_type":"process_automation","creation_time":"2022-12-12T18:51:42.048162Z","description":"Description of Action created by TF","id":"01DF4OBNYKW84FS9CCYVYS1MOS","last_run":"2022-12-12T18:52:11.937747Z","last_run_by":{"id":"PINL781","type":"user_reference"},"modify_time":"2022-12-12T18:51:42.048162Z","name":"Action created by TF","privileges":{"permissions":["read"]},"runner":"01DF4O9T1MDPYOUT7SUX9EXZ4R","runner_type":"runbook","services":[{"id":"PQWQ0U6","type":"service_reference"}],"teams":[{"id":"PZ31N6S","type":"team_reference"}],"type":"action"}}`))
+		w.Write([]byte(`{"action":{"only_invocable_on_unresolved_incidents":true,"allow_invocation_manually":true,"allow_invocation_from_event_orchestration":true,"map_to_all_services":true,"action_data_reference":{"process_automation_job_id":"1519578e-a22a-4340-b58f-08194691e10b","process_automation_job_arguments":"-arg 123", "process_automation_node_filter":"tags: production"},"action_type":"process_automation","creation_time":"2022-12-12T18:51:42.048162Z","description":"Description of Action created by TF","id":"01DF4OBNYKW84FS9CCYVYS1MOS","last_run":"2022-12-12T18:52:11.937747Z","last_run_by":{"id":"PINL781","type":"user_reference"},"modify_time":"2022-12-12T18:51:42.048162Z","name":"Action created by TF","privileges":{"permissions":["read"]},"runner":"01DF4O9T1MDPYOUT7SUX9EXZ4R","runner_type":"runbook","services":[{"id":"PQWQ0U6","type":"service_reference"}],"teams":[{"id":"PZ31N6S","type":"team_reference"}],"type":"action"}}`))
 	})
 
 	resp, _, err := client.AutomationActionsAction.Create(input)
@@ -153,8 +159,11 @@ func TestAutomationActionsActionTypeProcessAutomationCreate(t *testing.T) {
 		Privileges: &AutomationActionsPrivileges{
 			Permissions: []*string{&permissions_read},
 		},
-		ModifyTime:                         &modify_time,
-		OnlyInvocableOnUnresolvedIncidents: &only_invocable_on_unresolved_incidents,
+		ModifyTime:                            &modify_time,
+		OnlyInvocableOnUnresolvedIncidents:    &only_invocable_on_unresolved_incidents,
+		AllowInvocationManually:               &allow_invocation_manually,
+		AllowInvocationFromEventOrchestration: &allow_invocation_from_event_orchestration,
+		MapToAllServices:                      &map_to_all_services,
 	}
 
 	if !reflect.DeepEqual(resp, want) {
@@ -172,18 +181,23 @@ func TestAutomationActionsActionUpdate(t *testing.T) {
 	adf_node_filter := "tags: production"
 	job_id := "1519578e-a22a-4340-b58f-08194691e10b"
 	only_invocable_on_unresolved_incidents := true
+	allow_invocation_manually := true
+	allow_invocation_from_event_orchestration := true
+
 	adf := AutomationActionsActionDataReference{
 		ProcessAutomationJobId:        &job_id,
 		ProcessAutomationJobArguments: &adf_arg,
 		ProcessAutomationNodeFilter:   &adf_node_filter,
 	}
 	input := &AutomationActionsAction{
-		Name:                               "Action created by TF",
-		Description:                        &description,
-		ActionType:                         "process_automation",
-		RunnerID:                           &runner_id,
-		ActionDataReference:                adf,
-		OnlyInvocableOnUnresolvedIncidents: &only_invocable_on_unresolved_incidents,
+		Name:                                  "Action created by TF",
+		Description:                           &description,
+		ActionType:                            "process_automation",
+		RunnerID:                              &runner_id,
+		ActionDataReference:                   adf,
+		OnlyInvocableOnUnresolvedIncidents:    &only_invocable_on_unresolved_incidents,
+		AllowInvocationManually:               &allow_invocation_manually,
+		AllowInvocationFromEventOrchestration: &allow_invocation_from_event_orchestration,
 	}
 
 	var id = "01DF4OBNYKW84FS9CCYVYS1MOS"
@@ -196,7 +210,7 @@ func TestAutomationActionsActionUpdate(t *testing.T) {
 		if !reflect.DeepEqual(v.Action, input) {
 			t.Errorf("Request body = %+v, want %+v", v.Action, input)
 		}
-		w.Write([]byte(`{"action":{"only_invocable_on_unresolved_incidents":true,"action_data_reference":{"process_automation_job_id":"1519578e-a22a-4340-b58f-08194691e10b","process_automation_job_arguments":"-arg 123", "process_automation_node_filter":"tags: production"},"action_type":"process_automation","creation_time":"2022-12-12T18:51:42.048162Z","description":"Description of Action created by TF","id":"01DF4OBNYKW84FS9CCYVYS1MOS","last_run":"2022-12-12T18:52:11.937747Z","last_run_by":{"id":"PINL781","type":"user_reference"},"modify_time":"2022-12-12T18:51:42.048162Z","name":"Action created by TF","privileges":{"permissions":["read"]},"runner":"01DF4O9T1MDPYOUT7SUX9EXZ4R","runner_type":"runbook","services":[{"id":"PQWQ0U6","type":"service_reference"}],"teams":[{"id":"PZ31N6S","type":"team_reference"}],"type":"action"}}`))
+		w.Write([]byte(`{"action":{"only_invocable_on_unresolved_incidents":true,"allow_invocation_manually":true,"allow_invocation_from_event_orchestration":true,"action_data_reference":{"process_automation_job_id":"1519578e-a22a-4340-b58f-08194691e10b","process_automation_job_arguments":"-arg 123", "process_automation_node_filter":"tags: production"},"action_type":"process_automation","creation_time":"2022-12-12T18:51:42.048162Z","description":"Description of Action created by TF","id":"01DF4OBNYKW84FS9CCYVYS1MOS","last_run":"2022-12-12T18:52:11.937747Z","last_run_by":{"id":"PINL781","type":"user_reference"},"modify_time":"2022-12-12T18:51:42.048162Z","name":"Action created by TF","privileges":{"permissions":["read"]},"runner":"01DF4O9T1MDPYOUT7SUX9EXZ4R","runner_type":"runbook","services":[{"id":"PQWQ0U6","type":"service_reference"}],"teams":[{"id":"PZ31N6S","type":"team_reference"}],"type":"action"}}`))
 	})
 
 	resp, _, err := client.AutomationActionsAction.Update(id, input)
@@ -234,8 +248,10 @@ func TestAutomationActionsActionUpdate(t *testing.T) {
 		Privileges: &AutomationActionsPrivileges{
 			Permissions: []*string{&permissions_read},
 		},
-		ModifyTime:                         &modify_time,
-		OnlyInvocableOnUnresolvedIncidents: &only_invocable_on_unresolved_incidents,
+		ModifyTime:                            &modify_time,
+		OnlyInvocableOnUnresolvedIncidents:    &only_invocable_on_unresolved_incidents,
+		AllowInvocationManually:               &allow_invocation_manually,
+		AllowInvocationFromEventOrchestration: &allow_invocation_from_event_orchestration,
 	}
 
 	if !reflect.DeepEqual(resp, want) {
@@ -266,17 +282,22 @@ func TestAutomationActionsActionTypeScriptCreate(t *testing.T) {
 	invocation_command := "/bin/bash"
 	script_data := "java --version"
 	only_invocable_on_unresolved_incidents := true
+	allow_invocation_manually := true
+	allow_invocation_from_event_orchestration := true
+
 	adf := AutomationActionsActionDataReference{
 		Script:            &script_data,
 		InvocationCommand: &invocation_command,
 	}
 	input := &AutomationActionsAction{
-		Name:                               "Action created by TF",
-		Description:                        &description,
-		ActionType:                         "script",
-		RunnerID:                           &runner_id,
-		ActionDataReference:                adf,
-		OnlyInvocableOnUnresolvedIncidents: &only_invocable_on_unresolved_incidents,
+		Name:                                  "Action created by TF",
+		Description:                           &description,
+		ActionType:                            "script",
+		RunnerID:                              &runner_id,
+		ActionDataReference:                   adf,
+		OnlyInvocableOnUnresolvedIncidents:    &only_invocable_on_unresolved_incidents,
+		AllowInvocationManually:               &allow_invocation_manually,
+		AllowInvocationFromEventOrchestration: &allow_invocation_from_event_orchestration,
 	}
 
 	mux.HandleFunc("/automation_actions/actions", func(w http.ResponseWriter, r *http.Request) {
