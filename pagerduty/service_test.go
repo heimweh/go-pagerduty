@@ -352,3 +352,56 @@ func TestServicesDeleteEventRule(t *testing.T) {
 		t.Fatal(err)
 	}
 }
+
+func TestEventOrchestrationServiceStatusGet(t *testing.T) {
+	setup()
+	defer teardown()
+
+	mux.HandleFunc("/event_orchestrations/services/1/active", func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "GET")
+		w.Write([]byte(`{"active": true}`))
+	})
+
+	resp, _, err := client.Services.GetEventOrchestrationServiceStatus("1")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	want := &EventOrchestrationServiceStatusPayload{
+		Active: true,
+	}
+
+	if !reflect.DeepEqual(resp, want) {
+		t.Errorf("returned \n\n%#v want \n\n%#v", resp, want)
+	}
+}
+
+func TestEventOrchestrationServiceStatusUpdate(t *testing.T) {
+	setup()
+	defer teardown()
+
+	input := true
+
+	mux.HandleFunc("/event_orchestrations/services/1/active", func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "PUT")
+		v := true
+		json.NewDecoder(r.Body).Decode(v)
+		if !reflect.DeepEqual(v, input) {
+			t.Errorf("Request body = %+v, want %+v", v, input)
+		}
+		w.Write([]byte(`{"active": true}`))
+	})
+
+	resp, _, err := client.Services.UpdateEventOrchestrationServiceStatus("1", input)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	want := &EventOrchestrationServiceStatusPayload{
+		Active: true,
+	}
+
+	if !reflect.DeepEqual(resp, want) {
+		t.Errorf("returned \n\n%#v want \n\n%#v", resp, want)
+	}
+}
