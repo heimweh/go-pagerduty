@@ -80,8 +80,8 @@ type EventOrchestrationPathIncidentCustomFieldUpdate struct {
 }
 
 type EventOrchestrationPathPagerdutyAutomationAction struct {
-	ActionId     string `json:"action_id,omitempty"`
-	TriggerTypes string `json:"trigger_types,omitempty"`
+	ActionId     string  `json:"action_id,omitempty"`
+	TriggerTypes *string `json:"trigger_types"`
 }
 
 type EventOrchestrationPathAutomationAction struct {
@@ -90,7 +90,7 @@ type EventOrchestrationPathAutomationAction struct {
 	AutoSend     bool                                            `json:"auto_send,omitempty"`
 	Headers      []*EventOrchestrationPathAutomationActionObject `json:"headers"`
 	Parameters   []*EventOrchestrationPathAutomationActionObject `json:"parameters"`
-	TriggerTypes string                                          `json:"trigger_types,omitempty"`
+	TriggerTypes *string                                         `json:"trigger_types"`
 }
 
 type EventOrchestrationPathAutomationActionObject struct {
