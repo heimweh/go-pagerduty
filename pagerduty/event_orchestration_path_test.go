@@ -253,7 +253,6 @@ func TestEventOrchestrationPathGetServiceActiveStatus(t *testing.T) {
 func TestEventOrchestrationPathGlobalUpdate(t *testing.T) {
 	setup()
 	defer teardown()
-	triggertype := "alert_suppressed"
 
 	input := &EventOrchestrationPath{
 		CatchAll: &EventOrchestrationPathCatchAll{
@@ -282,7 +281,7 @@ func TestEventOrchestrationPathGlobalUpdate(t *testing.T) {
 							AutomationActions: []*EventOrchestrationPathAutomationAction{
 								{
 									AutoSend:     true,
-									TriggerTypes: &triggertype,
+									TriggerTypes: []string{"alert_suppressed"},
 									Headers: []*EventOrchestrationPathAutomationActionObject{
 										{
 											Key:   "x-header-1",
@@ -408,7 +407,7 @@ func TestEventOrchestrationPathGlobalUpdate(t *testing.T) {
 											"name": "test webhook",
 											"parameters": [{"key": "hostname", "value": "{{variables.hostname}}"}, {"key": "info", "value": "{{event.summary}}"}],
 											"url": "https://test.com",
-											"trigger_types": "alert_suppressed"
+											"trigger_types": ["alert_suppressed"]
 										}
 									],
 									"event_action": "trigger",
