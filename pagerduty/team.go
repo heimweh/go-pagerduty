@@ -112,7 +112,7 @@ func (s *TeamService) Get(id string) (*Team, *Response, error) {
 
 	resp, err := s.client.newRequestDo("GET", u, nil, nil, &v)
 	if err != nil {
-		return nil, nil, err
+		return nil, resp, err
 	}
 
 	return v.Team, resp, nil
