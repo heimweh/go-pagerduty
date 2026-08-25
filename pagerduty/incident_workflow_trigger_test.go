@@ -320,6 +320,7 @@ func TestIncidentWorkflowTriggerCreate(t *testing.T) {
 	}
 
 	workflowDesc := "This workflow serves as an example"
+	subscribedToAllServices := true
 
 	want := &IncidentWorkflowTrigger{
 		ID:          "abc-123",
@@ -341,7 +342,7 @@ func TestIncidentWorkflowTriggerCreate(t *testing.T) {
 				HTMLURL: "https://subdomain.pagerduty.com/services/PIJ90N7",
 			},
 		},
-		SubscribedToAllServices: true,
+		SubscribedToAllServices: &subscribedToAllServices,
 		Condition:               &cond,
 	}
 
