@@ -19,6 +19,7 @@ type IncidentWorkflowTrigger struct {
 	Condition               *string                             `json:"condition,omitempty"`
 	SubscribedToAllServices bool                                `json:"is_subscribed_to_all_services,omitempty"`
 	Permissions             *IncidentWorkflowTriggerPermissions `json:"permissions,omitempty"`
+	IncidentTypes           []string                            `json:"incident_types,omitempty"`
 }
 
 type IncidentWorkflowTriggerPermissions struct {
