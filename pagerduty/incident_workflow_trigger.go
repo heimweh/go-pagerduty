@@ -19,7 +19,12 @@ type IncidentWorkflowTrigger struct {
 	Condition               *string                             `json:"condition,omitempty"`
 	SubscribedToAllServices bool                                `json:"is_subscribed_to_all_services,omitempty"`
 	Permissions             *IncidentWorkflowTriggerPermissions `json:"permissions,omitempty"`
-	IncidentTypes           []string                            `json:"incident_types,omitempty"`
+	// IncidentTypes is a pointer so that an explicit empty list (used to clear a
+	// previously set list of incident types) can be distinguished from "not
+	// applicable to this trigger type": omitempty on a slice omits both nil and
+	// empty slices, but only omits a nil *pointer*, so a non-nil pointer to an
+	// empty slice is still marshalled as `[]`.
+	IncidentTypes *[]string `json:"incident_types,omitempty"`
 }
 
 type IncidentWorkflowTriggerPermissions struct {
