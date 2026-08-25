@@ -11,20 +11,13 @@ type IncidentWorkflowTriggerService service
 
 // IncidentWorkflowTrigger represents an incident workflow.
 type IncidentWorkflowTrigger struct {
-	ID          string                      `json:"id,omitempty"`
-	Type        string                      `json:"type,omitempty"`
-	TriggerType IncidentWorkflowTriggerType `json:"trigger_type,omitempty"`
-	Workflow    *IncidentWorkflow           `json:"workflow,omitempty"`
-	Services    []*ServiceReference         `json:"services,omitempty"`
-	Condition   *string                     `json:"condition,omitempty"`
-	// SubscribedToAllServices is a pointer: the API rejects
-	// is_subscribed_to_all_services outright when trigger_type is
-	// "incident_type", so it must be omissible independently of its boolean
-	// value. omitempty on a plain bool only omits false, which would still
-	// send `"is_subscribed_to_all_services":false` for incident_type triggers
-	// and get a 400. A nil pointer is omitted regardless of what a non-nil
-	// pointer would have pointed to.
-	SubscribedToAllServices *bool                               `json:"is_subscribed_to_all_services,omitempty"`
+	ID                      string                              `json:"id,omitempty"`
+	Type                    string                              `json:"type,omitempty"`
+	TriggerType             IncidentWorkflowTriggerType         `json:"trigger_type,omitempty"`
+	Workflow                *IncidentWorkflow                   `json:"workflow,omitempty"`
+	Services                []*ServiceReference                 `json:"services,omitempty"`
+	Condition               *string                             `json:"condition,omitempty"`
+	SubscribedToAllServices bool                                `json:"is_subscribed_to_all_services,omitempty"`
 	Permissions             *IncidentWorkflowTriggerPermissions `json:"permissions,omitempty"`
 	// IncidentTypes is a pointer so that an explicit empty list (used to clear a
 	// previously set list of incident types) can be distinguished from "not
