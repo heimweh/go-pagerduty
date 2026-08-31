@@ -81,6 +81,7 @@ type ListIncidentWorkflowOptions struct {
 	Limit    int      `url:"limit,omitempty"`
 	Total    bool     `url:"total,omitempty"`
 	Includes []string `url:"include,brackets,omitempty"`
+	Query    string   `url:"query,omitempty"`
 }
 
 type listIncidentWorkflowOptionsGen struct {

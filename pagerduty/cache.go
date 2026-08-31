@@ -66,8 +66,7 @@ func InitCache(c *Client) {
 		log.Println("===== Enabling PagerDuty memory cache =====")
 		cacheType = "memory"
 		return
-	} else {
-		log.Println("===== PagerDuty Cache Skipping Init =====")
+	} else {		
 		return
 	}
 
