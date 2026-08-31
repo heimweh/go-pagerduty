@@ -59,15 +59,12 @@ func InitCache(c *Client) {
 	cacheMongoURL = os.Getenv("TF_PAGERDUTY_CACHE")
 	re := regexp.MustCompile("^mongodb+(\\+srv)?://")
 	isMongodbURL := re.Match([]byte(cacheMongoURL))
-	if isMongodbURL {
-		log.Printf("===== Enabling PagerDuty Mongo cache at %v", cacheMongoURL)
+	if isMongodbURL {		
 		cacheType = "mongo"
-	} else if cacheMongoURL == "memory" {
-		log.Println("===== Enabling PagerDuty memory cache =====")
+	} else if cacheMongoURL == "memory" {		
 		cacheType = "memory"
 		return
-	} else {
-		log.Println("===== PagerDuty Cache Skipping Init =====")
+	} else {		
 		return
 	}
 
