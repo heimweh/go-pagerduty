@@ -313,6 +313,10 @@ func TestEventOrchestrationPathGlobalUpdate(t *testing.T) {
 									Template: "{{event.summary}}, hostname: {{variables.hostname}}",
 								},
 							},
+							IncidentType: &EventOrchestrationPathIncidentType{
+								ID:   "PT1234A",
+								Name: "security_incident",
+							},
 							Priority: "PCMUB6F",
 							RouteTo:  "7589a1b9",
 							Severity: "warning",
@@ -416,6 +420,7 @@ func TestEventOrchestrationPathGlobalUpdate(t *testing.T) {
 											"regex": null, "source": null, "target": "event.summary", "template": "{{event.summary}}, hostname: {{variables.hostname}}"
 										}
 									],
+									"incident_type": {"id": "PT1234A", "name": "security_incident"},
 									"priority": "PCMUB6F",
 									"route_to": "7589a1b9",
 									"severity": "warning",
