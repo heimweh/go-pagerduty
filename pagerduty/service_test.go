@@ -196,6 +196,51 @@ func TestServicesUpdateIntegration(t *testing.T) {
 	}
 }
 
+func TestServicesUpdateIntegrationConfig(t *testing.T) {
+	setup()
+	defer teardown()
+
+	input := &Integration{
+		Name: "foo",
+		Config: &IntegrationConfig{
+			Fields: map[string]*IntegrationConfigField{
+				"incident_key": {Value: "alarm_name"},
+				"description":  {Value: "alarm_description"},
+			},
+		},
+	}
+
+	mux.HandleFunc("/services/1/integrations/1", func(w http.ResponseWriter, r *http.Request) {
+		testMethod(t, r, "PUT")
+		v := new(IntegrationPayload)
+		json.NewDecoder(r.Body).Decode(v)
+		if !reflect.DeepEqual(v.Integration, input) {
+			t.Errorf("Request body = %+v, want %+v", v, input)
+		}
+		w.Write([]byte(`{"integration": {"name": "foo", "id": "1", "config": {"fields": {"incident_key": {"id": "incident_key", "label": "Correlate events by", "type": "select", "value": "alarm_name"}, "description": {"id": "description", "label": "Derive name from", "type": "select", "value": "alarm_description"}}}}}`))
+	})
+
+	resp, _, err := client.Services.UpdateIntegration("1", "1", input)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	want := &Integration{
+		Name: "foo",
+		ID:   "1",
+		Config: &IntegrationConfig{
+			Fields: map[string]*IntegrationConfigField{
+				"incident_key": {Value: "alarm_name"},
+				"description":  {Value: "alarm_description"},
+			},
+		},
+	}
+
+	if !reflect.DeepEqual(resp, want) {
+		t.Errorf("returned \n\n%#v want \n\n%#v", resp, want)
+	}
+}
+
 func TestServicesGetIntegration(t *testing.T) {
 	setup()
 	defer teardown()
