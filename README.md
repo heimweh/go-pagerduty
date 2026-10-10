@@ -50,6 +50,14 @@ func main() {
 $ PAGERDUTY_TOKEN=<SECRET> go run <PATH/TO/PROJECT/WITH/ABOVE/CODE>/main.go
 ```
 
+## Webhook subscription activation
+
+`WebhookSubscription.Active` is always included in create and update requests.
+Use `Active: false` to create an inactive subscription or deactivate an existing
+one, and `Active: true` to enable it. Set this field explicitly when creating or
+updating a subscription: its zero value is `false`, not an omitted API field.
+
+
 ## Caching support
 
 Since some of the APIs implemented into this library doesn't offer a query mechanism for querying specific resources by their attributes, each time an implementation on the side of the Terraform Provider relies on that kind of logic, what it is done is to list all the resources of an specific entity and the lookup is executed in memory. Therefore, this leads to an inefficient use of the APIs, on top of that for use cases with a big amount of resources this repetitive API calls for lists of resources definitions start to pile up with the form of time consumption performance penalties that are nowadays causing uncomfortable experience for the Terraform Provider users.
